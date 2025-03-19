@@ -1,0 +1,16 @@
+.main-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-container {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(255, 255, 255);
+    border-radius: 20px;
+    width: 65%;
+    height: 80%;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}

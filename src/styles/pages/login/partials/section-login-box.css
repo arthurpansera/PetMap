@@ -1,0 +1,81 @@
+.login-box{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.login-box h1 {
+    font-size: clamp(2rem, 2.6rem, 4rem);
+    padding: 50px 0px;
+    text-align: center;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-right: 40px;
+    margin-top: 25px;
+}
+
+.login-box a{
+    display: inline-block;
+    background-color: var(--purple-color);
+    color: white;
+    padding: 10px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: none;
+    text-decoration: none;
+    transition-duration: 0.2s;
+    cursor: pointer;
+
+}
+
+.login-box a:hover{
+    background-color: var(--dark-purple);
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3)
+}
+
+.input-box{
+    display: flex;
+    align-items: center;
+    margin: 4px auto;
+    margin-bottom: 55px;
+    width: 65%;
+    height: 45px;
+    background-color: var(--light-grey);
+    border-radius: 8px;
+    border: 1px solid var(--dark-grey);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    padding-left: 13px;
+
+}
+
+.label-input{
+    margin: 0 18%;
+}
+
+.login-btn{
+    display: flex;
+    align-items: center;
+    margin: 40px auto;
+    margin-bottom: 70px;
+    width: 45%;
+    height: 45px;
+    background-color: var(--purple-color);
+    color: white;
+    border-radius: 8px;
+    border: 1px solid var(--dark-purple);
+    font-size: 18px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+.login-btn:hover{
+    background-color: var(--dark-purple);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
+}
+
+
+
