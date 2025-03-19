@@ -74,7 +74,7 @@ img {
 
 .left-menu ul li {
     padding: 5px;
-    text-align: center;
+    text-align: left;
 }
 
 .left-menu ul li a {
@@ -82,23 +82,4 @@ img {
     color: black;
     text-decoration: none;
     font-size: 16px;
-    display: block;
-}
-
-.left-menu ul li a:hover {
-    color: black;
-}
-
-.left-menu ul li a:not(.btn)::after{
-    content: "";
-    background-color: black;
-    height: 2px;
-    width: 0;
-    display: block;
-    margin: 0 auto;
-    transition: 0.3s;
-}
-
-.left-menu ul li a:hover::after{
-    width: 100%;
 }
