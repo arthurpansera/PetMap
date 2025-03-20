@@ -1,4 +1,5 @@
 @import url(../../global/global.css);
-@import url(./partials/section-container.css);
-@import url(./partials/section-login-box.css);
-@import url(./partials/section-no-account.css);
+@import url(./partials/container.css);
+@import url(./partials/login-register-box.css);
+@import url(./partials/has-or-no-account.css);
+@import url(./partials/animation.css);

@@ -16,37 +16,60 @@
             </nav>
         </div> 
     </header>
-
     <section class="main-content">
         <section class="box-container">
+            <section class="login-content show" id="login-content">
+                <section class="no-account">
+                    <h1>Bem-vindo ao <br> PetMap!</h1>
+                    <h3>Ainda não possui uma conta?</h3>
+                    <a href="#" id="show-register">Cadastrar-se</a>
+                </section>
+    
+                <section class="login-box">
+                    <div class="back-btn">
+                        <a href="../../../index.html">Voltar</a>
+                    </div>
 
-            <section class="no-account">
-                <h1>Bem-vindo ao <br> PetMap!</h1>
-                <h3>Ainda não possui uma conta?</h3>
-                <a href="selectUserType.html" >Cadastrar-se</a>
+                    <h1>Login</h1>
+                    <label for="email" class="label-input">E-mail: </label>
+                    <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
+                    <label for="password" class="label-input">Senha:</label>
+                    <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha">
+                    <input type="submit" value="Login" class="login-btn">
+                </section>
             </section>
     
-            <section class="login-box">
-                <div class="back-btn">
-                    <a href="../../../index.html">Voltar</a>
-                </div>
+            <section class="register-content hidden" id="register-content">
+               
+                <section class="register-box">
+                    <div class="back-btn">
+                        <a href="../../../index.html">Voltar</a>
+                    </div>
 
-                <h1>Login</h1>
+                    <h1>Selecione o tipo de Cadastro</h1>
+                    <a class="user-options" href="#">Cidadão</a>
+                    <a class="user-options" href="#">ONG</a>
+                    <a class="user-options" href="#">Moderador</a>
+                </section>
     
-                <label for="email" class="label-input">E-mail: </label>
-                <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
-    
-                <label for="password" class="label-input">Senha:</label>
-                <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha">
-    
-                <input type="submit" value="Login" class="login-btn">
+                <section class="has-account">
+                    <h1>Bem-vindo ao <br> PetMap!</h1>
+                    <h3>Já possui uma conta?</h3>
+                    <a href="#" id="show-login">Login</a>
+                </section>
             </section>
-
+    
         </section>
     </section>
+    
+       
 
     <footer class="footer">
         <p>&copy;2024 - PetMap - Onde tem pet, tem Petmap!. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="../../scripts/pages/login/login.js"></script>
 </body>
 </html>
+
+
