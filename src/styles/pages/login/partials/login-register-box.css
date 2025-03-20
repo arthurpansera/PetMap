@@ -85,3 +85,11 @@
     background-color: rgb(215, 215, 215);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
+
+.user-options{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto;
+    margin-bottom: 10%;
+}
