@@ -6,6 +6,7 @@
 .left-menu {
     background-color:white;
     padding: 30px;
+    position: fixed;
 }
 
 .left-menu ul {
@@ -17,11 +18,19 @@
 .left-menu ul li {
     padding: 5px;
     text-align: left;
+    padding: 12px 0;
 }
 
 .left-menu ul li a {
-    text-transform: uppercase;
     color: black;
     text-decoration: none;
     font-size: 16px;
+    padding: 6px 8px;
+}
+
+.left-menu ul li a:hover {
+    color: white;
+    background-color: #9900FF;
+    border-radius: 10px;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
