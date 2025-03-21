@@ -3,3 +3,7 @@
 @import url(./partials/login-register-box.css);
 @import url(./partials/has-or-no-account.css);
 @import url(./partials/animation.css);
+
+*{
+    overflow: hidden;
+}
