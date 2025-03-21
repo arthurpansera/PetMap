@@ -50,8 +50,7 @@ img {
     display: inline-block;
     transition-duration: 0.2s;
     border: 2px solid white;
-    text-decoration: none;
-   
+    text-decoration: none;  
 }
 
 .btn:hover{
@@ -65,17 +64,51 @@ img {
 
 }
 
+/* --- FOOTER --- */
+
 .footer {
     background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 4.5rem;
+    width: 100%;
 }
+
+
+/* --- INPUT REQUIRED SPAN --- */
 
 .span-required{
     display: none;
     font-size: 12px;
     color:#e63636;
     margin: 3px 0 0 1px;
+}
+
+/* --- BACK BUTTON --- */
+
+.back-btn {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-left: 40px;
+    margin-top: 25px;
+}
+
+.back-btn a{
+    display: inline-block;
+    background-color: var(--purple-color);
+    color: white;
+    padding: 10px 30px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: none;
+    text-decoration: none;
+    transition-duration: 0.2s;
+    cursor: pointer;
+}
+
+.back-btn a:hover{
+    background-color: var(--dark-purple);
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3)
 }
