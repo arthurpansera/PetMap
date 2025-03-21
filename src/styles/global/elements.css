@@ -4,18 +4,17 @@ html, body{
     background-color: var(--light-grey);
     font-family: "Inter", sans-serif;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
 }
-
 /* --- top navigation menu --- */
 
 .nav{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 35px;
-    padding-right: 35px;
+    padding: 10px 35px;
     background-color: var(--purple-color);
     position: fixed;
     top: 0;
@@ -61,18 +60,17 @@ img {
 
 .main-content {
     flex: 1;
-
 }
 
 /* --- FOOTER --- */
 
 .footer {
     background-color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 4.5rem;
+    text-align: center;
+    padding: 25px;
     width: 100%;
+    margin-top: auto;
+    position: relative;
 }
 
 

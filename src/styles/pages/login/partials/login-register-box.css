@@ -25,13 +25,14 @@
     margin: 4px auto;
     margin-bottom: 55px;
     width: 65%;
-    height: 45px;
+    height: 60px;
     background-color: var(--light-grey);
     border-radius: 8px;
     border: 1px solid var(--dark-grey);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     padding-left: 13px;
 }
+
 .label-input{
     margin: 0 18%;
 }
@@ -41,7 +42,7 @@
     margin: 40px auto;
     margin-bottom: 70px;
     width: 45%;
-    height: 45px;
+    height: 60px;
     background-color: var(--purple-color);
     color: white;
     border-radius: 8px;
@@ -62,11 +63,15 @@
     background-color: rgb(215, 215, 215);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
-
 .user-options{
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 4px auto;
     margin-bottom: 10%;
+    height: 45px;
+}
+.user-options-box{
+    margin-bottom: 20%;
+
 }

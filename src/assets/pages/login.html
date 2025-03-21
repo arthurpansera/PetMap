@@ -34,7 +34,7 @@
                     <label for="email" class="label-input">E-mail: </label>
                     <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
                     <label for="password" class="label-input">Senha:</label>
-                    <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha">
+                    <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
                     <input type="submit" value="Login" class="login-btn">
                 </section>
             </section>
@@ -47,24 +47,28 @@
                     </div>
 
                     <h1>Selecione o tipo de Cadastro</h1>
-                    <a class="user-options" href="#">Cidadão</a>
-                    <a class="user-options" href="./register-ong.html">ONG</a>
-                    <a class="user-options" href="#">Moderador</a>
+                    <div class="user-options-box">
+                        <a class="user-options" href="./register-user.html">Cidadão</a>
+                        <a class="user-options" href="./register-ong.html">ONG</a>
+                        <a class="user-options" href="./register-adm.html">Moderador</a>
+
+                    </div>
+            
                 </section>
     
                 <section class="has-account">
                     <h1>Bem-vindo ao <br> PetMap!</h1>
                     <h3>Já possui uma conta?</h3>
-                    <a href="#" id="show-login">Login</a>
+                    <a id="show-login">Login</a>
                 </section>
             </section>
-    
         </section>
-    </section> 
+    </section>
 
     <footer class="footer">
         <p>&copy;2024 - PetMap - Onde tem pet, tem Petmap!. Todos os direitos reservados.</p>
     </footer>
+
 
     <script src="../../scripts/pages/login/login.js"></script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetMap | Registro de ONG</title>
+    <title>PetMap | Cadastro de Cidadão</title>
     <link rel="stylesheet" href="/src/styles/pages/register-ong/register-ong.css">
 </head>
 <body>
@@ -21,12 +21,11 @@
         <section class="box-container">
             <section class="btn-back">
                 <div class="back-btn">
-                    <a href="../../../index.html">Voltar</a>
+                    <a href="../../assets/pages/login.html">Voltar</a>
                 </div>
 
             </section>
             
-
             <h1>Dados Cadastrais - ONG</h1>
 
             <section class="input-register">
@@ -77,19 +76,19 @@
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="CEP"><b>CEP: *</b></label>
-                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cepValidate()">
+                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX">
                             <span class="span-required">CEP inválido!</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="road"><b>Rua: *</b></label>
-                            <input type="text" name="road" id="road" class="mid-inputUser required" placeholder="Insira o nome da rua" oninput="roadValidate()">
+                            <input type="text" name="road" id="road" class="mid-inputUser required" placeholder="Insira o nome da rua">
                             <span class="span-required"> Rua não pode conter caracteres especias.</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="num"><b>Número: *</b></label>
-                            <input type="text" name="num" id="num" class="mid-inputUser required" placeholder="Insira o número" oninput="numValidate()">
+                            <input type="text" name="num" id="num" class="mid-inputUser required" placeholder="Insira o número">
                             <span class="span-required">Número não pode conter letras ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -97,12 +96,12 @@
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="neighborhood"><b>Bairro: *</b></label>
-                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro" oninput="inputWithoutNumbersValidate(11)">
+                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro">
                             <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
                         </div>
                         <div class="mid-inputBox">
                             <label for="city"><b>Cidade: *</b></label>
-                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade" oninput="inputWithoutNumbersValidate(12)">
+                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade">
                             <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -110,13 +109,13 @@
                     <div class="container-row" >
                         <div class="mid-inputBox">
                             <label for="state"><b>Estado: *</b></label>
-                            <input type="text" name="state" id="state" class="mid-inputUser required" placeholder="Insira o estado" oninput="inputWithoutNumbersValidate(13)">
+                            <input type="text" name="state" id="state" class="mid-inputUser required" placeholder="Insira o estado">
                             <span class="span-required">Estado não pode conter números ou caracteres especiais.</span>  
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
-                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país" oninput="inputWithoutNumbersValidate(14)">
+                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país">
                             <span class="span-required">País não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -131,12 +130,11 @@
                 </form>
             </section>
         </section>
-
-        <footer class="footer">
-            <p>&copy;2024 - PetMap - Onde tem pet, tem Petmap!. Todos os direitos reservados.</p>
-        </footer>
-    
     </section>
+
+    <footer class="footer">
+        <p>&copy;2024 - PetMap - Onde tem pet, tem Petmap!. Todos os direitos reservados.</p>
+    </footer>
 
 </body>
 </html>

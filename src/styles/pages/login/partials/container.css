@@ -1,9 +1,10 @@
 .main-content {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     padding-top: 75px;
+
 }
 .box-container {
     display: flex;
