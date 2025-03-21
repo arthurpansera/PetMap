@@ -14,32 +14,9 @@
     padding: 60px 0px;
     margin-bottom: 20px;
 }
-.back-btn {
-    display: flex;
-    align-items: center;
+.login-box .back-btn {
     justify-content: flex-end;
     margin-right: 40px;
-    margin-top: 25px;
-}
-.register-box .back-btn {
-    justify-content: flex-start;
-    margin-left: 40px;
-}
-.back-btn a{
-    display: inline-block;
-    background-color: var(--purple-color);
-    color: white;
-    padding: 10px 30px;
-    border-radius: 10px;
-    font-size: 16px;
-    border: none;
-    text-decoration: none;
-    transition-duration: 0.2s;
-    cursor: pointer;
-}
-.back-btn a:hover{
-    background-color: var(--dark-purple);
-    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3)
 }
 .input-box, .user-options{
     display: flex;
