@@ -7,6 +7,9 @@
     background-color:white;
     padding: 30px;
     position: fixed;
+    width: 250px;
+    height: 100%;
+    padding-top: 100px;
 }
 
 .left-menu ul {
@@ -24,7 +27,7 @@
 .left-menu ul li a {
     color: black;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
     padding: 6px 8px;
 }
 
