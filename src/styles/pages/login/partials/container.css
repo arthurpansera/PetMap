@@ -3,6 +3,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    padding-top: 75px;
 }
 .box-container {
     display: flex;
