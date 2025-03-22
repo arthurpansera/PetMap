@@ -1,19 +1,14 @@
-.login-box, .register-box, .user-options{
+.login-box, .register-box{
     display: flex;
     flex-direction: column;
     width: 50%;
 }
-.login-box h1 {
-    font-size: clamp(2rem, 2.6rem, 4rem);
-    padding: 50px 0px;
+.login-box h1, .register-box h1 {
+    font-size: clamp(2rem, 2.4rem, 4rem);
+    padding: 40px 0px;
     text-align: center;
 }
-.register-box h1 {
-    font-size: clamp(2rem, 2rem, 4rem);
-    text-align: center;
-    padding: 60px 0px;
-    margin-bottom: 20px;
-}
+
 .login-box .back-btn {
     justify-content: flex-end;
     margin-right: 40px;
@@ -23,9 +18,9 @@
     align-items: center;
     justify-content: center;
     margin: 4px auto;
-    margin-bottom: 55px;
+    margin-bottom: 10%;
     width: 65%;
-    height: 60px;
+    height: 45px;
     background-color: var(--light-grey);
     border-radius: 8px;
     border: 1px solid var(--dark-grey);
@@ -36,13 +31,14 @@
 .label-input{
     margin: 0 18%;
 }
+
 .login-btn{
     display: flex;
     align-items: center;
     margin: 40px auto;
-    margin-bottom: 70px;
+    margin-bottom: 60px;
     width: 45%;
-    height: 60px;
+    height: 45px;
     background-color: var(--purple-color);
     color: white;
     border-radius: 8px;
@@ -63,15 +59,8 @@
     background-color: rgb(215, 215, 215);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
-.user-options{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 4px auto;
-    margin-bottom: 10%;
-    height: 45px;
-}
-.user-options-box{
-    margin-bottom: 20%;
 
+.user-options-box{
+    margin: 40px 0;
+    margin-bottom: 45px
 }
