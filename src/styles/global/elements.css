@@ -4,8 +4,6 @@ html, body{
     background-color: var(--light-grey);
     font-family: "Inter", sans-serif;
     height: 100%;
-    margin: 0;
-    padding: 0;
     overflow-x: hidden;
 }
 /* --- top navigation menu --- */

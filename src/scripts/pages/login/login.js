@@ -6,13 +6,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const showLoginBtn = document.getElementById("show-login");
 
     function toggleSections(show, hide) {
-        hide.classList.add("hidden");
         hide.classList.remove("show");
-
-        setTimeout(() => {
-            show.classList.remove("hidden");
-            show.classList.add("show");
-        }, 300);
+        hide.classList.add("hidden");
+    
+        show.classList.remove("hidden");
+        show.classList.add("show");
     }
 
     showRegisterBtn.addEventListener("click", function(event) {
@@ -25,5 +23,3 @@ document.addEventListener("DOMContentLoaded", function() {
         toggleSections(loginContent, registerContent);
     });
 });
-
-
