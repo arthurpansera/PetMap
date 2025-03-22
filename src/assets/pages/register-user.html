@@ -33,7 +33,7 @@
                 <form id="form" name="form" method="POST" action="ong-register-process.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
-                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo">
+                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira o nome da ONG" oninput="inputWithoutNumbersValidate(0)">
                         <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
                     </div>
 
@@ -93,6 +93,7 @@
         <p>&copy;2024 - PetMap - Onde tem pet, tem Petmap!. Todos os direitos reservados.</p>
     </footer>
 
+    <script src="../../scripts/pages/reigster-ong/register-ong.js"></script>
 </body>
 </html>
 

@@ -72,9 +72,9 @@ img {
 
 .span-required{
     display: none;
-    font-size: 12px;
+    font-size: 13px;
     color:#e63636;
-    margin: 3px 0 0 1px;
+    margin: 1px 0 0 5px;
 }
 
 /* --- BACK BUTTON --- */

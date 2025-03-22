@@ -1,96 +1,86 @@
 const form = document.getElementById('form')
-const campos = document.querySelectorAll('.required')
+const inputs = document.querySelectorAll('.required')
 const spans = document.querySelectorAll('.span-required')
 
 function btnRegisterOnClick(event) {
     let hasError = false;
 
-    if (campos[0].value === "") {
+    if (inputs[0].value === "") {
         errorAlert('Preenchimento obrigatório: Nome', 0);
         hasError = true;
-    } else if (!inputWithoutNumbers(campos[0].value)) {
+    } else if (!inputWithoutNumbers(inputs[0].value)) {
         inputWithoutNumbersValidate(0);
         hasError = true;
-    } else if (campos[1].value === "") {
+    } else if (inputs[1].value === "") {
         errorAlert('Preenchimento obrigatório: E-mail', 1);
         hasError = true;
-    } else if (!isEmail(campos[1].value)) {
+    } else if (!isEmail(inputs[1].value)) {
         emailValidate();
         hasError = true;
-    } else if (campos[2].value === "") {
-        errorAlert('Preenchimento obrigatório: Área de atuação', 2);
+    } else if (inputs[2].value === ""){
         hasError = true;
-    } else if (!inputWithoutNumbers(campos[2].value)) {
-        inputWithoutNumbersValidate(2);
+    } else if (!isCNPJ(inputs[2].value)){
+        cnpjValidate()
         hasError = true;
-    } else if (campos[3].value === "") {
-        errorAlert('Preenchimento obrigatório: Data de Fundação', 3);
+    } else if (inputs[3].value === "") {
+        errorAlert('Preenchimento obrigatório: Telefone');
         hasError = true;
-    } else if (!isValidDate(campos[3].value)) {
-        dateValidate();
-        hasError = true;
-    } else if (campos[4].value === "") {
-        errorAlert('Preenchimento obrigatório: Telefone', 4);
-        hasError = true;
-    } else if (!isTelephone(campos[4].value)) {
+    } else if (!isTelephone(inputs[3].value)) {
         telephoneValidate();
         hasError = true;
-    } else if (campos[5].value === "") {
-        errorAlert('Preenchimento obrigatório: Rede Social', 5);
+    } else if (inputs[4].value === "") {
+        errorAlert('Preenchimento obrigatório: Senha');
         hasError = true;
-    } else if (campos[6].value === "") {
-        errorAlert('Preenchimento obrigatório: Senha', 6);
-        hasError = true;
-    } else if (!validPassword(campos[6].value)) {
+    } else if (!validPassword(inputs[4].value)) {
         passwordValidate();
         hasError = true;
-    } else if (campos[7].value === "") {
-        errorAlert('Preenchimento obrigatório: Confirme sua senha', 7);
+    } else if (inputs[5].value === "") {
+        errorAlert('Preenchimento obrigatório: Confirme sua senha');
         hasError = true;
-    } else if (campos[6].value !== campos[7].value) {
+    } else if (inputs[5].value !== inputs[4].value) {
         confirmPasswordValidate();
         hasError = true;
-    } else if (campos[8].value === "") {
-        errorAlert('Preenchimento obrigatório: CEP', 8);
+    } else if (inputs[6].value === "") {
+        errorAlert('Preenchimento obrigatório: CEP');
         hasError = true;
-    } else if (!isCEP(campos[8].value)) {
+    } else if (!isCEP(inputs[6].value)) {
         cepValidate();
         hasError = true;
-    } else if (campos[9].value === "") {
-        errorAlert('Preenchimento obrigatório: Rua', 9);
+    } else if (inputs[7].value === "") {
+        errorAlert('Preenchimento obrigatório: Rua');
         hasError = true;
-    } else if (!isRoad(campos[9].value)) {
+    } else if (!isRoad(inputs[7].value)) {
         roadValidate();
         hasError = true;
-    } else if (campos[10].value === "") {
-        errorAlert('Preenchimento obrigatório: Número', 10);
+    } else if (inputs[8].value === "") {
+        errorAlert('Preenchimento obrigatório: Número');
         hasError = true;
-    } else if (!isNum(parseInt(campos[10].value))) {
+    } else if (!isNum(parseInt(inputs[8].value))) {
         numValidate();
         hasError = true;
-    } else if (campos[11].value === "") {
-        errorAlert('Preenchimento obrigatório: Bairro', 11);
+    } else if (inputs[9].value === "") {
+        errorAlert('Preenchimento obrigatório: Bairro');
         hasError = true;
-    } else if (!inputWithoutNumbers(campos[11].value)) {
+    } else if (!inputWithoutNumbers(inputs[9].value)) {
+        inputWithoutNumbersValidate(9);
+        hasError = true;
+    } else if (inputs[10].value === "") {
+        errorAlert('Preenchimento obrigatório: Cidade');
+        hasError = true;
+    } else if (!inputWithoutNumbers(inputs[10].value)) {
+        inputWithoutNumbersValidate(10);
+        hasError = true;
+    } else if (inputs[11].value === "") {
+        errorAlert('Preenchimento obrigatório: Estado');
+        hasError = true;
+    } else if (!inputWithoutNumbers(inputs[11].value)) {
         inputWithoutNumbersValidate(11);
         hasError = true;
-    } else if (campos[12].value === "") {
-        errorAlert('Preenchimento obrigatório: Cidade', 12);
+    } else if (inputs[12].value === "") {
+        errorAlert('Preenchimento obrigatório: País');
         hasError = true;
-    } else if (!inputWithoutNumbers(campos[12].value)) {
+    } else if (!inputWithoutNumbers(inputs[12].value)) {
         inputWithoutNumbersValidate(12);
-        hasError = true;
-    } else if (campos[13].value === "") {
-        errorAlert('Preenchimento obrigatório: Estado', 13);
-        hasError = true;
-    } else if (!inputWithoutNumbers(campos[13].value)) {
-        inputWithoutNumbersValidate(13);
-        hasError = true;
-    } else if (campos[14].value === "") {
-        errorAlert('Preenchimento obrigatório: País', 14);
-        hasError = true;
-    } else if (!inputWithoutNumbers(campos[14].value)) {
-        inputWithoutNumbersValidate(14);
         hasError = true;
     }
 
@@ -104,14 +94,14 @@ function btnRegisterOnClick(event) {
 
 // Function creates a red border on the input where the condition is not met
 function setError(index) {
-    campos[index].style.border = '2px solid #e63636'
+    inputs[index].style.border = '2px solid #e63636'
     spans[index].style.display = 'block'
-    campos[index].focus()
+    inputs[index].focus()
 }
 
 // Function remove the red border
 function removeError(index) {
-    campos[index].style.border = ''
+    inputs[index].style.border = ''
     spans[index].style.display = 'none'
 }
 
@@ -121,177 +111,140 @@ function errorAlert(message, index) {
         title: 'Erro!',
         text: message,
         icon: 'error',
-        confirmButtonText: 'Entendido' ,
-        confirmButtonColor:'#399aa8',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#399aa8',
         timer: 7000,
         timerProgressBar: true
     }).then((result) => {
         if (result.isConfirmed) {
-            campos[index].focus()
+            setTimeout(() => {
+                inputs[index].focus();
+            }, 300); 
         }
-    })
+    });
 }
+
 
 // ----- FUNCTIONS TO VALIDATE THE INPUTS ----- //
 function inputWithoutNumbersValidate(index) {
-    if (campos[index].value === "") {
+    if (inputs[index].value === "") {
         removeError(index)
-    } else if (!inputWithoutNumbers(campos[index].value)) {
+    } else if (!inputWithoutNumbers(inputs[index].value)) {
         setError(index)
     } else {
         removeError(index)
     }
 }
-
 function emailValidate() {
-    if (campos[1].value === "") {
+    if (inputs[1].value === "") {
         removeError(1)
-    } else if (!isEmail(campos[1].value)) {
+    } else if (!isEmail(inputs[1].value)) {
         setError(1)
     } else {
         removeError(1)
     }
 }
-
-function dateValidate() {
-    if (campos[3].value === "") {
+function cnpjValidate() {
+    if (inputs[2].value === "") {
+        removeError(2)
+    } else if (!isCNPJ(inputs[2].value)) {
+        setError(2)
+    } else{
+        removeError(2)
+    }
+}
+function telephoneValidate() {
+    if (inputs[3].value === "") {
         removeError(3)
-    } else if (!isValidDate(campos[3].value)) {
+    } else if (!isTelephone(inputs[3].value)) {
         setError(3)
     } else{
         removeError(3)
     }
 }
-
-
-function telephoneValidate() {
-    if (campos[4].value === "") {
+function passwordValidate() {
+    if (inputs[4].value === "") {
         removeError(4)
-    } else if (!isTelephone(campos[4].value)) {
+    } else if (!validPassword(inputs[4].value)) {
         setError(4)
     } else{
         removeError(4)
     }
 }
-
-function passwordValidate() {
-    if (campos[6].value === "") {
+function confirmPasswordValidate() {
+    if (inputs[5].value === "") {
+        removeError(5)
+    } else if ((inputs[4].value !== inputs[5].value)) {
+        setError(5)
+    } else{
+        removeError(5)
+    }
+}
+function cepValidate() {
+    if (inputs[6].value === "") {
         removeError(6)
-    } else if (!validPassword(campos[6].value)) {
+    } else if (!isCEP(inputs[6].value)) {
         setError(6)
     } else{
         removeError(6)
     }
 }
-
-function confirmPasswordValidate() {
-    if (campos[7].value === "") {
+function roadValidate() {
+    if (inputs[7].value === "") {
         removeError(7)
-    } else if ((campos[6].value !== campos[7].value)) {
+    } else if (!isRoad(inputs[7].value)) {
         setError(7)
     } else{
         removeError(7)
     }
 }
-
-function cepValidate() {
-    if (campos[8].value === "") {
+function numValidate() {
+    if (inputs[8].value === "") {
         removeError(8)
-    } else if (!isCEP(campos[8].value)) {
+    } else if (!isNum(inputs[8].value)) {
         setError(8)
     } else{
         removeError(8)
     }
 }
 
-function roadValidate() {
-    if (campos[9].value === "") {
-        removeError(9)
-    } else if (!isRoad(campos[9].value)) {
-        setError(9)
-    } else{
-        removeError(9)
-    }
-}
-
-function numValidate() {
-    if (campos[10].value === "") {
-        removeError(10)
-    } else if (!isNum(campos[10].value)) {
-        setError(10)
-    } else{
-        removeError(10)
-    }
-}
-
-// Function to check if is a valid date
-function isValidDate(date) {
-    const re = /^(0[1-9]|[12]\d|3[01])\/?(0[1-9]|1[0-2])\/?(19|20)\d\d$/
-
-    if (!re.test(date)) {
-        return false
-    }
-
-    let day, month, year
-    if (date.includes('/')) {
-        [day, month, year] = date.split('/').map(Number)
-    } else {
-        day = Number(date.slice(0, 2))
-        month = Number(date.slice(2, 4))
-        year = Number(date.slice(4, 8))
-    }
-
-    if (year < 1895 || year > 2024) {
-        return false
-    }
-
-    const daysInMonth = [31, 28 + (isLeapYear(year) ? 1 : 0), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-
-    return day <= daysInMonth[month - 1]
-}
-
-// Function to check if a year is a leap year
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0)
-}
-
 // ----- REGEX ----- //
+
 // Function to check if the input contains numbers
 function inputWithoutNumbers(index) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(index)
 }
-
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     return re.test(email)
 }
-
-// Function to check if is a valid password
-function validPassword(password) {
-    const re =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\.])[A-Za-z\d@$!%*?&\.]{8,}$/
-    return re.test(password)
-}
-
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
     const re = /^(\+55\s?)?(55\s?)?\d{2}\s?9?\d{4}-?\d{4}$/
     return re.test(telephone)
 }
-
+// Function to check if is a valid password
+function validPassword(password) {
+    const re =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\.])[A-Za-z\d@$!%*?&\.]{8,}$/
+    return re.test(password)
+}
+// Function to check if is a valid CNPJ
+function isCNPJ(cnpj) {
+    const re = /^(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|\d{14})$/
+    return re.test(cnpj)
+}
 // Function to check if is a valid CEP
 function isCEP(cep){
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
-
 // Function to check if is a valid road
 function isRoad(road){
     const re = /^[A-Za-z0-9\s]+$/
     return re.test(road)
 }
-
 // Function to check if is positive numbers
 function isNum(num) {
     return !isNaN(num) && num > 0
