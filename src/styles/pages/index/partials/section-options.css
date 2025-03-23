@@ -37,3 +37,33 @@
     border-radius: 10px;
     transition: background-color 0.5s ease, color 0.5s ease;
 }
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+    max-width: 1000px;
+    height: auto;
+    margin-left: 605px;
+    margin-top: 120px;
+}
+
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.menu-content h1 {
+    font-size: 70px;
+    margin-bottom: 20px;
+}
+
+.menu-content p {
+    font-size: 25px;
+}
