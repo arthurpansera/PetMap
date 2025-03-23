@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetMap | Perfil</title>
+    <link href="/src/styles/pages/register-adm/register-adm.css" rel="stylesheet">
+    <style>
+        .options {
+            display: flex;
+            padding: 0px;
+            width: 100%;
+        }
+
+        .left-menu {
+            background-color: white;
+            padding: 30px;
+            position: fixed;
+            width: 270px;
+            height: 100%;
+            padding-top: 100px;
+        }
+
+        .left-menu ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .left-menu ul li {
+            padding: 5px;
+            text-align: left;
+            padding: 12px 0;
+        }
+
+        .left-menu ul li a {
+            color: black;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 6px 8px;
+        }
+
+        .left-menu ul li a:hover {
+            color: white;
+            background-color: #9900FF;
+            border-radius: 10px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .profile {
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 1000px;
+            height: auto;
+            margin-left: 605px;
+            margin-top: 150px;
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 25px;
+        }
+
+        .profile-header img {
+            border-radius: 50%;
+            margin-bottom: 30px;
+            width: auto;
+            max-width: 300px;
+            height: auto;
+            max-height: 300px;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+
+        .profile .profile-info p {
+            font-size: 18px;
+            width: auto;
+            max-width: 500px;
+            line-height: 1.5em;
+            padding: 5px 0px;
+        }
+        
+        .profile-buttons {
+            margin-top: 30px;
+        }
+
+        button {
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-block;
+            transition-duration: 0.2s;
+            border: 2px solid white;
+            text-decoration: none;  
+            font-size: 18px;
+        }
+
+        .profile-button-1{
+            background-color: rgb(196, 196, 0);
+        }
+
+        .profile-button-2{
+            background-color: rgb(223, 0, 0);
+        }
+
+        .profile-button-1:hover{
+            background-color: rgb(150, 150, 0);
+            padding: 14px 22px;
+        }
+
+        .profile-button-2:hover{
+            background-color: rgb(182, 0, 0);
+            padding: 14px 22px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="nav">
+                <a href="../../../index.html">
+                    <img src="/src/assets/images/logo-petmap/white-logo.png" alt="Logo PetMap">
+                </a>
+                <a href="perfil.html">
+                    <img src="..." alt="Figura Perfil">
+                </a>
+            </nav>
+        </div> 
+    </header>
+    <section class="options">
+        <nav class="left-menu">
+            <ul>
+                <li><a href="../../../index.html">Página Principal</a></li>
+                <li><a href="../../../index.html">Animais Resgatados</a></li>
+                <li><a href="../../../index.html">Animais Perdidos</a></li>
+                <li><a href="../../../index.html">Sobre Nós</a></li>
+                <li><a href="../../../index.html">Perguntas Frequentes</a></li>
+                <li><a href="../../../index.html">Suporte</a></li>
+            </ul>
+        </nav>
+    </section>
+    <section class="profile">
+        <div class="profile-info">
+            <div class="profile-header">
+                <img src="/src/assets/images/perfil-images/imagem-perfil-teste.png" alt="Foto de Perfil">
+                <h2>João Silva</h2>
+            </div>
+            <p><span class="label">Tipo de Conta:</span> Moderador</p>
+            <p><span class="label">E-mail:</span> joao.silva@example.com</p>
+            <p><span class="label">Telefone:</span> (11) 91234-5678</p>
+            <div class="profile-buttons">
+                <button class="profile-button-1">Editar Informações</button>
+                <button class="profile-button-2">Excluir Conta</button>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
