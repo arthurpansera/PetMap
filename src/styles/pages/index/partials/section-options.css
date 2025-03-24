@@ -77,3 +77,8 @@
 .menu-content p {
     font-size: 25px;
 }
+
+.post-item {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
