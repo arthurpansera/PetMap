@@ -28,38 +28,38 @@
             <h1>Dados Cadastrais - Moderador</h1>
 
             <section class="input-register">
-                <form id="form" name="form" method="POST" action="#">
+                <form id="form" name="form" method="POST" action="adm-register-process.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
-                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo">
+                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo" oninput="inputWithoutNumbersValidate(0)">
                         <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="text"><b>E-mail: *</b></label>
-                        <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com">
+                        <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com" oninput="emailValidate()">
                         <span class="span-required">Insira um e-mail válido!</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="telephone"><b>Telefone: *</b></label>
-                        <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="(XX) XXXXX-XXXX">
+                        <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="(XX) XXXXX-XXXX" oninput="telephoneValidate()">
                         <span class="span-required">Insira um telefone válido</span>
                      </div>
             
                     <div class="full-inputBox">
                             <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha">
+                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha" oninput="passwordValidate()">
                             <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="confirm-pass"><b>Confirme sua senha: *</b></label>
-                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha">
+                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha" oninput="confirmPasswordValidate()">
                         <span class="span-required">As senhas não coincidem.</span>
                     </div>
                 
-                    <input type="submit" value="Cadastrar-se" class="register-btn">
+                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
 
                 </form>
             </section>
@@ -69,6 +69,9 @@
     <footer class="footer">
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="../../scripts/pages/register-adm/register-adm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 </html>
