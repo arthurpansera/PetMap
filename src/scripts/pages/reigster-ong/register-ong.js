@@ -98,13 +98,11 @@ function setError(index) {
     spans[index].style.display = 'block'
     inputs[index].focus()
 }
-
 // Function remove the red border
 function removeError(index) {
     inputs[index].style.border = ''
     spans[index].style.display = 'none'
 }
-
 // Function creates error alert for input that is not filled in
 function errorAlert(message, index) {
     Swal.fire({
@@ -123,7 +121,6 @@ function errorAlert(message, index) {
         }
     });
 }
-
 
 // ----- FUNCTIONS TO VALIDATE THE INPUTS ----- //
 function inputWithoutNumbersValidate(index) {
@@ -227,8 +224,8 @@ function isTelephone(telephone) {
 }
 // Function to check if is a valid password
 function validPassword(password) {
-    const re =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\.])[A-Za-z\d@$!%*?&\.]{8,}$/
-    return re.test(password)
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
+    return re.test(password);
 }
 // Function to check if is a valid CNPJ
 function isCNPJ(cnpj) {
