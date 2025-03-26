@@ -121,6 +121,7 @@ function confirmPasswordValidate() {
         removeError(4)
     }
 }
+
 // ----- REGEX ----- //
 
 // Function to check if the input contains numbers
@@ -140,7 +141,6 @@ function isTelephone(telephone) {
 }
 // Function to check if is a valid password
 function validPassword(password) {
-    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
-    return re.test(password);
+    const re =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&\.])[A-Za-z\d@$!%*?&\.]{8,}$/
+    return re.test(password)
 }
-
