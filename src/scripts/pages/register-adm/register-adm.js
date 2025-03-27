@@ -122,7 +122,6 @@ function confirmPasswordValidate() {
     }
 }
 
-
 // ----- REGEX ----- //
 
 // Function to check if the input contains numbers
