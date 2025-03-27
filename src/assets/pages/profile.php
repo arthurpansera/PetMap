@@ -65,22 +65,24 @@ if (isset($_POST['update_profile'])) {
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
     $foto = $_FILES['foto'];
-    
-    if ($foto['error'] == 0) {
-        $foto_nome = uniqid() . '-' . $foto['name'];
-        $foto_destino = "../../images/perfil-images/" . $foto_nome;
+    $senha = $_POST['senha'];
+    $confirmar_senha = $_POST['confirmar_senha'];
 
-        if (move_uploaded_file($foto['tmp_name'], $foto_destino)) {
-            $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
-            $stmt_foto = $obj->prepare($query_foto);
-            $stmt_foto->bind_param("si", $foto_destino, $user['id_usuario']);
-            $stmt_foto->execute();
-        }
+    if ($senha !== $confirmar_senha) {
+        echo "<span class='alert alert-danger'>As senhas não coincidem. Por favor, tente novamente.</span>";
+        exit();
     }
 
-    $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ? WHERE id_usuario = ?";
-    $stmt_usuario = $obj->prepare($query_usuario);
-    $stmt_usuario->bind_param("sssi", $nome, $telefone, $email, $user['id_usuario']);
+    if (!empty($senha)) {
+        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ?, senha = ? WHERE id_usuario = ?";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("ssssi", $nome, $telefone, $email, $senha, $user['id_usuario']);
+    } else {
+        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ? WHERE id_usuario = ?";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("sssi", $nome, $telefone, $email, $user['id_usuario']);
+    }
+
     $stmt_usuario->execute();
 
     header("Location: profile.php");
