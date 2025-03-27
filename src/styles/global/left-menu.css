@@ -1,28 +1,28 @@
-.options {
-    display: flex;
-    padding: 0px;
-    width: 100%;
-}
-
 .left-menu {
     background-color: white;
     padding: 30px;
     position: fixed;
-    width: 270px;
+    width: 20vw;
+    min-width: 200px;
+    max-width: 300px;
     height: 100%;
     padding-top: 100px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .left-menu ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    flex-grow: 1;
 }
 
 .left-menu ul li {
-    padding: 5px;
-    text-align: left;
     padding: 12px 0;
+    text-align: left;
 }
 
 .left-menu ul li a {
@@ -46,5 +46,17 @@
     justify-content: flex-end;
     text-align: center;
     padding: 10px;
-    margin-top: 470px;
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .left-menu {
+        width: 30vw;
+        min-width: 180px;
+        max-width: 250px;
+    }
+
+    .left-menu ul li {
+        padding: 8px 0;
+    }
 }
