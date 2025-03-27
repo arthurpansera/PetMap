@@ -62,7 +62,7 @@ if (isset($_POST['delete_account'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetMap | Perfil</title>
-    <link href="../../styles/pages/perfil/perfil.css" rel="stylesheet">
+    <link href="../../styles/pages/profile/profile.css" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -71,7 +71,7 @@ if (isset($_POST['delete_account'])) {
                 <a href="../../../index.php">
                     <img src="../images/logo-petmap/white-logo.png" alt="Logo PetMap">
                 </a>
-                <a href="perfil.php" class="profile-image">
+                <a href="profile.php" class="profile-image">
                     <img src="../images/login-images/perfil-de-usuario.png" alt="Ícone de Perfil">
                 </a>
             </nav>
@@ -106,12 +106,12 @@ if (isset($_POST['delete_account'])) {
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
             <div class="profile-buttons">
-                <form action="perfil.php" method="POST">
+                <form action="profile.php" method="POST">
                     <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
                 </form>
                 <div class="functions-buttons">
                     <a href="editar-perfil.php" class="profile-edit">Editar Informações</a>
-                    <form action="perfil.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
+                    <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
                         <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
                     </form>
                 </div>

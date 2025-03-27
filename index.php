@@ -20,7 +20,7 @@
                 </a>
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
-                        <a class="profile-image" href="src/assets/pages/perfil.php">
+                        <a class="profile-image" href="src/assets/pages/profile.php">
                             <img src="src/assets/images/login-images/perfil-de-usuario.png" alt="Ícone de Perfil">
                         </a>
                     <?php else: ?>
