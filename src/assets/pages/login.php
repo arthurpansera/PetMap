@@ -1,3 +1,21 @@
+<?php
+    session_start();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        if (isset($validUsers[$email]) && $validUsers[$email] === $password) {
+            $_SESSION['user_logged_in'] = true;
+            $_SESSION['user_email'] = $email;
+            header('Location: ../../../index.php');
+            exit();
+        } else {
+            $error = "E-mail ou senha inválidos!";
+        }
+    }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -72,5 +90,3 @@
     <script src="../../scripts/pages/login/login.js"></script>
 </body>
 </html>
-
-

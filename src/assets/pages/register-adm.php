@@ -1,55 +1,59 @@
 <?php
-    include('../../../conecta_db.php'); 
+include('../../../conecta_db.php'); 
 
-    if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password'])) {
-        $nome = $_POST['name'];
-        $email = $_POST['email'];
-        $telefone = $_POST['telephone'];
-        $senha = $_POST['password'];
+session_start();
 
-        $obj = conecta_db();
-        
-        $query = "INSERT INTO usuario (nome, email, telefone, senha) VALUES (?, ?, ?, ?)";
-        $stmt = $obj->prepare($query);
-        $stmt->bind_param("ssss", $nome, $email, $telefone, $senha);
-        $stmt->execute();
-        
-        if ($stmt->affected_rows > 0) {
-            $id_usuario = $obj->insert_id;
+if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password'])) {
+    $nome = $_POST['name'];
+    $email = $_POST['email'];
+    $telefone = $_POST['telephone'];
+    $senha = $_POST['password'];
 
-            $query_moderador = "INSERT INTO moderador (id_usuario) VALUES (?)";
-            $stmt_moderador = $obj->prepare($query_moderador);
-            $stmt_moderador->bind_param("i", $id_usuario);
-            $stmt_moderador->execute();
+    $obj = conecta_db();
 
-            if ($stmt_moderador->affected_rows > 0) {
-                $descricao = "Perfil do moderador";
-                $foto = null;
+    $query = "INSERT INTO usuario (nome, email, telefone, senha) VALUES (?, ?, ?, ?)";
+    $stmt = $obj->prepare($query);
+    $stmt->bind_param("ssss", $nome, $email, $telefone, $senha);
+    $stmt->execute();
 
-                $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
-                $stmt_perfil = $obj->prepare($query_perfil);
-                $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
-                $stmt_perfil->execute();
+    if ($stmt->affected_rows > 0) {
+        $id_usuario = $obj->insert_id;
 
-                if ($stmt_perfil->affected_rows > 0) {
-                    header("Location: perfil.php");
-                    exit();
-                } else {
-                    echo "<span class='alert alert-danger'>
-                    <h5>Erro ao cadastrar o perfil!</h5>
-                    </span>";
-                }
+        $query_moderador = "INSERT INTO moderador (id_usuario) VALUES (?)";
+        $stmt_moderador = $obj->prepare($query_moderador);
+        $stmt_moderador->bind_param("i", $id_usuario);
+        $stmt_moderador->execute();
+
+        if ($stmt_moderador->affected_rows > 0) {
+            $descricao = "Perfil de moderador";
+            $foto = null;
+
+            $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
+            $stmt_perfil = $obj->prepare($query_perfil);
+            $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
+            $stmt_perfil->execute();
+
+            if ($stmt_perfil->affected_rows > 0) {
+                $_SESSION['user_logged_in'] = true;
+                $_SESSION['user_email'] = $email;
+                header("Location: ../../../index.php");
+                exit();
             } else {
                 echo "<span class='alert alert-danger'>
-                <h5>Erro ao cadastrar o moderador!</h5>
+                <h5>Erro ao cadastrar o perfil!</h5>
                 </span>";
             }
         } else {
             echo "<span class='alert alert-danger'>
-            <h5>Erro ao cadastrar o usuário!</h5>
+            <h5>Erro ao cadastrar o moderador!</h5>
             </span>";
         }
+    } else {
+        echo "<span class='alert alert-danger'>
+        <h5>Erro ao cadastrar o usuário!</h5>
+        </span>";
     }
+}
 ?>
 
 <!DOCTYPE html>

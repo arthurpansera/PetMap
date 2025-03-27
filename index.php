@@ -1,3 +1,8 @@
+<?php
+    session_start();
+    $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +19,13 @@
                     <img src="src/assets/images/logo-petmap/white-logo.png" alt="Logo PetMap">
                 </a>
                 <ul class="ul">
-                    <a class="btn" href="src/assets/pages/login.php">Entrar</a>
+                    <?php if ($isLoggedIn): ?>
+                        <a class="profile-image" href="src/assets/pages/perfil.php">
+                            <img src="src/assets/images/login-images/perfil-de-usuario.png" alt="Ícone de Perfil">
+                        </a>
+                    <?php else: ?>
+                        <a class="btn" href="src/assets/pages/login.php">Entrar</a>
+                    <?php endif; ?>
                 </ul>
             </nav>
         </div> 
