@@ -10,16 +10,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetMap | Página Principal</title>
     <link href="src/styles/pages/index/index.css" rel="stylesheet">
-    <script>
-        window.addEventListener('beforeunload', function() {
-            if (<?php echo $isLoggedIn ? 'true' : 'false'; ?>) {
-                fetch('logout.php', {
-                    method: 'GET',
-                    credentials: 'same-origin'
-                });
-            }
-        });
-    </script>
 </head>
 <body>
     <header>
