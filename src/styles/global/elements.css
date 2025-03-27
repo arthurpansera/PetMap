@@ -29,13 +29,17 @@ html, body{
     font-size: 16px;
 }
 
-img {
-    width: 10%;
-    height: auto;
+.nav img {
+    max-width: 51px;
+    max-height: 51px;
 }
 
-.nav img[alt]{
-    color: white;
+.profile-image {
+    margin-left: auto;
+}
+
+.profile-image img {
+    object-fit: cover;
 }
 
 .btn{

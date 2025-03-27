@@ -1,3 +1,6 @@
+// ignoreee, eu ainda vou arrumar
+
+
 const form = document.getElementById('form')
 const inputs = document.querySelectorAll('.required')
 const spans = document.querySelectorAll('.span-required')
@@ -121,27 +124,26 @@ function confirmPasswordValidate() {
         removeError(4)
     }
 }
-
-
 // ----- REGEX ----- //
 
 // Function to check if the input contains numbers
 function inputWithoutNumbers(index) {
-    const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
+    const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(index)
 }
 // Function to check if is a valid email
 function isEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     return re.test(email)
 }
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
-    const re = /^(\+55\s?)?(55\s?)?\d{2}\s?9?\d{4}-?\d{4}$/;
+    const re = /^(\+55\s?)?(55\s?)?\d{2}\s?9?\d{4}-?\d{4}$/
     return re.test(telephone)
 }
 // Function to check if is a valid password
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
-    return re.test(password)
+    return re.test(password);
 }
+
