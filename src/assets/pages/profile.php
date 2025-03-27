@@ -54,6 +54,32 @@ if (isset($_POST['delete_account'])) {
     header("Location: ../../assets/pages/login.php");
     exit();
 }
+
+if (isset($_POST['update_profile'])) {
+    $nome = $_POST['nome'];
+    $telefone = $_POST['telefone'];
+    $foto = $_FILES['foto'];
+    
+    if ($foto['error'] == 0) {
+        $foto_nome = uniqid() . '-' . $foto['name'];
+        $foto_destino = "../../images/perfil-images/" . $foto_nome;
+
+        if (move_uploaded_file($foto['tmp_name'], $foto_destino)) {
+            $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
+            $stmt_foto = $obj->prepare($query_foto);
+            $stmt_foto->bind_param("si", $foto_destino, $user['id_usuario']);
+            $stmt_foto->execute();
+        }
+    }
+
+    $query_usuario = "UPDATE usuario SET nome = ?, telefone = ? WHERE id_usuario = ?";
+    $stmt_usuario = $obj->prepare($query_usuario);
+    $stmt_usuario->bind_param("ssi", $nome, $telefone, $user['id_usuario']);
+    $stmt_usuario->execute();
+
+    header("Location: profile.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -64,6 +90,110 @@ if (isset($_POST['delete_account'])) {
     <title>PetMap | Perfil</title>
     <link href="../../styles/pages/profile/profile.css" rel="stylesheet">
 </head>
+<style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+        overflow: auto;
+        padding-top: 0;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        border: 1px solid #ccc;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        font-family: Arial, sans-serif;
+        position: relative;
+    }
+
+    .modal-content h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        color: #333;
+    }
+
+    .close {
+        color: #333;
+        font-size: 30px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #666;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="file"],
+    input[type="password"],
+    button {
+        width: 100%;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        box-sizing: border-box;
+        font-size: 16px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        background-color: #f9f9f9;
+    }
+
+    input[type="file"] {
+        padding: 5px;
+    }
+
+    button.profile-save {
+        background-color: rgb(0, 167, 36);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 30px;
+        padding: 15px;
+        border-radius: 6px;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+        width: 60%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    button.profile-save:hover {
+        background-color: rgb(0, 133, 29);
+        transform: scale(1.05);
+    }
+</style>
 <body>
     <header>
         <div class="container">
@@ -110,7 +240,7 @@ if (isset($_POST['delete_account'])) {
                     <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
                 </form>
                 <div class="functions-buttons">
-                    <a href="editar-perfil.php" class="profile-edit">Editar Informações</a>
+                    <a href="javascript:void(0);" class="profile-edit" onclick="openModal()">Editar Informações</a>
                     <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
                         <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
                     </form>
@@ -118,6 +248,62 @@ if (isset($_POST['delete_account'])) {
             </div>
         </div>
     </section>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Editar Perfil</h2>
+            <form action="profile.php" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($user['nome']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($user['telefone']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha:</label>
+                    <input type="password" id="senha" name="senha" placeholder="Digite sua nova senha">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmar_senha">Confirmar Senha:</label>
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
+                </div>
+
+                <div class="form-group">
+                    <label for="foto">Foto de Perfil:</label>
+                    <input type="file" id="foto" name="foto">
+                </div>
+
+                <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("editModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById("editModal")) {
+                closeModal();
+            }
+        }
+    </script>
 
 </body>
 </html>
