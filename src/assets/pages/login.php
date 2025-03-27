@@ -1,19 +1,61 @@
 <?php
-    session_start();
+include('../../../conecta_db.php'); 
+session_start();
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $email = $_POST['email'];
-        $password = $_POST['password'];
+if (isset($_SESSION['error_message'])) {
+    $error_message = $_SESSION['error_message'];
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Erro!',
+                text: '$error_message',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        });
+    </script>";
+    unset($_SESSION['error_message']);
+}
 
-        if (isset($validUsers[$email]) && $validUsers[$email] === $password) {
-            $_SESSION['user_logged_in'] = true;
-            $_SESSION['user_email'] = $email;
-            header('Location: ../../../index.php');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $obj = conecta_db();
+    if (!$obj) {
+        die("Erro ao conectar ao banco de dados.");
+    }
+
+    $query = "SELECT * FROM usuario WHERE email = ?";
+    $stmt = $obj->prepare($query);
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        if ($password === $user['senha']) {
+            header("Location: ../../../index.php");
             exit();
         } else {
-            $error = "E-mail ou senha inválidos!";
+            $_SESSION['error_message'] = "Usuário ou senha incorretos";
+            header("Location: login.php");
+            exit();
         }
+    } else {
+        $_SESSION['error_message'] = "Usuário ou senha incorretos";
+        header("Location: login.php");
+        exit();
     }
+
+} else {
+    echo "O método de envio não é POST. Dados não recebidos.";
+}
 ?>
 
 <!DOCTYPE html>
@@ -25,6 +67,7 @@
     <link rel="stylesheet" href="../../styles/pages/login/login.css">
 </head>
 <body>
+    </style>
     <header>
         <div class="container">
             <nav class="nav">
@@ -49,11 +92,13 @@
                     </div>
 
                     <h1>Login</h1>
-                    <label for="email" class="label-input">E-mail: </label>
-                    <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
-                    <label for="password" class="label-input">Senha:</label>
-                    <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
-                    <input type="submit" value="Login" class="login-btn">
+                        <form id="form" name="form" method="POST" action="login.php">
+                            <label for="email" class="label-input">E-mail: </label>
+                            <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
+                            <label for="password" class="label-input">Senha:</label>
+                            <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
+                            <input type="submit" value="Login" class="login-btn">
+                        </form>
                 </section>
             </section>
     
@@ -87,6 +132,7 @@
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/login/login.js"></script>
 </body>
 </html>

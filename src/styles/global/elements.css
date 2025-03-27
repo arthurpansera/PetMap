@@ -23,6 +23,11 @@ html, body{
     height: 100%;
     overflow-x: hidden;
 }
+
+body.swal2-shown {
+    overflow: auto !important;
+}
+
 /* --- top navigation menu --- */
 
 .nav{
