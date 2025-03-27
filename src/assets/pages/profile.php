@@ -6,18 +6,23 @@ if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true)
     exit();
 }
 
+if (!isset($_SESSION['id_usuario'])) {
+    echo "Erro: ID do usuário não encontrado.";
+    exit();
+}
+
 include('../../../conecta_db.php');
 
-$email = $_SESSION['user_email'];
+$id_usuario = $_SESSION['id_usuario'];
 
 $obj = conecta_db();
 
 $query = "SELECT u.id_usuario, u.nome, u.email, u.telefone, p.foto, p.descricao AS tipo_conta 
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
-          WHERE u.email = ?";
+          WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
-$stmt->bind_param("s", $email);
+$stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -58,6 +63,7 @@ if (isset($_POST['delete_account'])) {
 if (isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
+    $email = $_POST['email'];
     $foto = $_FILES['foto'];
     
     if ($foto['error'] == 0) {
@@ -72,9 +78,9 @@ if (isset($_POST['update_profile'])) {
         }
     }
 
-    $query_usuario = "UPDATE usuario SET nome = ?, telefone = ? WHERE id_usuario = ?";
+    $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ? WHERE id_usuario = ?";
     $stmt_usuario = $obj->prepare($query_usuario);
-    $stmt_usuario->bind_param("ssi", $nome, $telefone, $user['id_usuario']);
+    $stmt_usuario->bind_param("sssi", $nome, $telefone, $email, $user['id_usuario']);
     $stmt_usuario->execute();
 
     header("Location: profile.php");
