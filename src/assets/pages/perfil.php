@@ -106,16 +106,13 @@ if (isset($_POST['delete_account'])) {
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
             <div class="profile-buttons">
-                <div class="logout-button">
-                    <form action="perfil.php" method="POST">
-                        <button type="submit" name="logout" class="logout-button-1">Sair</button>
-                    </form>
-                </div>
+                <form action="perfil.php" method="POST">
+                    <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
+                </form>
                 <div class="functions-buttons">
-                    <a href="editar-perfil.php" class="profile-button-1">Editar Informações</a>
-                    
+                    <a href="editar-perfil.php" class="profile-edit">Editar Informações</a>
                     <form action="perfil.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
-                        <button type="submit" name="delete_account" class="profile-button-2">Excluir Conta</button>
+                        <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
                     </form>
                 </div>
             </div>

@@ -9,9 +9,10 @@
     text-align: center;
     width: 100%;
     max-width: 1000px;
-    height: 70%;
+    min-height: 400px;
     margin-left: 605px;
     margin-top: 150px;
+    box-sizing: border-box;
 }
 
 .profile-header {
@@ -51,55 +52,50 @@
     margin-top: 30px;
 }
 
-button {
+.functions-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+}
+
+button, .profile-logout, .profile-edit, .profile-delete {
     color: white;
     padding: 12px 20px;
     border-radius: 10px;
     cursor: pointer;
     display: inline-block;
-    transition-duration: 0.2s;
+    transition: transform 0.2s ease, background-color 0.2s ease;
     border: 2px solid white;
     text-decoration: none;  
     font-size: 18px;
-}
-
-.logout-button {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.logout-button-1 {
-    background-color: #868686;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 200px;
+    width: auto;
     text-align: center;
-    transition: background-color 0.3s ease;
 }
 
-.logout-button-1:hover {
-    background-color: #5e5e5e;
+.profile-edit {
+    background-color: #dbc500;
 }
 
-.profile-button-1{
-    background-color: #E6AC00;
+.profile-edit:hover {
+    background-color: #c7b300;
+    transform: scale(1.05);
 }
 
-.profile-button-2{
-    background-color: #FF4D4D;
+.profile-delete {
+    background-color: #FF5733;
 }
 
-.profile-button-1:hover{
-    background-color: #d18a06;
-    padding: 14px 22px;
+.profile-delete:hover {
+    background-color: #cc4a2a;
+    transform: scale(1.05);
 }
 
-.profile-button-2:hover{
-    background-color: #cc1111;
-    padding: 14px 22px;
+.profile-logout {
+    background-color: #a7a7a7;
+}
+
+.profile-logout:hover {
+    background-color: #8a8a8a;
+    transform: scale(1.05);
 }
