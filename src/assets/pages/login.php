@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Erro ao conectar ao banco de dados.");
     }
 
-    $query = "SELECT * FROM usuario WHERE email = ?";
+    $query = "SELECT id_usuario, senha FROM usuario WHERE email = ?";
     $stmt = $obj->prepare($query);
     $stmt->bind_param('s', $email);
     $stmt->execute();
@@ -40,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user = $result->fetch_assoc();
 
         if ($password === $user['senha']) {
+            $_SESSION['user_logged_in'] = true;
+            $_SESSION['id_usuario'] = $user['id_usuario'];
             header("Location: ../../../index.php");
             exit();
         } else {
