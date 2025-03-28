@@ -54,3 +54,14 @@ CREATE TABLE perfil (
     PRIMARY KEY (id_perfil),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
+
+CREATE TABLE publicacao (
+    id_publicacao INT NOT NULL AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    titulo VARCHAR(255) NOT NULL,
+    conteudo TEXT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo_publicacao ENUM('animal', 'resgate', 'informacao', 'outro') NOT NULL,
+    PRIMARY KEY (id_publicacao),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
