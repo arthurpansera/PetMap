@@ -66,7 +66,6 @@ if (isset($_POST['delete_account'])) {
     exit();
 }
 
-<?php
 if (isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
@@ -203,21 +202,7 @@ if (isset($_POST['update_profile'])) {
         </div>
     </div>
 
-    <script>
-        function openModal() {
-            document.getElementById("editModal").style.display = "block";
-        }
-
-        function closeModal() {
-            document.getElementById("editModal").style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == document.getElementById("editModal")) {
-                closeModal();
-            }
-        }
-    </script>
+    <script src="../../scripts/pages/profile/profile.js"></script>
 
 </body>
 </html>
