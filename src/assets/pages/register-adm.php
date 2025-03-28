@@ -1,5 +1,5 @@
 <?php
-include('../../../conecta_db.php'); 
+include('../../../conecta_db.php');
 
 session_start();
 
@@ -7,24 +7,29 @@ if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password
     $nome = $_POST['name'];
     $email = $_POST['email'];
     $telefone = $_POST['telephone'];
-    $senha = $_POST['password'];
+    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash da senha
 
     $obj = conecta_db();
 
-    $query = "INSERT INTO usuario (nome, email, telefone, senha) VALUES (?, ?, ?, ?)";
+    $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)"; //Removido telefone da tabela usuario
     $stmt = $obj->prepare($query);
-    $stmt->bind_param("ssss", $nome, $email, $telefone, $senha);
+    $stmt->bind_param("ss", $nome, $senha);
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
         $id_usuario = $obj->insert_id;
+
+        $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+        $stmt_contato = $obj->prepare($query_contato);
+        $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+        $stmt_contato->execute();
 
         $query_moderador = "INSERT INTO moderador (id_usuario) VALUES (?)";
         $stmt_moderador = $obj->prepare($query_moderador);
         $stmt_moderador->bind_param("i", $id_usuario);
         $stmt_moderador->execute();
 
-        if ($stmt_moderador->affected_rows > 0) {
+        if ($stmt_moderador->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
             $descricao = "Perfil de moderador";
             $foto = null;
 
@@ -39,19 +44,13 @@ if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password
                 header("Location: ../../../index.php");
                 exit();
             } else {
-                echo "<span class='alert alert-danger'>
-                <h5>Erro ao cadastrar o perfil!</h5>
-                </span>";
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil!</h5></span>";
             }
         } else {
-            echo "<span class='alert alert-danger'>
-            <h5>Erro ao cadastrar o moderador!</h5>
-            </span>";
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o moderador ou contato!</h5></span>";
         }
     } else {
-        echo "<span class='alert alert-danger'>
-        <h5>Erro ao cadastrar o usuário!</h5>
-        </span>";
+        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
     }
 }
 ?>
