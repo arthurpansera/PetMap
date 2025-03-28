@@ -1,4 +1,5 @@
 CREATE DATABASE petmap;
+
 USE petmap;
 
 CREATE TABLE usuario (
@@ -22,7 +23,7 @@ CREATE TABLE moderador (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE ong {
+CREATE TABLE ong (
     cnpj VARCHAR(18) NOT NULL UNIQUE,
     id_usuario INT NOT NULL,
     endereco_rua VARCHAR(100) NOT NULL,
@@ -35,15 +36,15 @@ CREATE TABLE ong {
     endereco_cep CHAR(8) NOT NULL,
     PRIMARY KEY (cnpj),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-}
+);
 
-CREATE TABLE cidadao {
+CREATE TABLE cidadao (
     cpf VARCHAR(14) NOT NULL UNIQUE,
     id_usuario INT NOT NULL,
     data_nasc DATE NOT NULL,
     PRIMARY KEY (cpf),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
-}
+);
 
 CREATE TABLE perfil (
     id_perfil INT NOT NULL AUTO_INCREMENT,
