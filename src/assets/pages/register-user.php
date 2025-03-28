@@ -1,3 +1,62 @@
+<?php
+include('../../../conecta_db.php');
+
+session_start();
+
+if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'], $_POST['email'], $_POST['password'])) {
+    $nome = $_POST['name'];
+    $cpf = $_POST['cpf'];
+    $data_nascimento = $_POST['birthYear'];
+    $telefone = $_POST['telephone'];
+    $email = $_POST['email'];
+    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+    $obj = conecta_db();
+
+    $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
+    $stmt = $obj->prepare($query);
+    $stmt->bind_param("ss", $nome, $senha);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $id_usuario = $obj->insert_id;
+
+        $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+        $stmt_contato = $obj->prepare($query_contato);
+        $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+        $stmt_contato->execute();
+
+        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nascimento) VALUES (?, ?, ?, ?)";
+        $stmt_cidadao = $obj->prepare($query_cidadao);
+        $stmt_cidadao->bind_param("isss", $id_usuario, $cnpj, $data_nascimento);
+        $stmt_cidadao->execute();
+
+        if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
+            $descricao = "Perfil de cidadão";
+            $foto = null;
+
+            $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
+            $stmt_perfil = $obj->prepare($query_perfil);
+            $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
+            $stmt_perfil->execute();
+
+            if ($stmt_perfil->affected_rows > 0) {
+                $_SESSION['user_logged_in'] = true;
+                $_SESSION['id_usuario'] = $id_usuario;
+                header("Location: ../../../index.php");
+                exit();
+            } else {
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil!</h5></span>";
+            }
+        } else {
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão ou contato!</h5></span>";
+        }
+    } else {
+        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

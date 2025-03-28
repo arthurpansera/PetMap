@@ -7,11 +7,11 @@ if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password
     $nome = $_POST['name'];
     $email = $_POST['email'];
     $telefone = $_POST['telephone'];
-    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash da senha
+    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
     $obj = conecta_db();
 
-    $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)"; //Removido telefone da tabela usuario
+    $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
     $stmt = $obj->prepare($query);
     $stmt->bind_param("ss", $nome, $senha);
     $stmt->execute();
