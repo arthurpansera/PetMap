@@ -66,6 +66,7 @@ if (isset($_POST['delete_account'])) {
     exit();
 }
 
+<?php
 if (isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
@@ -79,10 +80,12 @@ if (isset($_POST['update_profile'])) {
     }
 
     if (!empty($senha)) {
+        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
         $query_usuario = "UPDATE usuario SET nome = ?, senha = ? WHERE id_usuario = ?";
         $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
         $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("ssi", $nome, $senha, $user['id_usuario']);
+        $stmt_usuario->bind_param("ssi", $nome, $senha_hash, $user['id_usuario']);
         $stmt_contato = $obj->prepare($query_contato);
         $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
     } else {
