@@ -116,7 +116,7 @@ if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password
                         <span class="span-required">As senhas não coincidem.</span>
                     </div>
                 
-                    <input type="submit" value="Cadastrar-se" class="register-btn">
+                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
 
                 </form>
             </section>

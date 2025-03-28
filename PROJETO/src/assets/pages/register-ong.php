@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_ong->execute();
 
             if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0) {
-                $descricao = "Perfil de moderador";
+                $descricao = "Perfil de ONG";
                 $foto = null;
 
                 $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";

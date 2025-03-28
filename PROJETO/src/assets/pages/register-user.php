@@ -141,7 +141,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
                         <input type="text" name="complement" id="complement" class="full-inputUser" placeholder="Insira o complemento">
                     </div>
 
-                    <input type="submit" value="Cadastrar-se" class="register-btn">
+                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
 
                 </form>
             </section>
