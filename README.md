@@ -3,10 +3,7 @@ Projeto de Experiência Criativa
 
 // Integrantes //
 
-Nome: Arthur Rodrigues
-
-Nome: Jean Praes
-
-Nome: João Coltre
-
-Nome: Stefany Carlos
+Arthur Rodrigues Pansera
+Jean Inácio Praes
+João Gabriel de Lima Coltre
+Stefany Carlos de Oliveira
