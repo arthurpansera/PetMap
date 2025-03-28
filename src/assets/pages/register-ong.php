@@ -203,7 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <footer class="footer">
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
-    <script src="../../scripts/pages/reigster-ong/register-ong.js"></script>
+    <script src="../../scripts/pages/register-ong/register-ong.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>
