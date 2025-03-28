@@ -6,18 +6,23 @@ if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true)
     exit();
 }
 
+if (!isset($_SESSION['id_usuario'])) {
+    echo "Erro: ID do usuário não encontrado.";
+    exit();
+}
+
 include('../../../conecta_db.php');
 
-$email = $_SESSION['user_email'];
+$id_usuario = $_SESSION['id_usuario'];
 
 $obj = conecta_db();
 
 $query = "SELECT u.id_usuario, u.nome, u.email, u.telefone, p.foto, p.descricao AS tipo_conta 
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
-          WHERE u.email = ?";
+          WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
-$stmt->bind_param("s", $email);
+$stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -58,23 +63,26 @@ if (isset($_POST['delete_account'])) {
 if (isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
+    $email = $_POST['email'];
     $foto = $_FILES['foto'];
-    
-    if ($foto['error'] == 0) {
-        $foto_nome = uniqid() . '-' . $foto['name'];
-        $foto_destino = "../../images/perfil-images/" . $foto_nome;
+    $senha = $_POST['senha'];
+    $confirmar_senha = $_POST['confirmar_senha'];
 
-        if (move_uploaded_file($foto['tmp_name'], $foto_destino)) {
-            $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
-            $stmt_foto = $obj->prepare($query_foto);
-            $stmt_foto->bind_param("si", $foto_destino, $user['id_usuario']);
-            $stmt_foto->execute();
-        }
+    if ($senha !== $confirmar_senha) {
+        echo "<span class='alert alert-danger'>As senhas não coincidem. Por favor, tente novamente.</span>";
+        exit();
     }
 
-    $query_usuario = "UPDATE usuario SET nome = ?, telefone = ? WHERE id_usuario = ?";
-    $stmt_usuario = $obj->prepare($query_usuario);
-    $stmt_usuario->bind_param("ssi", $nome, $telefone, $user['id_usuario']);
+    if (!empty($senha)) {
+        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ?, senha = ? WHERE id_usuario = ?";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("ssssi", $nome, $telefone, $email, $senha, $user['id_usuario']);
+    } else {
+        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ? WHERE id_usuario = ?";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("sssi", $nome, $telefone, $email, $user['id_usuario']);
+    }
+
     $stmt_usuario->execute();
 
     header("Location: profile.php");
@@ -90,110 +98,6 @@ if (isset($_POST['update_profile'])) {
     <title>PetMap | Perfil</title>
     <link href="../../styles/pages/profile/profile.css" rel="stylesheet">
 </head>
-<style>
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.4);
-        overflow: auto;
-        padding-top: 0;
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: 5% auto;
-        padding: 30px;
-        border: 1px solid #ccc;
-        width: 90%;
-        max-width: 500px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        font-family: Arial, sans-serif;
-        position: relative;
-    }
-
-    .modal-content h2 {
-        text-align: center;
-        margin-bottom: 20px;
-        font-size: 24px;
-        color: #333;
-    }
-
-    .close {
-        color: #333;
-        font-size: 30px;
-        font-weight: bold;
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        cursor: pointer;
-    }
-
-    .close:hover,
-    .close:focus {
-        color: #666;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        font-weight: bold;
-        color: #555;
-        margin-bottom: 5px;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="file"],
-    input[type="password"],
-    button {
-        width: 100%;
-        padding: 12px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-        box-sizing: border-box;
-        font-size: 16px;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
-        background-color: #f9f9f9;
-    }
-
-    input[type="file"] {
-        padding: 5px;
-    }
-
-    button.profile-save {
-        background-color: rgb(0, 167, 36);
-        color: white;
-        border: none;
-        cursor: pointer;
-        font-size: 18px;
-        margin-top: 30px;
-        padding: 15px;
-        border-radius: 6px;
-        transition: transform 0.2s ease, background-color 0.2s ease;
-        width: 60%;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    button.profile-save:hover {
-        background-color: rgb(0, 133, 29);
-        transform: scale(1.05);
-    }
-</style>
 <body>
     <header>
         <div class="container">
@@ -277,11 +181,6 @@ if (isset($_POST['update_profile'])) {
                 <div class="form-group">
                     <label for="confirmar_senha">Confirmar Senha:</label>
                     <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
-                </div>
-
-                <div class="form-group">
-                    <label for="foto">Foto de Perfil:</label>
-                    <input type="file" id="foto" name="foto">
                 </div>
 
                 <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>

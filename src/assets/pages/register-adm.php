@@ -35,7 +35,7 @@ if (isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['password
 
             if ($stmt_perfil->affected_rows > 0) {
                 $_SESSION['user_logged_in'] = true;
-                $_SESSION['user_email'] = $email;
+                $_SESSION['id_usuario'] = $id_usuario;
                 header("Location: ../../../index.php");
                 exit();
             } else {
