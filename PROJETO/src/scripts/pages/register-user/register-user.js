@@ -1,6 +1,3 @@
-// ignoreee, eu ainda vou arrumar
-
-
 const form = document.getElementById('form')
 const inputs = document.querySelectorAll('.required')
 const spans = document.querySelectorAll('.span-required')
@@ -15,27 +12,39 @@ function btnRegisterOnClick(event) {
         inputWithoutNumbersValidate(0);
         hasError = true;
     } else if (inputs[1].value === "") {
-        errorAlert('Preenchimento obrigatório: E-mail');
+        errorAlert('Preenchimento obrigatório: CPF');
         hasError = true;
-    } else if (!isEmail(inputs[1].value)) {
-        emailValidate();
+    } else if (!isCPF(inputs[1])) {
+        cpfValidate();
         hasError = true;
     } else if (inputs[2].value === "") {
-        errorAlert('Preenchimento obrigatório: Telefone');
+        errorAlert('Preenchimento obrigatório: Data de Nascimento');
         hasError = true;
-    } else if (!isTelephone(inputs[2].value)) {
-        telephoneValidate();
+    } else if (!isBirthYear(inputs[2])) {
+        birthYearValidate();
         hasError = true;
     } else if (inputs[3].value === "") {
-        errorAlert('Preenchimento obrigatório: Senha');
+        errorAlert('Preenchimento obrigatório: Telefone');
         hasError = true;
-    } else if (!validPassword(inputs[3].value)) {
-        passwordValidate();
+    } else if (!isTelephone(inputs[3].value)) {
+        telephoneValidate();
         hasError = true;
     } else if (inputs[4].value === "") {
+        errorAlert('Preenchimento obrigatório: E-mail');
+         hasError = true;
+    } else if (!isEmail(inputs[4].value)) {
+        emailValidate();
+        hasError = true;
+    } else if (inputs[5].value === "") {
+        errorAlert('Preenchimento obrigatório: Senha');
+        hasError = true;
+    } else if (!validPassword(inputs[5].value)) {
+        passwordValidate();
+        hasError = true;
+    } else if (inputs[6].value === "") {
         errorAlert('Preenchimento obrigatório: Confirme sua senha');
         hasError = true;
-    } else if (inputs[4].value !== inputs[3].value) {
+    } else if (inputs[6].value !== inputs[5].value) {
         confirmPasswordValidate();
         hasError = true;
     }
@@ -66,7 +75,7 @@ function errorAlert(message, index) {
         text: message,
         icon: 'error',
         confirmButtonText: 'Entendido',
-        confirmButtonColor: '#7A00CC',
+        confirmButtonColor: '#399aa8',
         timer: 7000,
         timerProgressBar: true
     }).then((result) => {
@@ -88,42 +97,65 @@ function inputWithoutNumbersValidate(index) {
         removeError(index)
     }
 }
-function emailValidate() {
+
+function cpfValidate(){
     if (inputs[1].value === "") {
         removeError(1)
-    } else if (!isEmail(inputs[1].value)) {
+    } else if (!isCPF(inputs[1].value)) {
         setError(1)
-    } else {
+    } else{
         removeError(1)
     }
 }
-function telephoneValidate() {
+
+function birthYearValidate() {
     if (inputs[2].value === "") {
         removeError(2)
-    } else if (!isTelephone(inputs[2].value)) {
+    } else if (!isBirthYear(inputs[2].value)) {
         setError(2)
     } else{
         removeError(2)
     }
 }
-function passwordValidate() {
+
+function telephoneValidate() {
     if (inputs[3].value === "") {
         removeError(3)
-    } else if (!validPassword(inputs[3].value)) {
+    } else if (!isTelephone(inputs[3].value)) {
         setError(3)
     } else{
         removeError(3)
     }
 }
-function confirmPasswordValidate() {
+
+function emailValidate() {
     if (inputs[4].value === "") {
         removeError(4)
-    } else if ((inputs[3].value !== inputs[4].value)) {
+    } else if (!isEmail(inputs[4].value)) {
         setError(4)
-    } else{
+    } else {
         removeError(4)
     }
 }
+function passwordValidate() {
+    if (inputs[5].value === "") {
+        removeError(5)
+    } else if (!validPassword(inputs[5].value)) {
+        setError(5)
+    } else{
+        removeError(5)
+    }
+}
+function confirmPasswordValidate() {
+    if (inputs[6].value === "") {
+        removeError(6)
+    } else if ((inputs[5].value !== inputs[6].value)) {
+        setError(6)
+    } else{
+        removeError(6)
+    }
+}
+
 // ----- REGEX ----- //
 
 // Function to check if the input contains numbers
@@ -131,6 +163,67 @@ function inputWithoutNumbers(index) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(index)
 }
+// Function to check if is a valid CPF
+function isCPF(cpf){
+    const re = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
+    return re.test(cpf) 
+}
+// Function to check if is a valid date
+function isBirthYear(date) {
+    const re = /^(\d{2})(\/?)(\d{2})\2(\d{4})$/;
+    if (!re.test(date)) {
+        return false;
+    }
+
+    const [day, month, year] = date.split('/').map(Number);
+
+    if (year < 1895 || year > 2024) {
+        return false;
+    }
+
+    const daysInMonth = [31, 28 + (isLeapYear(year) ? 1 : 0), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    return day > 0 && month > 0 && month <= 12 && day <= daysInMonth[month - 1];
+}
+
+// Function to check if a year is a leap year
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
+
+// Functions to check if is a valid BirthDate
+function isBirthYear(date) {
+    const re = /^(\d{2})(\/?)(\d{2})\2(\d{4})$/;
+    const match = date.match(re);
+
+    if (!match) {
+        return false;
+    }
+
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[3], 10);
+    const year = parseInt(match[4], 10);
+
+    if (year < 1895 || year > 2024){
+        return false;
+    }
+
+    return isValidDate(day, month, year);
+}
+function isValidDate(day, month, year) {
+    if (month < 1 || month > 12) {
+        return false;
+    }
+
+    const daysInMonth = [31, 28 + (isLeapYear(year) ? 1 : 0), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    return day > 0 && day <= daysInMonth[month - 1];
+}
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
+
+
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -146,4 +239,3 @@ function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
 }
-
