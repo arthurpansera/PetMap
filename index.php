@@ -21,7 +21,7 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <a class="profile-image" href="src/assets/pages/profile.php">
-                            <img src="src/assets/images/login-images/perfil-de-usuario.png" alt="Ícone de Perfil">
+                            <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                         </a>
                     <?php else: ?>
                         <a class="btn" href="src/assets/pages/login.php">Entrar</a>
