@@ -183,11 +183,6 @@ if (isset($_POST['update_profile'])) {
                     <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
                 </div>
 
-                <div class="form-group">
-                    <label for="foto">Foto de Perfil:</label>
-                    <input type="file" id="foto" name="foto">
-                </div>
-
                 <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>
             </form>
         </div>
