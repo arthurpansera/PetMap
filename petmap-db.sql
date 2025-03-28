@@ -1,28 +1,29 @@
-CREATE DATABASE petmap;
+CREATE DATABASE petmap IF NOT EXISTS;
+
 USE petmap;
 
-CREATE TABLE usuario (
+CREATE TABLE usuario IF NOT EXISTS (
     id_usuario INT NOT NULL AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     senha VARCHAR(255) NOT NULL,
     PRIMARY KEY (id_usuario)
 );
 
-CREATE TABLE contato (
+CREATE TABLE contato IF NOT EXISTS (
     id_usuario INT NOT NULL,
     telefone VARCHAR(20),
     email VARCHAR(100) NOT NULL UNIQUE,
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 );
 
-CREATE TABLE moderador (
+CREATE TABLE moderador IF NOT EXISTS (
     id_moderador INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     PRIMARY KEY (id_moderador),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE ong {
+CREATE TABLE ong IF NOT EXISTS {
     cnpj VARCHAR(18) NOT NULL UNIQUE,
     id_usuario INT NOT NULL,
     endereco_rua VARCHAR(100) NOT NULL,
@@ -37,7 +38,7 @@ CREATE TABLE ong {
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 }
 
-CREATE TABLE cidadao {
+CREATE TABLE cidadao IF NOT EXISTS {
     cpf VARCHAR(14) NOT NULL UNIQUE,
     id_usuario INT NOT NULL,
     data_nasc DATE NOT NULL,
@@ -45,7 +46,7 @@ CREATE TABLE cidadao {
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 }
 
-CREATE TABLE perfil (
+CREATE TABLE perfil IF NOT EXISTS (
     id_perfil INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     descricao TEXT,
