@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cnpj = $_POST['cnpj'];
     $telefone = $_POST['telephone'];
     $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $cep = $_POST['cep'];
+    $cep = $_POST['CEP'];
     $rua = $_POST['road'];
     $numero = $_POST['num'];
     $bairro = $_POST['neighborhood'];
@@ -34,17 +34,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
             $stmt_contato->execute();
 
-            $query_ong = "INSERT INTO ong (id_usuario, cnpj) VALUES (?, ?)";
+            $query_ong = "INSERT INTO ong (id_usuario, cnpj, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt_ong = $obj->prepare($query_ong);
-            $stmt_ong->bind_param("is", $id_usuario, $cnpj);
+            $stmt_ong->bind_param("isssssssss", $id_usuario, $cnpj, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
             $stmt_ong->execute();
 
-            $query_endereco = "INSERT INTO endereco (id_usuario, cep, rua, numero, bairro, cidade, estado, pais, complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt_endereco = $obj->prepare($query_endereco);
-            $stmt_endereco->bind_param("issssssss", $id_usuario, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
-            $stmt_endereco->execute();
+            if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0) {
+                $descricao = "Perfil de moderador";
+                $foto = null;
 
-            if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0 && $stmt_endereco->affected_rows > 0) {
+                $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
+                $stmt_perfil = $obj->prepare($query_perfil);
+                $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
+                $stmt_perfil->execute();
+
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['id_usuario'] = $id_usuario;
                 header("Location: ../../../index.php");
@@ -94,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h1>Dados Cadastrais - ONG</h1>
 
             <section class="input-register">
-                <form id="form" name="form" method="POST" action="ong-register-process.php">
+                <form id="form" name="form" method="POST" action="register-ong.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
                         <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira o nome da ONG" oninput="inputWithoutNumbersValidate(0)">

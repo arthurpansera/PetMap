@@ -17,9 +17,10 @@ $id_usuario = $_SESSION['id_usuario'];
 
 $obj = conecta_db();
 
-$query = "SELECT u.id_usuario, u.nome, u.email, u.telefone, p.foto, p.descricao AS tipo_conta 
+$query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta 
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
+          JOIN contato c ON u.id_usuario = c.id_usuario
           WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
 $stmt->bind_param("i", $id_usuario);
@@ -50,6 +51,11 @@ if (isset($_POST['delete_account'])) {
     $stmt_moderador->bind_param("i", $user['id_usuario']);
     $stmt_moderador->execute();
 
+    $query_contato = "DELETE FROM contato WHERE id_usuario = ?";
+    $stmt_contato = $obj->prepare($query_contato);
+    $stmt_contato->bind_param("i", $user['id_usuario']);
+    $stmt_contato->execute();
+
     $query_usuario = "DELETE FROM usuario WHERE id_usuario = ?";
     $stmt_usuario = $obj->prepare($query_usuario);
     $stmt_usuario->bind_param("i", $user['id_usuario']);
@@ -64,7 +70,6 @@ if (isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
-    $foto = $_FILES['foto'];
     $senha = $_POST['senha'];
     $confirmar_senha = $_POST['confirmar_senha'];
 
@@ -74,16 +79,23 @@ if (isset($_POST['update_profile'])) {
     }
 
     if (!empty($senha)) {
-        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ?, senha = ? WHERE id_usuario = ?";
+        $query_usuario = "UPDATE usuario SET nome = ?, senha = ? WHERE id_usuario = ?";
+        $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
         $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("ssssi", $nome, $telefone, $email, $senha, $user['id_usuario']);
+        $stmt_usuario->bind_param("ssi", $nome, $senha, $user['id_usuario']);
+        $stmt_contato = $obj->prepare($query_contato);
+        $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
     } else {
-        $query_usuario = "UPDATE usuario SET nome = ?, telefone = ?, email = ? WHERE id_usuario = ?";
+        $query_usuario = "UPDATE usuario SET nome = ? WHERE id_usuario = ?";
+        $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
         $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("sssi", $nome, $telefone, $email, $user['id_usuario']);
+        $stmt_usuario->bind_param("si", $nome, $user['id_usuario']);
+        $stmt_contato = $obj->prepare($query_contato);
+        $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
     }
 
     $stmt_usuario->execute();
+    $stmt_contato->execute();
 
     header("Location: profile.php");
     exit();
