@@ -1,3 +1,68 @@
+<?php
+include('../../../conecta_db.php');
+
+session_start();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = $_POST['name'];
+    $email = $_POST['email'];
+    $cnpj = $_POST['cnpj'];
+    $telefone = $_POST['telephone'];
+    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $cep = $_POST['cep'];
+    $rua = $_POST['road'];
+    $numero = $_POST['num'];
+    $bairro = $_POST['neighborhood'];
+    $cidade = $_POST['city'];
+    $estado = $_POST['state'];
+    $pais = $_POST['country'];
+    $complemento = $_POST['complement'];
+
+    $obj = conecta_db();
+
+    try {
+        $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("ss", $nome, $senha);
+        $stmt_usuario->execute();
+
+        if ($stmt_usuario->affected_rows > 0) {
+            $id_usuario = $obj->insert_id;
+
+            $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+            $stmt_contato = $obj->prepare($query_contato);
+            $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+            $stmt_contato->execute();
+
+            $query_ong = "INSERT INTO ong (id_usuario, cnpj) VALUES (?, ?)";
+            $stmt_ong = $obj->prepare($query_ong);
+            $stmt_ong->bind_param("is", $id_usuario, $cnpj);
+            $stmt_ong->execute();
+
+            $query_endereco = "INSERT INTO endereco (id_usuario, cep, rua, numero, bairro, cidade, estado, pais, complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt_endereco = $obj->prepare($query_endereco);
+            $stmt_endereco->bind_param("issssssss", $id_usuario, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
+            $stmt_endereco->execute();
+
+            if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0 && $stmt_endereco->affected_rows > 0) {
+                $_SESSION['user_logged_in'] = true;
+                $_SESSION['id_usuario'] = $id_usuario;
+                header("Location: ../../../index.php");
+                exit();
+            } else {
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados de contato, ONG ou endereço.</h5></span>";
+            }
+        } else {
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar usuário.</h5></span>";
+        }
+    } catch (Exception $e) {
+        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar: " . $e->getMessage() . "</h5></span>";
+    } finally {
+        $obj->close();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
