@@ -202,7 +202,7 @@ if (isset($_POST['update_profile'])) {
                     <img src="../images/logo-petmap/white-logo.png" alt="Logo PetMap">
                 </a>
                 <a href="profile.php" class="profile-image">
-                    <img src="../images/login-images/perfil-de-usuario.png" alt="Ícone de Perfil">
+                    <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                 </a>
             </nav>
         </div> 
