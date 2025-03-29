@@ -28,7 +28,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
         $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nascimento) VALUES (?, ?, ?, ?)";
         $stmt_cidadao = $obj->prepare($query_cidadao);
-        $stmt_cidadao->bind_param("isss", $id_usuario, $cnpj, $data_nascimento);
+        $stmt_cidadao->bind_param("isss", $id_usuario, $cpf, $data_nascimento);
         $stmt_cidadao->execute();
 
         if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
@@ -89,7 +89,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
             <h1>Dados Cadastrais - Cidadão</h1>
 
             <section class="input-register">
-                <form id="form" name="form" method="POST" action="ong-register-process.php">
+                <form id="form" name="form" method="POST" action="register-user.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
                         <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira o nome da ONG" oninput="inputWithoutNumbersValidate(0)">
@@ -98,14 +98,14 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
                     <div class="container-row">
                         <div class="mid-inputBox">
-                            <label for="CNPJ"><b>CPF: *</b></label>
-                            <input type="text" name="cnpj" id="cnpj" class="mid-inputUser required" placeholder="XX.XXX.XXX/XXXX-XX">
+                            <label for="CPF"><b>CPF: *</b></label>
+                            <input type="text" name="CPF" id="CPF" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cpfValidate()">
                             <span class="span-required"></span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="birthYear"><b>Data de Nascimento: *</b></label>
-                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" placeholder="DD/MM/AAAA">
+                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" placeholder="DD/MM/AAAA" oninput="birthYearValidate()">
                             <span class="span-required">Insira uma data de nascimento válida.</span>
                         </div>
                     </div>
@@ -113,32 +113,27 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="telephone"><b>Telefone: *</b></label>
-                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="XX XXXXX-XXXX">
+                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="XX XXXXX-XXXX" oninput="telephoneValidate()">
                             <span class="span-required">Insira um telefone válido</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="text"><b>E-mail: *</b></label>
-                            <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com">
+                            <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com" oninput="emailValidate()">
                             <span class="span-required">Insira um e-mail válido!</span>
                         </div>
                     </div>
             
                     <div class="full-inputBox">
                             <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha">
+                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha" oninput="passwordValidate()">
                             <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="confirm-pass"><b>Confirme sua senha: *</b></label>
-                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha">
+                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha" oninput="confirmPasswordValidate()">
                         <span class="span-required">As senhas não coincidem.</span>
-                    </div>
-                    
-                    <div class="full-inputBox complement">
-                        <label for="complement"><b>Complemento: (opcional)</b></label>
-                        <input type="text" name="complement" id="complement" class="full-inputUser" placeholder="Insira o complemento">
                     </div>
 
                     <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
@@ -151,8 +146,8 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
     <footer class="footer">
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
-
-    <script src="../../scripts/pages/reigster-ong/register-ong.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../scripts/pages/register-user/register-user.js"></script>
 </body>
 </html>
 
