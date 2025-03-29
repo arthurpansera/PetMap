@@ -1,5 +1,4 @@
 CREATE DATABASE petmap;
-
 USE petmap;
 
 CREATE TABLE usuario (
