@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $query = "SELECT u.id_usuario, u.senha 
               FROM usuario u
-              JOIN contato c ON u.id_usuario = c.id_usuario
+              JOIN contato c ON u.id_usuario = c.id_usuario 
               WHERE c.email = ?";
     $stmt = $obj->prepare($query);
     $stmt->bind_param('s', $email);
@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: ../../../index.php");
             exit();
         } else {
-            $_SESSION['error_message'] = "Usuário ou senha incorretos";
+            $_SESSION['error_message'] = "Usuário e/ou senha incorretos";
             header("Location: login.php");
             exit();
         }
     } else {
-        $_SESSION['error_message'] = "Usuário ou senha incorretos";
+        $_SESSION['error_message'] = "Usuário e/ou senha incorretos";
         header("Location: login.php");
         exit();
     }
