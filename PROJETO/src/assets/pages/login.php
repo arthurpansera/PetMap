@@ -61,7 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     echo "O método de envio não é POST. Dados não recebidos.";
 }
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -69,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PetMap | Login</title>
-    <link rel="stylesheet" href="../../styles/pages/login/login.css">
+    <link rel="stylesheet" href="../../styles/pages/login/login.css?v=<?php echo time(); ?>">
 </head>
 <body>
     </style>
