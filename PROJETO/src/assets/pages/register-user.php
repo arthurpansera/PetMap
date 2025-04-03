@@ -15,21 +15,42 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
     $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
     $stmt = $obj->prepare($query);
+    
+    if (!$stmt) {
+        die("<span class='alert alert-danger'><h5>Erro na preparação da query de usuário: " . $obj->error . "</h5></span>");
+    }
+
     $stmt->bind_param("ss", $nome, $senha);
-    $stmt->execute();
+    if (!$stmt->execute()) {
+        die("<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário: " . $stmt->error . "</h5></span>");
+    }
 
     if ($stmt->affected_rows > 0) {
         $id_usuario = $obj->insert_id;
 
         $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
         $stmt_contato = $obj->prepare($query_contato);
-        $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
-        $stmt_contato->execute();
+        
+        if (!$stmt_contato) {
+            die("<span class='alert alert-danger'><h5>Erro na preparação da query de contato: " . $obj->error . "</h5></span>");
+        }
 
-        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nascimento) VALUES (?, ?, ?, ?)";
+        $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+        if (!$stmt_contato->execute()) {
+            die("<span class='alert alert-danger'><h5>Erro ao cadastrar o contato: " . $stmt_contato->error . "</h5></span>");
+        }
+
+        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nascimento) VALUES (?, ?, ?)";
         $stmt_cidadao = $obj->prepare($query_cidadao);
-        $stmt_cidadao->bind_param("isss", $id_usuario, $cpf, $data_nascimento);
-        $stmt_cidadao->execute();
+        
+        if (!$stmt_cidadao) {
+            die("<span class='alert alert-danger'><h5>Erro na preparação da query de cidadão: " . $obj->error . "</h5></span>");
+        }
+
+        $stmt_cidadao->bind_param("iss", $id_usuario, $cpf, $data_nascimento);
+        if (!$stmt_cidadao->execute()) {
+            die("<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão: " . $stmt_cidadao->error . "</h5></span>");
+        }
 
         if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
             $descricao = "Perfil de cidadão";
@@ -37,8 +58,15 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
             $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
             $stmt_perfil = $obj->prepare($query_perfil);
+
+            if (!$stmt_perfil) {
+                die("<span class='alert alert-danger'><h5>Erro na preparação da query de perfil: " . $obj->error . "</h5></span>");
+            }
+
             $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
-            $stmt_perfil->execute();
+            if (!$stmt_perfil->execute()) {
+                die("<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil: " . $stmt_perfil->error . "</h5></span>");
+            }
 
             if ($stmt_perfil->affected_rows > 0) {
                 $_SESSION['user_logged_in'] = true;
@@ -56,6 +84,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,7 +121,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
                 <form id="form" name="form" method="POST" action="register-user.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
-                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira o nome da ONG" oninput="inputWithoutNumbersValidate(0)">
+                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo" oninput="inputWithoutNumbersValidate(0)">
                         <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
                     </div>
 
@@ -100,7 +129,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
                         <div class="mid-inputBox">
                             <label for="CPF"><b>CPF: *</b></label>
                             <input type="text" name="CPF" id="CPF" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cpfValidate()">
-                            <span class="span-required"></span>
+                            <span class="span-required">Por faovr, insira um CPF válido</span>
                         </div>
 
                         <div class="mid-inputBox">
