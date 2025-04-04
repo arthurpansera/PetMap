@@ -133,13 +133,19 @@ button, .profile-logout, .profile-edit, .profile-delete {
     padding-top: 0;
 }
 
+.form-content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
 .modal-content {
     background-color: #fff;
     margin: 5% auto;
     padding: 30px;
     border: 1px solid #ccc;
     width: 90%;
-    max-width: 500px;
+    max-width: 1000px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-family: Arial, sans-serif;
