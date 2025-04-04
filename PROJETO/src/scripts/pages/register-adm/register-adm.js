@@ -141,6 +141,7 @@ function isTelephone(telephone) {
 }
 // Function to check if is a valid password
 function validPassword(password) {
-    const re = /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[#@$!%?&.])[A-Za-z\d#@$!%?&.]{8,}$/;
+    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
 }
+

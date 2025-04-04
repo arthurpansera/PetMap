@@ -13,6 +13,18 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
     $obj = conecta_db();
 
+    $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
+    $stmt_check_email = $obj->prepare($query_check_email);
+    $stmt_check_email->bind_param("s", $email);
+    $stmt_check_email->execute();
+    $stmt_check_email->store_result();
+
+    if ($stmt_check_email->num_rows > 0) {
+        $_SESSION['error_message'] = "Este e-mail já está cadastrado!";
+        header("Location: register-user.php");
+        exit();
+    }
+
     $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
     $stmt = $obj->prepare($query);
     
@@ -40,7 +52,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
             die("<span class='alert alert-danger'><h5>Erro ao cadastrar o contato: " . $stmt_contato->error . "</h5></span>");
         }
 
-        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nascimento) VALUES (?, ?, ?)";
+        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nasc) VALUES (?, ?, ?)";
         $stmt_cidadao = $obj->prepare($query_cidadao);
         
         if (!$stmt_cidadao) {
@@ -54,7 +66,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
         if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
             $descricao = "Perfil de cidadão";
-            $foto = null;
+            $foto = "";
 
             $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
             $stmt_perfil = $obj->prepare($query_perfil);
@@ -83,8 +95,24 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
         echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
     }
 }
-?>
 
+if (isset($_SESSION['error_message'])) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Erro!',
+                text: '{$_SESSION['error_message']}',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        });
+    </script>";
+    unset($_SESSION['error_message']);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -127,8 +155,8 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
                     <div class="container-row">
                         <div class="mid-inputBox">
-                            <label for="CPF"><b>CPF: *</b></label>
-                            <input type="text" name="CPF" id="CPF" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cpfValidate()">
+                            <label for="cpf"><b>CPF: *</b></label>
+                            <input type="text" name="cpf" id="cpf" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cpfValidate()">
                             <span class="span-required">Por faovr, insira um CPF válido</span>
                         </div>
 
