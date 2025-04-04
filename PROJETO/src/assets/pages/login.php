@@ -57,9 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: login.php");
         exit();
     }
-
-} else {
-    echo "O método de envio não é POST. Dados não recebidos.";
 }
 
 ?>

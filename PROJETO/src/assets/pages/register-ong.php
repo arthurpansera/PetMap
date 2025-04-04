@@ -20,6 +20,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $obj = conecta_db();
 
+    
+    $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
+    $stmt_check_email = $obj->prepare($query_check_email);
+    $stmt_check_email->bind_param("s", $email);
+    $stmt_check_email->execute();
+    $stmt_check_email->store_result();
+
+    $query_check_cnpj = "SELECT id_usuario FROM ong WHERE cnpj = ?";
+    $stmt_check_cnpj = $obj->prepare($query_check_cnpj);
+    $stmt_check_cnpj->bind_param("s", $cnpj);
+    $stmt_check_cnpj->execute();
+    $stmt_check_cnpj->store_result();
+
+
+    if ($stmt_check_email->num_rows > 0 || $stmt_check_cnpj->num_rows > 0) {
+        $_SESSION['error_message'] = "Usuário já cadastrado!";
+        header("Location: register-ong.php");
+        exit();
+    }
+
     try {
         $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
         $stmt_usuario = $obj->prepare($query_usuario);
@@ -64,6 +84,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $obj->close();
     }
 }
+
+if (isset($_SESSION['error_message'])) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Erro!',
+                text: '{$_SESSION['error_message']}',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        });
+    </script>";
+    unset($_SESSION['error_message']);
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -74,6 +112,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>PetMap | Cadastro de Cidadão</title>
     <link rel="stylesheet" href="../../styles/pages/register-ong/register-ong.css">
 </head>
+
+<style>
+        select.mid-inputUser {
+        color: #8A8A8A;
+    }
+    select.mid-inputUser:focus {
+        color: #000000;
+    }
+    select.mid-inputUser option:checked {
+        color: var(--dark-purple);
+    }
+    select.mid-inputUser option {
+        color: #8A8A8A;
+    }
+</style>
+
 <body>
     <header>
         <div class="container">
@@ -175,11 +229,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
             
                     <div class="container-row" >
-                        <div class="mid-inputBox">
-                            <label for="state"><b>Estado: *</b></label>
-                            <input type="text" name="state" id="state" class="mid-inputUser required" placeholder="Insira o estado" oninput="inputWithoutNumbersValidate(11)">
-                            <span class="span-required">Estado não pode conter números ou caracteres especiais.</span>  
-                        </div>
+
+                    <div class="mid-inputBox">
+                        <label for="state"><b>Estado: *</b></label>
+                        <select name="state" id="state" class="mid-inputUser required">
+                            <option value="">Selecione um estado</option>
+                            <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                            <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                            <option value="AP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                            <option value="AM" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                            <option value="BA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                            <option value="CE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                            <option value="DF" <?php echo (isset($_POST['state']) && $_POST['state'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                            <option value="ES" <?php echo (isset($_POST['state']) && $_POST['state'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                            <option value="GO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                            <option value="MA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                            <option value="MT" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                            <option value="MS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                            <option value="MG" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                            <option value="PA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                            <option value="PB" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                            <option value="PR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                            <option value="PE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                            <option value="PI" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                            <option value="RJ" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                            <option value="RN" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                            <option value="RS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                            <option value="RO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                            <option value="RR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                            <option value="SC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                            <option value="SP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                            <option value="SE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                            <option value="TO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                        </select>
+                        <span class="span-required">Selecione um estado válido.</span>
+                    </div>
+
 
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
