@@ -171,6 +171,9 @@ if (isset($_SESSION['error_message'])) {
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="../../../index.php">Animais Resgatados</a></li>
                 <li><a href="../../../index.php">Animais Perdidos</a></li>
+                <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
+                    <li><a href="../../../index.php">Usuários Cadastrados</a></li>
+                <?php endif; ?>
                 <li><a href="../../../index.php">Sobre Nós</a></li>
                 <li><a href="../../../index.php">Perguntas Frequentes</a></li>
                 <li><a href="../../../index.php">Suporte</a></li>

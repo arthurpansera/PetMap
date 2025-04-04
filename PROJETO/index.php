@@ -1,6 +1,25 @@
 <?php
+    include('conecta_db.php');
+
     session_start();
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+    $isModerator = false;
+
+    $obj = conecta_db();
+
+    if ($isLoggedIn) {
+        $userId = $_SESSION['id_usuario'];
+        
+        $query = "SELECT descricao FROM perfil WHERE id_usuario = ?";
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $userProfile = $stmt->get_result()->fetch_assoc();
+
+        if ($userProfile && $userProfile['descricao'] === 'Perfil de moderador') {
+            $isModerator = true;
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -36,6 +55,9 @@
                 <li><a href="index.php">Página Principal</a></li>
                 <li><a href="index.php">Animais Resgatados</a></li>
                 <li><a href="index.php">Animais Perdidos</a></li>
+                <?php if ($isModerator): ?>
+                    <li><a href="index.php">Usuários Cadastrados</a></li>
+                <?php endif; ?>
                 <li><a href="index.php">Sobre Nós</a></li>
                 <li><a href="index.php">Perguntas Frequentes</a></li>
                 <li><a href="index.php">Suporte</a></li>
