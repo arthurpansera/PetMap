@@ -74,7 +74,8 @@ if (isset($_POST['update_profile'])) {
     $confirmar_senha = $_POST['confirmar_senha'];
 
     if ($senha !== $confirmar_senha) {
-        echo "<span class='alert alert-danger'>As senhas não coincidem. Por favor, tente novamente.</span>";
+        $_SESSION['error_message'] = "As senhas não coincidem!";
+        header("Location: profile.php");
         exit();
     }
 
@@ -101,6 +102,23 @@ if (isset($_POST['update_profile'])) {
 
     header("Location: profile.php");
     exit();
+}
+
+if (isset($_SESSION['error_message'])) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Erro!',
+                text: '{$_SESSION['error_message']}',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        });
+    </script>";
+    unset($_SESSION['error_message']);
 }
 ?>
 
@@ -201,7 +219,8 @@ if (isset($_POST['update_profile'])) {
             </form>
         </div>
     </div>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
 
 </body>

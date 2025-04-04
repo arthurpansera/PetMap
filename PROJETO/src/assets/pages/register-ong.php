@@ -20,6 +20,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $obj = conecta_db();
 
+    
+    $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
+    $stmt_check_email = $obj->prepare($query_check_email);
+    $stmt_check_email->bind_param("s", $email);
+    $stmt_check_email->execute();
+    $stmt_check_email->store_result();
+
+    $query_check_cnpj = "SELECT id_usuario FROM ong WHERE cnpj = ?";
+    $stmt_check_cnpj = $obj->prepare($query_check_cnpj);
+    $stmt_check_cnpj->bind_param("s", $cnpj);
+    $stmt_check_cnpj->execute();
+    $stmt_check_cnpj->store_result();
+
+
+    if ($stmt_check_email->num_rows > 0 || $stmt_check_cnpj->num_rows > 0) {
+        $_SESSION['error_message'] = "Usuário já cadastrado!";
+        header("Location: register-ong.php");
+        exit();
+    }
+
     try {
         $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
         $stmt_usuario = $obj->prepare($query_usuario);
@@ -64,6 +84,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $obj->close();
     }
 }
+
+if (isset($_SESSION['error_message'])) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Erro!',
+                text: '{$_SESSION['error_message']}',
+                icon: 'error',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        });
+    </script>";
+    unset($_SESSION['error_message']);
+}
+
 ?>
 
 <!DOCTYPE html>
