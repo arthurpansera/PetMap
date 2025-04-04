@@ -19,8 +19,15 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
     $stmt_check_email->execute();
     $stmt_check_email->store_result();
 
-    if ($stmt_check_email->num_rows > 0) {
-        $_SESSION['error_message'] = "Este e-mail já está cadastrado!";
+    $query_check_cpf = "SELECT id_usuario FROM cidadao WHERE cpf = ?";
+    $stmt_check_cpf = $obj->prepare($query_check_cpf);
+    $stmt_check_cpf->bind_param("s", $cpf);
+    $stmt_check_cpf->execute();
+    $stmt_check_cpf->store_result();
+
+
+    if ($stmt_check_email->num_rows > 0 || $stmt_check_cpf->num_rows > 0) {
+        $_SESSION['error_message'] = "Usuário já cadastrado!";
         header("Location: register-user.php");
         exit();
     }
