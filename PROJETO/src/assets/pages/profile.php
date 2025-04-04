@@ -17,10 +17,13 @@ $id_usuario = $_SESSION['id_usuario'];
 
 $obj = conecta_db();
 
-$query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta 
+$query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
+            o.endereco_rua, o.endereco_numero, o.endereco_complemento, o.endereco_bairro, 
+            o.endereco_cidade, o.endereco_estado, o.endereco_pais, o.endereco_cep
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
           JOIN contato c ON u.id_usuario = c.id_usuario
+          LEFT JOIN ong o ON u.id_usuario = o.id_usuario
           WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
 $stmt->bind_param("i", $id_usuario);
@@ -153,6 +156,16 @@ if (isset($_POST['update_profile'])) {
             <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
+            <p><span class="label">Endereço:</span> <?php echo 'Rua '. htmlspecialchars($user['endereco_rua']) . ', ' . htmlspecialchars($user['endereco_numero']); ?></p>
+            <?php if (!empty($user['endereco_complemento'])): ?>
+                <p><span class="label">Complemento:</span> <?php echo htmlspecialchars($user['endereco_complemento']); ?></p>
+            <?php endif; ?>
+            <p><span class="label">Bairro:</span> <?php echo htmlspecialchars($user['endereco_bairro']); ?></p>
+            <p><span class="label">Cidade:</span> <?php echo htmlspecialchars($user['endereco_cidade']); ?></p>
+            <p><span class="label">Estado:</span> <?php echo htmlspecialchars($user['endereco_estado']); ?></p>
+            <p><span class="label">País:</span> <?php echo htmlspecialchars($user['endereco_pais']); ?></p>
+            <p><span class="label">CEP:</span> <?php echo htmlspecialchars($user['endereco_cep']); ?></p>
+
             <div class="profile-buttons">
                 <form action="profile.php" method="POST">
                     <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
@@ -172,31 +185,73 @@ if (isset($_POST['update_profile'])) {
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Editar Perfil</h2>
             <form action="profile.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($user['nome']); ?>" required>
-                </div>
+                <div class="form-content">
+                    <div>
+                        <div class="form-group">
+                            <label for="nome">Nome:</label>
+                            <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($user['nome']); ?>" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($user['telefone']); ?>" required>
-                </div>
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($user['telefone']); ?>" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                </div>
+                        <div class="form-group">
+                            <label for="email">E-mail:</label>
+                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="senha">Senha:</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua nova senha">
-                </div>
+                        <div class="form-group">
+                            <label for="senha">Senha:</label>
+                            <input type="password" id="senha" name="senha" placeholder="Digite sua nova senha">
+                        </div>
 
-                <div class="form-group">
-                    <label for="confirmar_senha">Confirmar Senha:</label>
-                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
-                </div>
+                        <div class="form-group">
+                            <label for="confirmar_senha">Confirmar Senha:</label>
+                            <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
+                        </div>
+                    </div>
 
+                    <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
+                    <div>
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="endereco_rua" name="endereco_rua" value="<?php echo htmlspecialchars($user['endereco_rua']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_numero">Número:</label>
+                            <input type="text" id="endereco_numero" name="endereco_numero" value="<?php echo htmlspecialchars($user['endereco_numero']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_complemento">Complemento:</label>
+                            <input type="text" id="endereco_complemento" name="endereco_complemento" value="<?php echo htmlspecialchars($user['endereco_complemento']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="endereco_bairro" name="endereco_bairro" value="<?php echo htmlspecialchars($user['endereco_bairro']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="endereco_cidade" name="endereco_cidade" value="<?php echo htmlspecialchars($user['endereco_cidade']); ?>">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="endereco_estado">Estado:</label>
+                            <input type="text" id="endereco_estado" name="endereco_estado" value="<?php echo htmlspecialchars($user['endereco_estado']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_pais">País:</label>
+                            <input type="text" id="endereco_pais" name="endereco_pais" value="<?php echo htmlspecialchars($user['endereco_pais']); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_cep">CEP:</label>
+                            <input type="text" id="endereco_cep" name="endereco_cep" value="<?php echo htmlspecialchars($user['endereco_cep']); ?>">
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
                 <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>
             </form>
         </div>
