@@ -180,7 +180,7 @@ function isBirthYear(date) {
 
     const [day, month, year] = date.split('/').map(Number);
 
-    if (year < 1895 || year > 2025) {
+    if (year < 1925 || year >= 2012) {
         return false;
     }
 
