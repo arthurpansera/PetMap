@@ -41,6 +41,14 @@ CREATE TABLE cidadao (
     cpf VARCHAR(14) NOT NULL UNIQUE,
     id_usuario INT NOT NULL,
     data_nasc DATE NOT NULL,
+    endereco_rua VARCHAR(100) NOT NULL,
+    endereco_numero VARCHAR(10) NOT NULL,
+    endereco_complemento VARCHAR(50),
+    endereco_bairro VARCHAR(50) NOT NULL,
+    endereco_cidade VARCHAR(50) NOT NULL,
+    endereco_estado CHAR(2) NOT NULL,
+    endereco_pais VARCHAR(20) NOT NULL,
+    endereco_cep CHAR(8) NOT NULL,
     PRIMARY KEY (cpf),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
