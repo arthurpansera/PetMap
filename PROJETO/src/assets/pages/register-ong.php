@@ -173,7 +173,7 @@ if (isset($_SESSION['error_message'])) {
 
                         <div class="mid-inputBox">
                             <label for="telephone"><b>Telefone: *</b></label>
-                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="XX XXXXX-XXXX" oninput="telephoneValidate()">
+                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="(XX) XXXXX-XXXX" oninput="telephoneValidate()">
                             <span class="span-required">Por favor, insira um telefone válido</span>
                         </div>
                     </div>

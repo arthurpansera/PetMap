@@ -219,8 +219,8 @@ function isEmail(email) {
 }
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
-    const re = /^(\+55\s?)?(55\s?)?\d{2}\s?9?\d{4}-?\d{4}$/
-    return re.test(telephone)
+    const re = /^(?:\(\d{2}\)\s?|\d{2}\s?)9\d{4}-?\d{4}$/;
+    return re.test(telephone);
 }
 // Function to check if is a valid password
 function validPassword(password) {
