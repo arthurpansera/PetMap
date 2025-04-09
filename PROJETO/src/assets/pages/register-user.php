@@ -200,6 +200,91 @@ if (isset($_SESSION['error_message'])) {
                         <span class="span-required">As senhas não coincidem.</span>
                     </div>
 
+                    <h1>Endereço</h1>
+                    
+                    <div class="container-row">
+                        <div class="mid-inputBox">
+                            <label for="CEP"><b>CEP: *</b></label>
+                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" placeholder="XXXXX-XXX" oninput="cepValidate()">
+                            <span class="span-required">Por favor, insira um CEP válido</span>
+                        </div>
+
+                        <div class="mid-inputBox">
+                            <label for="road"><b>Rua: *</b></label>
+                            <input type="text" name="road" id="road" class="mid-inputUser required" placeholder="Insira o nome da rua" oninput="roadValidate()">
+                            <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                        </div>
+
+                        <div class="mid-inputBox">
+                            <label for="num"><b>Número: *</b></label>
+                            <input type="text" name="num" id="num" class="mid-inputUser required" placeholder="Insira o número" oninput="numValidate()">
+                            <span class="span-required">Número não pode conter letras ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="container-row">
+                        <div class="mid-inputBox">
+                            <label for="neighborhood"><b>Bairro: *</b></label>
+                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro" oninput="inputWithoutNumbersValidate(9)">
+                            <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                        </div>
+                        <div class="mid-inputBox">
+                            <label for="city"><b>Cidade: *</b></label>
+                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade" oninput="inputWithoutNumbersValidate(10)">
+                            <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="container-row" >
+
+                    <div class="mid-inputBox">
+                        <label for="state"><b>Estado: *</b></label>
+                        <select name="state" id="state" class="mid-inputUser required">
+                            <option value="">Selecione um estado</option>
+                            <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                            <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                            <option value="AP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                            <option value="AM" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                            <option value="BA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                            <option value="CE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                            <option value="DF" <?php echo (isset($_POST['state']) && $_POST['state'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                            <option value="ES" <?php echo (isset($_POST['state']) && $_POST['state'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                            <option value="GO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                            <option value="MA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                            <option value="MT" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                            <option value="MS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                            <option value="MG" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                            <option value="PA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                            <option value="PB" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                            <option value="PR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                            <option value="PE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                            <option value="PI" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                            <option value="RJ" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                            <option value="RN" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                            <option value="RS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                            <option value="RO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                            <option value="RR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                            <option value="SC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                            <option value="SP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                            <option value="SE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                            <option value="TO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                        </select>
+                        <span class="span-required">Selecione um estado válido.</span>
+                    </div>
+
+
+                        <div class="mid-inputBox">
+                            <label for="country"><b>País: *</b></b></label>
+                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país" oninput="inputWithoutNumbersValidate(12)">
+                            <span class="span-required">País não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="full-inputBox complement">
+                        <label for="complement"><b>Complemento: (opcional)</b></label>
+                        <input type="text" name="complement" id="complement" class="full-inputUser" placeholder="Insira o complemento">
+                    </div>
+
                     <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
 
                 </form>
