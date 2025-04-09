@@ -16,6 +16,10 @@
     margin-left: 410px;
 }
 
+.profile-image {
+    padding-right: 16px;
+}
+
 .profile-header {
     display: flex;
     flex-direction: column;
