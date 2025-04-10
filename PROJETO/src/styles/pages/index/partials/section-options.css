@@ -1,4 +1,4 @@
-body{
+body {
     background-image: url(../../../../assets/images/background-image/background-image-maior-2.png);
 }
 
@@ -15,8 +15,6 @@ body{
     margin-top: 120px;
     box-sizing: border-box;
 }
-
-
 
 .options {
     display: flex;

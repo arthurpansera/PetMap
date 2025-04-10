@@ -298,6 +298,12 @@ if (isset($_SESSION['error_message'])) {
         </div>
     </section>
 
+    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
+        <button class="floating-button" title="Nova Publicação" onclick="">
+            +
+        </button>
+    <?php endif; ?>
+
     <div id="editModal" class="modal">
 
         <div class="modal-content<?php 
