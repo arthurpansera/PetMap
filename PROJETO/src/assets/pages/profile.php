@@ -195,7 +195,7 @@ if (isset($_SESSION['error_message'])) {
             <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
-            <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
+            <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
                 <p><span class="label">Endereço:</span> <?php echo 'Rua '. htmlspecialchars($user['endereco_rua']) . ', ' . htmlspecialchars($user['endereco_numero']); ?></p>
                 <?php if (!empty($user['endereco_complemento'])): ?>
                     <p><span class="label">Complemento:</span> <?php echo htmlspecialchars($user['endereco_complemento']); ?></p>
@@ -222,12 +222,22 @@ if (isset($_SESSION['error_message'])) {
     </section>
 
     <div id="editModal" class="modal">
-        <div class="modal-content">
+
+        <div class="modal-content<?php 
+            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão') {
+                    echo ' adress-modal'; 
+            } 
+        ?>">
+
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Editar Perfil</h2>
             <form action="profile.php" method="POST" enctype="multipart/form-data">
                 <div class="form-content">
-                    <div>
+                    <div class="form-input<?php 
+                        if ($user['tipo_conta'] == 'Perfil de moderador') {
+                            echo ' adm-input'; 
+                        } 
+                    ?>">
                         <div class="form-group">
                             <label for="nome">Nome:</label>
                             <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($user['nome']); ?>" required>
@@ -254,7 +264,7 @@ if (isset($_SESSION['error_message'])) {
                         </div>
                     </div>
 
-                    <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
+                    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
                         <div>
                             <div class="form-group">
                                 <label for="endereco_rua">Rua:</label>

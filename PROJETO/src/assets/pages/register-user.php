@@ -208,7 +208,6 @@ if (isset($_SESSION['error_message'])) {
                             <input type="text" name="CEP" id="CEP" class="mid-inputUser required" placeholder="XXXXX-XXX" oninput="cepValidate()">
                             <span class="span-required">Por favor, insira um CEP válido</span>
                         </div>
-
                         <div class="mid-inputBox">
                             <label for="road"><b>Rua: *</b></label>
                             <input type="text" name="road" id="road" class="mid-inputUser required" placeholder="Insira o nome da rua" oninput="roadValidate()">
@@ -225,12 +224,12 @@ if (isset($_SESSION['error_message'])) {
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="neighborhood"><b>Bairro: *</b></label>
-                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro" oninput="inputWithoutNumbersValidate(9)">
+                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro" oninput="inputWithoutNumbersValidate(10)">
                             <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
                         </div>
                         <div class="mid-inputBox">
                             <label for="city"><b>Cidade: *</b></label>
-                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade" oninput="inputWithoutNumbersValidate(10)">
+                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade" oninput="inputWithoutNumbersValidate(11)">
                             <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -275,7 +274,7 @@ if (isset($_SESSION['error_message'])) {
 
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
-                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país" oninput="inputWithoutNumbersValidate(12)">
+                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país" oninput="inputWithoutNumbersValidate(13)">
                             <span class="span-required">País não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
