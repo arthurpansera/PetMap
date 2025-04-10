@@ -3,13 +3,21 @@ include('../../../conecta_db.php');
 
 session_start();
 
-if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'], $_POST['email'], $_POST['password'])) {
+if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'], $_POST['email'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
     $nome = $_POST['name'];
     $cpf = $_POST['cpf'];
-    $data_nascimento = $_POST['birthYear'];
+    $data_nascimento = DateTime::createFromFormat('d/m/Y', $_POST['birthYear'])->format('Y-m-d');
     $telefone = $_POST['telephone'];
     $email = $_POST['email'];
     $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $cep = $_POST['CEP'];
+    $rua = $_POST['road'];
+    $numero = $_POST['num'];
+    $bairro = $_POST['neighborhood'];
+    $cidade = $_POST['city'];
+    $estado = $_POST['state'];
+    $pais = $_POST['country'];
+    $complemento = $_POST['complement'];
 
     $obj = conecta_db();
 
@@ -59,14 +67,15 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
             die("<span class='alert alert-danger'><h5>Erro ao cadastrar o contato: " . $stmt_contato->error . "</h5></span>");
         }
 
-        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nasc) VALUES (?, ?, ?)";
+        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nasc, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt_cidadao = $obj->prepare($query_cidadao);
         
         if (!$stmt_cidadao) {
             die("<span class='alert alert-danger'><h5>Erro na preparação da query de cidadão: " . $obj->error . "</h5></span>");
         }
 
-        $stmt_cidadao->bind_param("iss", $id_usuario, $cpf, $data_nascimento);
+        $complemento = !empty($complemento) ? $complemento : null;
+        $stmt_cidadao->bind_param("issssssssss", $id_usuario, $cpf, $data_nascimento, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
         if (!$stmt_cidadao->execute()) {
             die("<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão: " . $stmt_cidadao->error . "</h5></span>");
         }
@@ -299,4 +308,3 @@ if (isset($_SESSION['error_message'])) {
     <script src="../../scripts/pages/register-user/register-user.js"></script>
 </body>
 </html>
-

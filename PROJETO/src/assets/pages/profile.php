@@ -18,12 +18,15 @@ $id_usuario = $_SESSION['id_usuario'];
 $obj = conecta_db();
 
 $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
-            o.endereco_rua, o.endereco_numero, o.endereco_complemento, o.endereco_bairro, 
-            o.endereco_cidade, o.endereco_estado, o.endereco_pais, o.endereco_cep
+            o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
+            o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
+            ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
+            ci.endereco_cidade AS cidadao_endereco_cidade, ci.endereco_estado AS cidadao_endereco_estado, ci.endereco_pais AS cidadao_endereco_pais, ci.endereco_cep AS cidadao_endereco_cep
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
           JOIN contato c ON u.id_usuario = c.id_usuario
           LEFT JOIN ong o ON u.id_usuario = o.id_usuario
+          LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
           WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
 $stmt->bind_param("i", $id_usuario);
@@ -195,16 +198,86 @@ if (isset($_SESSION['error_message'])) {
             <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
-            <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
-                <p><span class="label">Endereço:</span> <?php echo 'Rua '. htmlspecialchars($user['endereco_rua']) . ', ' . htmlspecialchars($user['endereco_numero']); ?></p>
-                <?php if (!empty($user['endereco_complemento'])): ?>
-                    <p><span class="label">Complemento:</span> <?php echo htmlspecialchars($user['endereco_complemento']); ?></p>
+            <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
+                <p><span class="label">Endereço:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            $endereco_rua = htmlspecialchars($user['ong_endereco_rua']);
+                            $endereco_numero = htmlspecialchars($user['ong_endereco_numero']);
+                        } else {
+                            $endereco_rua = htmlspecialchars($user['cidadao_endereco_rua']);
+                            $endereco_numero = htmlspecialchars($user['cidadao_endereco_numero']);
+                        }
+                        
+                        if (stripos($endereco_rua, 'Rua ') !== 0) {
+                            echo 'Rua ' . $endereco_rua . ', ' . $endereco_numero;
+                        } else {
+                            echo $endereco_rua . ', ' . $endereco_numero;
+                        }
+                    ?>
+                </p>
+
+                <?php if (!empty($user['ong_endereco_complemento']) || !empty($user['cidadao_endereco_complemento'])): ?>
+                    <p><span class="label">Complemento:</span> 
+                        <?php 
+                            if ($user['tipo_conta'] == 'Perfil de ONG') {
+                                echo htmlspecialchars($user['ong_endereco_complemento']);
+                            } else {
+                                echo htmlspecialchars($user['cidadao_endereco_complemento']);
+                            }
+                        ?>
+                    </p>
                 <?php endif; ?>
-                <p><span class="label">Bairro:</span> <?php echo htmlspecialchars($user['endereco_bairro']); ?></p>
-                <p><span class="label">Cidade:</span> <?php echo htmlspecialchars($user['endereco_cidade']); ?></p>
-                <p><span class="label">Estado:</span> <?php echo htmlspecialchars($user['endereco_estado']); ?></p>
-                <p><span class="label">País:</span> <?php echo htmlspecialchars($user['endereco_pais']); ?></p>
-                <p><span class="label">CEP:</span> <?php echo htmlspecialchars($user['endereco_cep']); ?></p>
+
+                <p><span class="label">Bairro:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_bairro']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_bairro']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">Cidade:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_cidade']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_cidade']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">Estado:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_estado']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_estado']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">País:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_pais']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_pais']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">CEP:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_cep']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_cep']);
+                        }
+                    ?>
+                </p>
             <?php endif; ?>
 
             <div class="profile-buttons">
