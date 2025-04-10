@@ -254,7 +254,7 @@ if (isset($_SESSION['error_message'])) {
                         </div>
                     </div>
 
-                    <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
+                    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
                         <div>
                             <div class="form-group">
                                 <label for="endereco_rua">Rua:</label>

@@ -73,7 +73,7 @@ if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'
 
         if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
             $descricao = "Perfil de cidadão";
-            $foto = "";
+            $foto = null;
 
             $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
             $stmt_perfil = $obj->prepare($query_perfil);
