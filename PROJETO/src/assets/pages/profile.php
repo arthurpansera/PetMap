@@ -115,12 +115,16 @@ if (isset($_POST['update_profile'])) {
         $query_endereco = "UPDATE ong SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
         $stmt_endereco = $obj->prepare($query_endereco);
         $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
+    } elseif ($user['tipo_conta'] == 'Perfil de cidadão') {
+        $query_endereco = "UPDATE cidadao SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
+        $stmt_endereco = $obj->prepare($query_endereco);
+        $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
     }
 
     $stmt_usuario->execute();
     $stmt_contato->execute();
 
-    if ($user['tipo_conta'] == 'Perfil de ONG') {
+    if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
         $stmt_endereco->execute();
     }
 
@@ -297,7 +301,7 @@ if (isset($_SESSION['error_message'])) {
     <div id="editModal" class="modal">
 
         <div class="modal-content<?php 
-            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão') {
+            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
                     echo ' adress-modal'; 
             } 
         ?>">
@@ -338,42 +342,66 @@ if (isset($_SESSION['error_message'])) {
                     </div>
 
                     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
-                        <div>
-                            <div class="form-group">
-                                <label for="endereco_rua">Rua:</label>
-                                <input type="text" id="endereco_rua" name="endereco_rua" value="<?php echo htmlspecialchars($user['endereco_rua']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_numero">Número:</label>
-                                <input type="text" id="endereco_numero" name="endereco_numero" value="<?php echo htmlspecialchars($user['endereco_numero']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_complemento">Complemento:</label>
-                                <input type="text" id="endereco_complemento" name="endereco_complemento" value="<?php echo htmlspecialchars($user['endereco_complemento']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_bairro">Bairro:</label>
-                                <input type="text" id="endereco_bairro" name="endereco_bairro" value="<?php echo htmlspecialchars($user['endereco_bairro']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_cidade">Cidade:</label>
-                                <input type="text" id="endereco_cidade" name="endereco_cidade" value="<?php echo htmlspecialchars($user['endereco_cidade']); ?>">
-                            </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="endereco_rua" name="endereco_rua" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_rua'] : $user['cidadao_endereco_rua']
+                            ); ?>">
                         </div>
-                        <div>
-                            <div class="form-group">
-                                <label for="endereco_estado">Estado:</label>
-                                <input type="text" id="endereco_estado" name="endereco_estado" value="<?php echo htmlspecialchars($user['endereco_estado']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_pais">País:</label>
-                                <input type="text" id="endereco_pais" name="endereco_pais" value="<?php echo htmlspecialchars($user['endereco_pais']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_cep">CEP:</label>
-                                <input type="text" id="endereco_cep" name="endereco_cep" value="<?php echo htmlspecialchars($user['endereco_cep']); ?>">
-                            </div>
+                        <div class="form-group">
+                            <label for="endereco_numero">Número:</label>
+                            <input type="text" id="endereco_numero" name="endereco_numero" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_numero'] : $user['cidadao_endereco_numero']
+                            ); ?>">
                         </div>
+                        <div class="form-group">
+                            <label for="endereco_complemento">Complemento:</label>
+                            <input type="text" id="endereco_complemento" name="endereco_complemento" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_complemento'] : $user['cidadao_endereco_complemento']
+                            ); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="endereco_bairro" name="endereco_bairro" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_bairro'] : $user['cidadao_endereco_bairro']
+                            ); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="endereco_cidade" name="endereco_cidade" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_cidade'] : $user['cidadao_endereco_cidade']
+                            ); ?>">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="endereco_estado">Estado:</label>
+                            <input type="text" id="endereco_estado" name="endereco_estado" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_estado'] : $user['cidadao_endereco_estado']
+                            ); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_pais">País:</label>
+                            <input type="text" id="endereco_pais" name="endereco_pais" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_pais'] : $user['cidadao_endereco_pais']
+                            ); ?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_cep">CEP:</label>
+                            <input type="text" id="endereco_cep" name="endereco_cep" 
+                            value="<?php echo htmlspecialchars(
+                                $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_cep'] : $user['cidadao_endereco_cep']
+                            ); ?>">
+                        </div>
+                    </div>
                     <?php endif; ?>
                 </div>
                 <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>
