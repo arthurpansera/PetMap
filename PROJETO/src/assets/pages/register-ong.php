@@ -3,7 +3,7 @@ include('../../../conecta_db.php');
 
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST['name'], $_POST['email'], $_POST['cnpj'], $_POST['telephone'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
     $nome = $_POST['name'];
     $email = $_POST['email'];
     $cnpj = $_POST['cnpj'];
@@ -56,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $query_ong = "INSERT INTO ong (id_usuario, cnpj, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt_ong = $obj->prepare($query_ong);
+            $complemento = !empty($complemento) ? $complemento : null;
             $stmt_ong->bind_param("isssssssss", $id_usuario, $cnpj, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
             $stmt_ong->execute();
 
