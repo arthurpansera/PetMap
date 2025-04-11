@@ -102,5 +102,10 @@
             </div>
         </div>
     </section>
+    <?php if ($isLoggedIn && ($userProfile['descricao'] == 'Perfil de ONG' || $userProfile['descricao'] == 'Perfil de cidadão')): ?>
+        <button class="floating-button" title="Nova Publicação" onclick="">
+            +
+        </button>
+    <?php endif; ?>
 </body>
 </html>

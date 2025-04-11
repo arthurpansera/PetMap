@@ -20,9 +20,10 @@ function btnRegisterOnClick(event) {
         emailValidate();
         hasError = true;
     } else if (inputs[2].value === ""){
+        errorAlert('Preenchimento obrigatório: CNPJ');
         hasError = true;
     } else if (!isCNPJ(inputs[2].value)){
-        cnpjValidate()
+        cnpjValidate();
         hasError = true;
     } else if (inputs[3].value === "") {
         errorAlert('Preenchimento obrigatório: Telefone');
@@ -221,7 +222,7 @@ function isEmail(email) {
 }
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
-    const re = /^(?:\(\d{2}\)\s?|\d{2}\s?)9\d{4}-?\d{4}$/;
+    const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
 // Function to check if is a valid password

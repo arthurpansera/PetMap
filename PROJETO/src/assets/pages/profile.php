@@ -18,12 +18,15 @@ $id_usuario = $_SESSION['id_usuario'];
 $obj = conecta_db();
 
 $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
-            o.endereco_rua, o.endereco_numero, o.endereco_complemento, o.endereco_bairro, 
-            o.endereco_cidade, o.endereco_estado, o.endereco_pais, o.endereco_cep
+            o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
+            o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
+            ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
+            ci.endereco_cidade AS cidadao_endereco_cidade, ci.endereco_estado AS cidadao_endereco_estado, ci.endereco_pais AS cidadao_endereco_pais, ci.endereco_cep AS cidadao_endereco_cep
           FROM usuario u
           JOIN perfil p ON u.id_usuario = p.id_usuario
           JOIN contato c ON u.id_usuario = c.id_usuario
           LEFT JOIN ong o ON u.id_usuario = o.id_usuario
+          LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
           WHERE u.id_usuario = ?";
 $stmt = $obj->prepare($query);
 $stmt->bind_param("i", $id_usuario);
@@ -112,12 +115,16 @@ if (isset($_POST['update_profile'])) {
         $query_endereco = "UPDATE ong SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
         $stmt_endereco = $obj->prepare($query_endereco);
         $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
+    } elseif ($user['tipo_conta'] == 'Perfil de cidadão') {
+        $query_endereco = "UPDATE cidadao SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
+        $stmt_endereco = $obj->prepare($query_endereco);
+        $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
     }
 
     $stmt_usuario->execute();
     $stmt_contato->execute();
 
-    if ($user['tipo_conta'] == 'Perfil de ONG') {
+    if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
         $stmt_endereco->execute();
     }
 
@@ -195,16 +202,86 @@ if (isset($_SESSION['error_message'])) {
             <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
-            <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
-                <p><span class="label">Endereço:</span> <?php echo 'Rua '. htmlspecialchars($user['endereco_rua']) . ', ' . htmlspecialchars($user['endereco_numero']); ?></p>
-                <?php if (!empty($user['endereco_complemento'])): ?>
-                    <p><span class="label">Complemento:</span> <?php echo htmlspecialchars($user['endereco_complemento']); ?></p>
+            <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
+                <p><span class="label">Endereço:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            $endereco_rua = htmlspecialchars($user['ong_endereco_rua']);
+                            $endereco_numero = htmlspecialchars($user['ong_endereco_numero']);
+                        } else {
+                            $endereco_rua = htmlspecialchars($user['cidadao_endereco_rua']);
+                            $endereco_numero = htmlspecialchars($user['cidadao_endereco_numero']);
+                        }
+                        
+                        if (stripos($endereco_rua, 'Rua ') !== 0) {
+                            echo 'Rua ' . $endereco_rua . ', ' . $endereco_numero;
+                        } else {
+                            echo $endereco_rua . ', ' . $endereco_numero;
+                        }
+                    ?>
+                </p>
+
+                <?php if (!empty($user['ong_endereco_complemento']) || !empty($user['cidadao_endereco_complemento'])): ?>
+                    <p><span class="label">Complemento:</span> 
+                        <?php 
+                            if ($user['tipo_conta'] == 'Perfil de ONG') {
+                                echo htmlspecialchars($user['ong_endereco_complemento']);
+                            } else {
+                                echo htmlspecialchars($user['cidadao_endereco_complemento']);
+                            }
+                        ?>
+                    </p>
                 <?php endif; ?>
-                <p><span class="label">Bairro:</span> <?php echo htmlspecialchars($user['endereco_bairro']); ?></p>
-                <p><span class="label">Cidade:</span> <?php echo htmlspecialchars($user['endereco_cidade']); ?></p>
-                <p><span class="label">Estado:</span> <?php echo htmlspecialchars($user['endereco_estado']); ?></p>
-                <p><span class="label">País:</span> <?php echo htmlspecialchars($user['endereco_pais']); ?></p>
-                <p><span class="label">CEP:</span> <?php echo htmlspecialchars($user['endereco_cep']); ?></p>
+
+                <p><span class="label">Bairro:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_bairro']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_bairro']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">Cidade:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_cidade']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_cidade']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">Estado:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_estado']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_estado']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">País:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_pais']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_pais']);
+                        }
+                    ?>
+                </p>
+
+                <p><span class="label">CEP:</span> 
+                    <?php 
+                        if ($user['tipo_conta'] == 'Perfil de ONG') {
+                            echo htmlspecialchars($user['ong_endereco_cep']);
+                        } else {
+                            echo htmlspecialchars($user['cidadao_endereco_cep']);
+                        }
+                    ?>
+                </p>
             <?php endif; ?>
 
             <div class="profile-buttons">
@@ -221,14 +298,37 @@ if (isset($_SESSION['error_message'])) {
         </div>
     </section>
 
+    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
+        <button class="floating-button" title="Nova Publicação" onclick="">
+            +
+        </button>
+    <?php endif; ?>
+
+    <div id="postModal" class="post-modal">
+        <div class="post-modal-content">
+            <span class="post-modal-close" onclick="closePostModal()">&times;</span>
+            <h2>Criar Nova Publicação</h2>
+            <form action="processar_publicacao.php" method="POST">
+                <div class="form-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo</label>
+                    <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
+                </div>
+                <button type="submit">Publicar</button>
+            </form>
+        </div>
+    </div>
+
     <div id="editModal" class="modal">
 
         <div class="modal-content<?php 
-            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão') {
+            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
                     echo ' adress-modal'; 
             } 
         ?>">
-
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Editar Perfil</h2>
             <form action="profile.php" method="POST" enctype="multipart/form-data">
@@ -277,21 +377,29 @@ if (isset($_SESSION['error_message'])) {
                             <div class="row-style-content">
                                 <div class="form-group">
                                     <label for="endereco_rua">Rua:</label>
-                                    <input type="text" id="endereco_rua" name="endereco_rua" class="required" value="<?php echo htmlspecialchars($user['endereco_rua']); ?>" data-type="rua" data-required="true">
+                                    <input type="text" id="endereco_rua" name="endereco_rua" class="required" data-type="rua" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_rua'] : $user['cidadao_endereco_rua']
+                                    ); ?>">
                                     <span class="span-required"> Rua não pode conter caracteres especias.</span>
                                 </div>
                                 <div class="form-group">
                                     <label for="endereco_numero">Número:</label>
-                                    <input type="text" id="endereco_numero" name="endereco_numero" class="required" value="<?php echo htmlspecialchars($user['endereco_numero']); ?>" data-type="número" data-required="true">
+                                    <input type="text" id="endereco_numero" name="endereco_numero" class="required" data-type="número" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_numero'] : $user['cidadao_endereco_numero']
+                                    ); ?>">
                                     <span class="span-required">Número não pode conter letras ou caracteres especiais.</span>
                                 </div>
                                 <div class="form-group">
                                     <label for="endereco_complemento">Complemento:</label>
-                                    <input type="text" id="endereco_complemento" name="endereco_complemento" class="required" value="<?php echo htmlspecialchars($user['endereco_complemento']); ?>">
+                                    <input type="text" id="endereco_complemento" name="endereco_complemento" class="required" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_complemento'] : $user['cidadao_endereco_complemento']
+                                    ); ?>">
                                 </div>
                                 <div class="form-group">
                                     <label for="endereco_bairro">Bairro:</label>
-                                    <input type="text" id="endereco_bairro" name="endereco_bairro" class="required" value="<?php echo htmlspecialchars($user['endereco_bairro']); ?>" data-type="bairro" data-required="true">
+                                    <input type="text" id="endereco_bairro" name="endereco_bairro" class="required" data-type="bairro" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_bairro'] : $user['cidadao_endereco_bairro']
+                                    ); ?>">
                                     <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
                                 </div>
                                 
@@ -301,13 +409,17 @@ if (isset($_SESSION['error_message'])) {
                             <div class="row-style-content">
                                 <div class="form-group">
                                     <label for="endereco_cidade">Cidade:</label>
-                                    <input type="text" id="endereco_cidade" name="endereco_cidade" class="required" value="<?php echo htmlspecialchars($user['endereco_cidade']); ?>" data-type="cidade" data-required="true">
+                                    <input type="text" id="endereco_cidade" name="endereco_cidade" class="required" data-type="cidade" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_cidade'] : $user['cidadao_endereco_cidade']
+                                    ); ?>">
                                     <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="endereco_estado"><b>Estado: *</b></label>
-                                    <select name="endereco_estado" id="endereco_estado" class="required" data-type="estado" data-required="true">
+                                    <select name="endereco_estado" id="endereco_estado" class="required" data-type="estado" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_estado'] : $user['cidadao_endereco_estado']
+                                    ); ?>">
                                         <option value="">Selecione um estado</option>
                                         <option value="AC" <?php echo ($user['endereco_estado'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
                                         <option value="AL" <?php echo ($user['endereco_estado'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
@@ -342,17 +454,20 @@ if (isset($_SESSION['error_message'])) {
 
                                 <div class="form-group">
                                     <label for="endereco_pais">País:</label>
-                                    <input type="text" id="endereco_pais" name="endereco_pais" class="required" value="<?php echo htmlspecialchars($user['endereco_pais']); ?>" data-type="país" data-required="true">
+                                    <input type="text" id="endereco_pais" name="endereco_pais" class="required" data-type="país" data-required="true"  value="<?php echo htmlspecialchars(
+                                    $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_pais'] : $user['cidadao_endereco_pais']
+                                    ); ?>">
                                     <span class="span-required">País não pode conter números ou caracteres especiais.</span>
                                 </div>
                                 <div class="form-group">
                                     <label for="endereco_cep">CEP:</label>
-                                    <input type="text" id="endereco_cep" name="endereco_cep" class="required" value="<?php echo htmlspecialchars($user['endereco_cep']); ?>" data-type="CEP" data-required="true">
+                                    <input type="text" id="endereco_cep" name="endereco_cep" class="required" data-type="CEP" data-required="true" value="<?php echo htmlspecialchars(
+                                        $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_cep'] : $user['cidadao_endereco_cep']
+                                    ); ?>">
                                     <span class="span-required">Por favor, insira um CEP válido</span>
                                 </div>
                             </div>
                         </div>
-           
                     <?php endif; ?>
                 </div>
                 <button type="submit" name="update_profile" class="profile-save" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
