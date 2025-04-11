@@ -388,3 +388,107 @@ input.input-adm{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     object-fit: cover;
 }
+
+.post-edit-modal {
+    display: none;
+    position: fixed;
+    z-index: 9990;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: auto;
+}
+
+.post-edit-modal h2 {
+    margin-bottom: 20px;
+}
+
+.post-edit-modal-content {
+    background-color: #fff;
+    margin: 3% auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.post-edit-modal-close {
+    color: #333;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.post-edit-modal-close:hover,
+.post-edit-modal-close:focus {
+    color: #666;
+}
+
+.post-edit-modal .edit-post-form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.post-edit-modal input[type="text"],
+.post-edit-modal textarea,
+.post-edit-modal button,
+.post-edit-modal select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.post-edit-modal button {
+    background-color: rgb(0, 167, 36);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 6px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    width: 70%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.post-edit-modal button:hover {
+    background-color: rgb(0, 133, 29);
+    transform: scale(1.05);
+}
+
+.post-edit-modal select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 16px;
+    cursor: pointer;
+}
+
+.edit-post-form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.edit-post-form-group label {
+    font-weight: bold;
+}

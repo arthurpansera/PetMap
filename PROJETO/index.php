@@ -172,15 +172,15 @@
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
             <form action="index.php" method="POST">
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
                 </div>
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>
                         <option value="animal">Animal</option>

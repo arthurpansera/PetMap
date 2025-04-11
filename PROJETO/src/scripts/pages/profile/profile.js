@@ -25,3 +25,17 @@ window.onclick = function(event) {
         closePostModal();
     }
 }
+
+function openEditPostModal() {
+    document.getElementById("postEditModal").style.display = "block";
+}
+
+function closeEditPostModal() {
+    document.getElementById("postEditModal").style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target === document.getElementById("postEditModal")) {
+        closeEditPostModal();
+    }
+}

@@ -176,6 +176,10 @@ body.swal2-shown {
     overflow: auto;
 }
 
+.post-modal h2 {
+    margin-bottom: 20px;
+}
+
 .post-modal-content {
     background-color: #fff;
     margin: 3% auto;
@@ -253,4 +257,13 @@ body.swal2-shown {
     background-position: right 12px center;
     background-size: 16px 16px;
     cursor: pointer;
+}
+
+.post-form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.post-form-group label {
+    font-weight: bold;
 }

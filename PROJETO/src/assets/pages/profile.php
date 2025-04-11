@@ -197,7 +197,7 @@ if (isset($_POST['update_post'])) {
 
     $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_usuario = ?";
     $stmt_post = $obj->prepare($query_post);
-    $stmt_post>bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
+    $stmt_post->bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
     $stmt_post->execute();
 
     header('Location: profile.php');
@@ -377,7 +377,7 @@ if (isset($_SESSION['error_message'])) {
                     <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
                 </form>
                 <div class="functions-buttons">
-                    <a href="javascript:void(0);" class="profile-edit" onclick="openModal()">Editar Informações</a>
+                    <a href="#" class="profile-edit" onclick="openModal()">Editar Informações</a>
                     <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
                         <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
                     </form>
@@ -413,8 +413,7 @@ if (isset($_SESSION['error_message'])) {
                         
                         <div class="post-actions">
                             <form method="POST" action="profile.php">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
-                                <button type="submit" name="update_post" class="edit-button">✏️ Editar</button>
+                                <button type="button" name="update_post" class="edit-button" onclick="openEditPostModal();">✏️ Editar</button>
                             </form>
                             <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
@@ -438,15 +437,15 @@ if (isset($_SESSION['error_message'])) {
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
             <form action="profile.php" method="POST">
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
                 </div>
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-                <div class="form-group">
+                <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>
                         <option value="animal">Animal</option>
@@ -623,6 +622,38 @@ if (isset($_SESSION['error_message'])) {
                 </div>
                 <button type="submit" name="update_profile" class="profile-save" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
 
+            </form>
+        </div>
+    </div>
+
+    <div id="postEditModal" class="post-edit-modal">
+        <div class="post-edit-modal-content">
+            <span class="close" onclick="closeEditPostModal()">&times;</span>
+            <h2>Editar Publicação</h2>
+            <form id="editPostForm" action="profile.php" method="POST">
+                <input type="hidden" id="edit_post_id" name="post_id">
+                
+                <div class="edit-post-form-group">
+                    <label for="edit_titulo">Título</label>
+                    <input type="text" id="edit_titulo" name="titulo" required>
+                </div>
+
+                <div class="edit-post-form-group">
+                    <label for="edit_conteudo">Conteúdo</label>
+                    <textarea id="edit_conteudo" name="conteudo" rows="4" required></textarea>
+                </div>
+
+                <div class="edit-post-form-group">
+                    <label for="edit_tipo_publicacao">Tipo de Publicação</label>
+                    <select id="edit_tipo_publicacao" name="tipo_publicacao" required>
+                        <option value="animal">Animal</option>
+                        <option value="resgate">Resgate</option>
+                        <option value="informacao">Informação</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <button type="submit" name="update_post" class="save-button">Salvar Alterações</button>
             </form>
         </div>
     </div>
