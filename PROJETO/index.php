@@ -92,11 +92,6 @@
             </div>
         </nav> 
         <div class="content">
-            <div class="menu-content">
-                <h1>PetMap</h1>
-                <p>Onde tem pet, tem PetMap!</p>
-            </div>
-            <hr class="line"></hr>
             <div class="menu-post">
                 <div class="post-item">
                     <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
