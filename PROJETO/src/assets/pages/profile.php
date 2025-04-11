@@ -115,7 +115,7 @@ if (isset($_POST['delete_account'])) {
     exit();
 }
 
-if (isset($_POST['update_profile'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $telefone = $_POST['telefone'];
@@ -185,6 +185,20 @@ if (isset($_POST['make_post'])) {
     $stmt = $obj->prepare($insertQuery);
     $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
     $stmt->execute();
+
+    header('Location: profile.php');
+    exit;
+}
+
+if (isset($_POST['update_post'])) {
+    $titulo = $_POST['titulo'];
+    $conteudo = $_POST['conteudo'];
+    $tipoPublicacao = $_POST['tipo_publicacao'];
+
+    $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_usuario = ?";
+    $stmt_post = $obj->prepare($query_post);
+    $stmt_post>bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
+    $stmt_post->execute();
 
     header('Location: profile.php');
     exit;
@@ -373,9 +387,9 @@ if (isset($_SESSION['error_message'])) {
     </section>
     <section class="content">
         <div class="user-posts">
-            <h2>Minhas Publicações</h2>
 
             <?php if ($result_posts->num_rows > 0): ?>
+                <h2>Minhas Publicações</h2>
                 <?php while ($post = $result_posts->fetch_assoc()): ?>
                     <div class="post-item">
                         <p class="post-info">
@@ -400,7 +414,7 @@ if (isset($_SESSION['error_message'])) {
                         <div class="post-actions">
                             <form method="POST" action="profile.php">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
-                                <button type="submit" name="edit_post" class="edit-button">✏️ Editar</button>
+                                <button type="submit" name="update_post" class="edit-button">✏️ Editar</button>
                             </form>
                             <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
@@ -465,7 +479,7 @@ if (isset($_SESSION['error_message'])) {
                         <div class="column-style">
                             <div class="form-group">
                                 <label for="foto_perfil">Escolher imagem:</label>
-                                <input type="file" name="foto_perfil" id="foto_perfil" required>
+                                <input type="file" name="foto_perfil" id="foto_perfil">
                             </div>
                             <div class="form-group">
                                 <label for="nome">Nome:</label>
@@ -487,13 +501,13 @@ if (isset($_SESSION['error_message'])) {
 
                             <div class="form-group">
                                 <label for="senha">Senha:</label>
-                                <input type="password" id="senha" name="senha" class="required" placeholder="Digite sua nova senha" data-type="senha" data-required="true">
+                                <input type="password" id="senha" name="senha" class="required" placeholder="Digite sua nova senha" data-type="senha">
                                 <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                             </div>
 
                             <div class="form-group">
                                 <label for="confirmar_senha">Confirmar Senha:</label>
-                                <input type="password" id="confirmar_senha" name="confirmar_senha" class="required" placeholder="Confirme sua nova senha" data-type="confirmar senha" data-required="true">
+                                <input type="password" id="confirmar_senha" name="confirmar_senha" class="required" placeholder="Confirme sua nova senha" data-type="confirmar senha">
                                 <span class="span-required">As senhas não coincidem.</span>
                             </div> 
                         </div>

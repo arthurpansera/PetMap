@@ -74,10 +74,6 @@ function btnRegisterOnClick(event, formElement) {
         const isRequired = input.dataset.required === "true";
         const value = input.value.trim();
 
-        if (type === "senha" && value === "" || type === "confirmar senha" && value === "") {
-            continue;
-        }
-
         if (isRequired && value === "") {
             console.log("Campo obrigatório não preenchido:", type);
             setError(input);
@@ -179,7 +175,7 @@ function isLeapYear(year) {
 }
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
-    const re = /^(?:\(\d{2}\)\s?|\d{2}\s?)9\d{4}-?\d{4}$/;
+    const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
 // Function to check if is a valid password
