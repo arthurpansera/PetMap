@@ -1,65 +1,65 @@
 <?php
-include('../../../conecta_db.php'); 
-session_start();
+    include('../../../conecta_db.php');
 
-if (isset($_SESSION['error_message'])) {
-    $error_message = $_SESSION['error_message'];
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Erro!',
-                text: '$error_message',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#7A00CC',
-                allowOutsideClick: true,
-                heightAuto: false
+    session_start();
+
+    if (isset($_SESSION['error_message'])) {
+        $error_message = $_SESSION['error_message'];
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '$error_message',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
             });
-        });
-    </script>";
-    unset($_SESSION['error_message']);
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    $obj = conecta_db();
-    if (!$obj) {
-        die("Erro ao conectar ao banco de dados.");
+        </script>";
+        unset($_SESSION['error_message']);
     }
 
-    $query = "SELECT u.id_usuario, u.senha 
-              FROM usuario u
-              JOIN contato c ON u.id_usuario = c.id_usuario 
-              WHERE c.email = ?";
-    $stmt = $obj->prepare($query);
-    $stmt->bind_param('s', $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+        $obj = conecta_db();
 
-        if (password_verify($password, $user['senha'])) {
-            $_SESSION['user_logged_in'] = true;
-            $_SESSION['id_usuario'] = $user['id_usuario'];
-            header("Location: ../../../index.php");
-            exit();
+        if (!$obj) {
+            die("Erro ao conectar ao banco de dados.");
+        }
+
+        $query = "SELECT u.id_usuario, u.senha 
+                FROM usuario u
+                JOIN contato c ON u.id_usuario = c.id_usuario 
+                WHERE c.email = ?";
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $user = $result->fetch_assoc();
+
+            if (password_verify($password, $user['senha'])) {
+                $_SESSION['user_logged_in'] = true;
+                $_SESSION['id_usuario'] = $user['id_usuario'];
+                header("Location: ../../../index.php");
+                exit();
+            } else {
+                $_SESSION['error_message'] = "Usuário e/ou senha incorretos";
+                header("Location: login.php");
+                exit();
+            }
         } else {
             $_SESSION['error_message'] = "Usuário e/ou senha incorretos";
             header("Location: login.php");
             exit();
         }
-    } else {
-        $_SESSION['error_message'] = "Usuário e/ou senha incorretos";
-        header("Location: login.php");
-        exit();
     }
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -117,9 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <a class="user-options" href="./register-user.php">Cidadão</a>
                         <a class="user-options" href="./register-ong.php">ONG</a>
                         <a class="user-options" href="./register-adm.php">Moderador</a>
-
                     </div>
-            
                 </section>
     
                 <section class="has-account">

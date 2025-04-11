@@ -1,237 +1,233 @@
 <?php
-session_start();
+    session_start();
 
-if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
-    header("Location: ../../assets/pages/login.php");
-    exit();
-}
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
 
-if (!isset($_SESSION['id_usuario'])) {
-    echo "Erro: ID do usuário não encontrado.";
-    exit();
-}
+    if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
+        header("Location: ../../assets/pages/login.php");
+        exit();
+    }
 
-include('../../../conecta_db.php');
+    if (!isset($_SESSION['id_usuario'])) {
+        echo "Erro: ID do usuário não encontrado.";
+        exit();
+    }
 
-$id_usuario = $_SESSION['id_usuario'];
+    include('../../../conecta_db.php');
 
-$obj = conecta_db();
-date_default_timezone_set('America/Sao_Paulo');
-setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
+    $id_usuario = $_SESSION['id_usuario'];
 
+    $obj = conecta_db();
+    date_default_timezone_set('America/Sao_Paulo');
+    setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
-$query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
-            o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
-            o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
-            ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
-            ci.endereco_cidade AS cidadao_endereco_cidade, ci.endereco_estado AS cidadao_endereco_estado, ci.endereco_pais AS cidadao_endereco_pais, ci.endereco_cep AS cidadao_endereco_cep
-          FROM usuario u
-          JOIN perfil p ON u.id_usuario = p.id_usuario
-          JOIN contato c ON u.id_usuario = c.id_usuario
-          LEFT JOIN ong o ON u.id_usuario = o.id_usuario
-          LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
-          WHERE u.id_usuario = ?";
-$stmt = $obj->prepare($query);
-$stmt->bind_param("i", $id_usuario);
-$stmt->execute();
-$result = $stmt->get_result();
+    $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
+                o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
+                o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
+                ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
+                ci.endereco_cidade AS cidadao_endereco_cidade, ci.endereco_estado AS cidadao_endereco_estado, ci.endereco_pais AS cidadao_endereco_pais, ci.endereco_cep AS cidadao_endereco_cep
+            FROM usuario u
+            JOIN perfil p ON u.id_usuario = p.id_usuario
+            JOIN contato c ON u.id_usuario = c.id_usuario
+            LEFT JOIN ong o ON u.id_usuario = o.id_usuario
+            LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
+            WHERE u.id_usuario = ?";
+    $stmt = $obj->prepare($query);
+    $stmt->bind_param("i", $id_usuario);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
-$stmt_posts = $obj->prepare($query_posts);
-$stmt_posts->bind_param("i", $id_usuario);
-$stmt_posts->execute();
-$result_posts = $stmt_posts->get_result();
+    $query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
+    $stmt_posts = $obj->prepare($query_posts);
+    $stmt_posts->bind_param("i", $id_usuario);
+    $stmt_posts->execute();
+    $result_posts = $stmt_posts->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-} else {
-    echo "Erro ao buscar os dados do usuário.";
-    exit();
-}
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+    } else {
+        echo "Erro ao buscar os dados do usuário.";
+        exit();
+    }
 
-if (isset($_POST['update_profile'])) {
-    if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['foto_perfil']['tmp_name'];
-        $fileName = $_FILES['foto_perfil']['name'];
-        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+    if (isset($_POST['update_profile'])) {
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['foto_perfil']['tmp_name'];
+            $fileName = $_FILES['foto_perfil']['name'];
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
-        if (in_array($fileExtension, $allowedExtensions)) {
-            $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
-            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/src/assets/images/uploads/profile/';
-            $destPath = $uploadFileDir . $newFileName;
+            if (in_array($fileExtension, $allowedExtensions)) {
+                $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
+                $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/src/assets/images/uploads/profile/';
+                $destPath = $uploadFileDir . $newFileName;
 
-            if (!is_dir($uploadFileDir)) {
-                mkdir($uploadFileDir, 0777, true);
-            }
-            
-            if (move_uploaded_file($fileTmpPath, $destPath)) {
-
-            
-                $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
-                $stmt_foto = $obj->prepare($query_foto);
-                $stmt_foto->bind_param("si", $newFileName, $user['id_usuario']);
-                $stmt_foto->execute();
-            
+                if (!is_dir($uploadFileDir)) {
+                    mkdir($uploadFileDir, 0777, true);
+                }
+                
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
+                    $stmt_foto = $obj->prepare($query_foto);
+                    $stmt_foto->bind_param("si", $newFileName, $user['id_usuario']);
+                    $stmt_foto->execute();
+                } else {
+                    $_SESSION['error_message'] = "Erro ao mover a imagem.";
+                }
+                
             } else {
-                $_SESSION['error_message'] = "Erro ao mover a imagem.";
+                $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas imagens são permitidas.";
             }
-            
-        } else {
-            $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas imagens são permitidas.";
         }
     }
-}
 
-if (isset($_POST['logout'])) {
-    session_destroy();
-    header("Location: ../../assets/pages/login.php");
-    exit();
-}
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: ../../assets/pages/login.php");
+        exit();
+    }
 
-if (isset($_POST['delete_account'])) {
-    $query_perfil = "DELETE FROM perfil WHERE id_usuario = ?";
-    $stmt_perfil = $obj->prepare($query_perfil);
-    $stmt_perfil->bind_param("i", $user['id_usuario']);
-    $stmt_perfil->execute();
+    if (isset($_POST['delete_account'])) {
+        $query_perfil = "DELETE FROM perfil WHERE id_usuario = ?";
+        $stmt_perfil = $obj->prepare($query_perfil);
+        $stmt_perfil->bind_param("i", $user['id_usuario']);
+        $stmt_perfil->execute();
 
-    $query_moderador = "DELETE FROM moderador WHERE id_usuario = ?";
-    $stmt_moderador = $obj->prepare($query_moderador);
-    $stmt_moderador->bind_param("i", $user['id_usuario']);
-    $stmt_moderador->execute();
+        $query_moderador = "DELETE FROM moderador WHERE id_usuario = ?";
+        $stmt_moderador = $obj->prepare($query_moderador);
+        $stmt_moderador->bind_param("i", $user['id_usuario']);
+        $stmt_moderador->execute();
 
-    $query_contato = "DELETE FROM contato WHERE id_usuario = ?";
-    $stmt_contato = $obj->prepare($query_contato);
-    $stmt_contato->bind_param("i", $user['id_usuario']);
-    $stmt_contato->execute();
+        $query_contato = "DELETE FROM contato WHERE id_usuario = ?";
+        $stmt_contato = $obj->prepare($query_contato);
+        $stmt_contato->bind_param("i", $user['id_usuario']);
+        $stmt_contato->execute();
 
-    $query_usuario = "DELETE FROM usuario WHERE id_usuario = ?";
-    $stmt_usuario = $obj->prepare($query_usuario);
-    $stmt_usuario->bind_param("i", $user['id_usuario']);
-    $stmt_usuario->execute();
+        $query_usuario = "DELETE FROM usuario WHERE id_usuario = ?";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("i", $user['id_usuario']);
+        $stmt_usuario->execute();
 
-    session_destroy();
-    header("Location: ../../assets/pages/login.php");
-    exit();
-}
+        session_destroy();
+        header("Location: ../../assets/pages/login.php");
+        exit();
+    }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $telefone = $_POST['telefone'];
-    $senha = $_POST['senha'];
-    $confirmar_senha = $_POST['confirmar_senha'];
-    $endereco_rua = $_POST['endereco_rua'];
-    $endereco_numero = $_POST['endereco_numero'];
-    $endereco_complemento = $_POST['endereco_complemento'];
-    $endereco_bairro = $_POST['endereco_bairro'];
-    $endereco_cidade = $_POST['endereco_cidade'];
-    $endereco_estado = $_POST['endereco_estado'];
-    $endereco_pais = $_POST['endereco_pais'];
-    $endereco_cep = $_POST['endereco_cep'];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+        $nome = $_POST['nome'];
+        $email = $_POST['email'];
+        $telefone = $_POST['telefone'];
+        $senha = $_POST['senha'];
+        $confirmar_senha = $_POST['confirmar_senha'];
+        $endereco_rua = $_POST['endereco_rua'];
+        $endereco_numero = $_POST['endereco_numero'];
+        $endereco_complemento = $_POST['endereco_complemento'];
+        $endereco_bairro = $_POST['endereco_bairro'];
+        $endereco_cidade = $_POST['endereco_cidade'];
+        $endereco_estado = $_POST['endereco_estado'];
+        $endereco_pais = $_POST['endereco_pais'];
+        $endereco_cep = $_POST['endereco_cep'];
 
-    if ($senha !== $confirmar_senha) {
-        $_SESSION['error_message'] = "As senhas não coincidem!";
+        if ($senha !== $confirmar_senha) {
+            $_SESSION['error_message'] = "As senhas não coincidem!";
+            header("Location: profile.php");
+            exit();
+        }
+
+        if (!empty($senha)) {
+            $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+            $query_usuario = "UPDATE usuario SET nome = ?, senha = ? WHERE id_usuario = ?";
+            $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
+            $stmt_usuario = $obj->prepare($query_usuario);
+            $stmt_usuario->bind_param("ssi", $nome, $senha_hash, $user['id_usuario']);
+            $stmt_contato = $obj->prepare($query_contato);
+            $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
+        } else {
+            $query_usuario = "UPDATE usuario SET nome = ? WHERE id_usuario = ?";
+            $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
+            $stmt_usuario = $obj->prepare($query_usuario);
+            $stmt_usuario->bind_param("si", $nome, $user['id_usuario']);
+            $stmt_contato = $obj->prepare($query_contato);
+            $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
+        }
+
+        if ($user['tipo_conta'] == 'Perfil de ONG') {
+            $query_endereco = "UPDATE ong SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
+            $stmt_endereco = $obj->prepare($query_endereco);
+            $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
+        } elseif ($user['tipo_conta'] == 'Perfil de cidadão') {
+            $query_endereco = "UPDATE cidadao SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
+            $stmt_endereco = $obj->prepare($query_endereco);
+            $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
+        }
+
+        $stmt_usuario->execute();
+        $stmt_contato->execute();
+
+        if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
+            $stmt_endereco->execute();
+        }
+
         header("Location: profile.php");
         exit();
     }
 
-    if (!empty($senha)) {
-        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+    if (isset($_POST['make_post'])) {
+        $titulo = $_POST['titulo'];
+        $conteudo = $_POST['conteudo'];
+        $tipoPublicacao = $_POST['tipo_publicacao'];
+        $dataCriacao = date('Y-m-d H:i:s');
 
-        $query_usuario = "UPDATE usuario SET nome = ?, senha = ? WHERE id_usuario = ?";
-        $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
-        $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("ssi", $nome, $senha_hash, $user['id_usuario']);
-        $stmt_contato = $obj->prepare($query_contato);
-        $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
-    } else {
-        $query_usuario = "UPDATE usuario SET nome = ? WHERE id_usuario = ?";
-        $query_contato = "UPDATE contato SET telefone = ?, email = ? WHERE id_usuario = ?";
-        $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("si", $nome, $user['id_usuario']);
-        $stmt_contato = $obj->prepare($query_contato);
-        $stmt_contato->bind_param("ssi", $telefone, $email, $user['id_usuario']);
+        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $obj->prepare($insertQuery);
+        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
+        $stmt->execute();
+
+        header('Location: profile.php');
+        exit;
     }
 
-    if ($user['tipo_conta'] == 'Perfil de ONG') {
-        $query_endereco = "UPDATE ong SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
-        $stmt_endereco = $obj->prepare($query_endereco);
-        $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
-    } elseif ($user['tipo_conta'] == 'Perfil de cidadão') {
-        $query_endereco = "UPDATE cidadao SET endereco_rua = ?, endereco_numero = ?, endereco_complemento = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ?, endereco_pais = ?, endereco_cep = ? WHERE id_usuario = ?";
-        $stmt_endereco = $obj->prepare($query_endereco);
-        $stmt_endereco->bind_param("ssssssssi", $endereco_rua, $endereco_numero, $endereco_complemento, $endereco_bairro, $endereco_cidade, $endereco_estado, $endereco_pais, $endereco_cep, $user['id_usuario']);
+    if (isset($_POST['update_post'])) {
+        $titulo = $_POST['titulo'];
+        $conteudo = $_POST['conteudo'];
+        $tipoPublicacao = $_POST['tipo_publicacao'];
+
+        $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_usuario = ?";
+        $stmt_post = $obj->prepare($query_post);
+        $stmt_post->bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
+        $stmt_post->execute();
+
+        header('Location: profile.php');
+        exit;
     }
 
-    $stmt_usuario->execute();
-    $stmt_contato->execute();
+    if (isset($_POST['delete_post'])) {
+        $post_id = $_POST['post_id'];
 
-    if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
-        $stmt_endereco->execute();
+        $query_delete = "DELETE FROM publicacao WHERE id_publicacao = ? AND id_usuario = ?";
+        $stmt_delete = $obj->prepare($query_delete);
+        $stmt_delete->bind_param("ii", $post_id, $id_usuario);
+        $stmt_delete->execute();
+
+        header("Location: profile.php");
+        exit();
     }
-
-    header("Location: profile.php");
-    exit();
-}
-
-if (isset($_POST['make_post'])) {
-    $titulo = $_POST['titulo'];
-    $conteudo = $_POST['conteudo'];
-    $tipoPublicacao = $_POST['tipo_publicacao'];
-    $dataCriacao = date('Y-m-d H:i:s');
-
-    $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $obj->prepare($insertQuery);
-    $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
-    $stmt->execute();
-
-    header('Location: profile.php');
-    exit;
-}
-
-if (isset($_POST['update_post'])) {
-    $titulo = $_POST['titulo'];
-    $conteudo = $_POST['conteudo'];
-    $tipoPublicacao = $_POST['tipo_publicacao'];
-
-    $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_usuario = ?";
-    $stmt_post = $obj->prepare($query_post);
-    $stmt_post->bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
-    $stmt_post->execute();
-
-    header('Location: profile.php');
-    exit;
-}
-
-if (isset($_POST['delete_post'])) {
-    $post_id = $_POST['post_id'];
-
-    $query_delete = "DELETE FROM publicacao WHERE id_publicacao = ? AND id_usuario = ?";
-    $stmt_delete = $obj->prepare($query_delete);
-    $stmt_delete->bind_param("ii", $post_id, $id_usuario);
-    $stmt_delete->execute();
-
-    header("Location: profile.php");
-    exit();
-}
-
-if (isset($_SESSION['error_message'])) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Erro!',
-                text: '{$_SESSION['error_message']}',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#7A00CC',
-                allowOutsideClick: true,
-                heightAuto: false
-            });
-        });
-    </script>";
-    unset($_SESSION['error_message']);
-}
 ?>
 
 <!DOCTYPE html>
@@ -425,6 +421,7 @@ if (isset($_SESSION['error_message'])) {
                     </div>
                 <?php endwhile; ?>
             <?php endif; ?>
+
         </div>
     </section>
 
@@ -462,12 +459,7 @@ if (isset($_SESSION['error_message'])) {
     </div>
 
     <div id="editModal" class="modal">
-
-        <div class="modal-content<?php 
-            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
-                    echo ' adress-modal'; 
-            } 
-        ?>">
+        <div class="modal-content<?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {echo ' adress-modal';} ?>">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Editar Perfil</h2>
             <form action="profile.php" method="POST" enctype="multipart/form-data">
@@ -623,7 +615,6 @@ if (isset($_SESSION['error_message'])) {
                     <?php endif; ?>
                 </div>
                 <button type="submit" name="update_profile" class="profile-save" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
-
             </form>
         </div>
     </div>

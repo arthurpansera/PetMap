@@ -102,11 +102,13 @@ function setError(index) {
     spans[index].style.display = 'block'
     inputs[index].focus()
 }
+
 // Function remove the red border
 function removeError(index) {
     inputs[index].style.border = ''
     spans[index].style.display = 'none'
 }
+
 // Function creates error alert for input that is not filled in
 function errorAlert(message, index) {
     Swal.fire({
@@ -176,6 +178,7 @@ function emailValidate() {
         removeError(4)
     }
 }
+
 function passwordValidate() {
     if (inputs[5].value === "") {
         removeError(5)
@@ -185,6 +188,7 @@ function passwordValidate() {
         removeError(5)
     }
 }
+
 function confirmPasswordValidate() {
     if (inputs[6].value === "") {
         removeError(6)
@@ -204,6 +208,7 @@ function cepValidate() {
         removeError(7)
     }
 }
+
 function roadValidate() {
     if (inputs[8].value === "") {
         removeError(8)
@@ -213,6 +218,7 @@ function roadValidate() {
         removeError(8)
     }
 }
+
 function numValidate() {
     if (inputs[9].value === "") {
         removeError(9)
@@ -230,6 +236,7 @@ function inputWithoutNumbers(index) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(index)
 }
+
 // Function to check if is a valid CPF
 function isCPF(cpf){
     const re = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
@@ -258,31 +265,37 @@ function isBirthYear(date) {
 function isLeapYear(year) {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
+
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     return re.test(email)
 }
+
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
     const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
+
 // Function to check if is a valid password
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
 }
+
 // Function to check if is a valid CEP
 function isCEP(cep){
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
+
 // Function to check if is a valid road
 function isRoad(road){
     const re = /^[A-Za-z0-9\s]+$/
     return re.test(road)
 }
+
 // Function to check if is positive numbers
 function isNum(num) {
     return !isNaN(num) && num > 0

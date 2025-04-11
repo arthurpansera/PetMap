@@ -1,108 +1,105 @@
 <?php
-include('../../../conecta_db.php');
+    include('../../../conecta_db.php');
 
-session_start();
+    session_start();
 
-if (isset($_POST['name'], $_POST['email'], $_POST['cnpj'], $_POST['telephone'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
-    $nome = $_POST['name'];
-    $email = $_POST['email'];
-    $cnpj = $_POST['cnpj'];
-    $telefone = $_POST['telephone'];
-    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $cep = $_POST['CEP'];
-    $rua = $_POST['road'];
-    $numero = $_POST['num'];
-    $bairro = $_POST['neighborhood'];
-    $cidade = $_POST['city'];
-    $estado = $_POST['state'];
-    $pais = $_POST['country'];
-    $complemento = $_POST['complement'];
-
-    $obj = conecta_db();
-
-    
-    $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
-    $stmt_check_email = $obj->prepare($query_check_email);
-    $stmt_check_email->bind_param("s", $email);
-    $stmt_check_email->execute();
-    $stmt_check_email->store_result();
-
-    $query_check_cnpj = "SELECT id_usuario FROM ong WHERE cnpj = ?";
-    $stmt_check_cnpj = $obj->prepare($query_check_cnpj);
-    $stmt_check_cnpj->bind_param("s", $cnpj);
-    $stmt_check_cnpj->execute();
-    $stmt_check_cnpj->store_result();
-
-
-    if ($stmt_check_email->num_rows > 0 || $stmt_check_cnpj->num_rows > 0) {
-        $_SESSION['error_message'] = "Usuário já cadastrado!";
-        header("Location: register-ong.php");
-        exit();
-    }
-
-    try {
-        $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
-        $stmt_usuario = $obj->prepare($query_usuario);
-        $stmt_usuario->bind_param("ss", $nome, $senha);
-        $stmt_usuario->execute();
-
-        if ($stmt_usuario->affected_rows > 0) {
-            $id_usuario = $obj->insert_id;
-
-            $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
-            $stmt_contato = $obj->prepare($query_contato);
-            $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
-            $stmt_contato->execute();
-
-            $query_ong = "INSERT INTO ong (id_usuario, cnpj, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt_ong = $obj->prepare($query_ong);
-            $complemento = !empty($complemento) ? $complemento : null;
-            $stmt_ong->bind_param("isssssssss", $id_usuario, $cnpj, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
-            $stmt_ong->execute();
-
-            if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0) {
-                $descricao = "Perfil de ONG";
-                $foto = null;
-
-                $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
-                $stmt_perfil = $obj->prepare($query_perfil);
-                $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
-                $stmt_perfil->execute();
-
-                $_SESSION['user_logged_in'] = true;
-                $_SESSION['id_usuario'] = $id_usuario;
-                header("Location: ../../../index.php");
-                exit();
-            } else {
-                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados de contato, ONG ou endereço.</h5></span>";
-            }
-        } else {
-            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar usuário.</h5></span>";
-        }
-    } catch (Exception $e) {
-        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar: " . $e->getMessage() . "</h5></span>";
-    } finally {
-        $obj->close();
-    }
-}
-
-if (isset($_SESSION['error_message'])) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Erro!',
-                text: '{$_SESSION['error_message']}',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#7A00CC',
-                allowOutsideClick: true,
-                heightAuto: false
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
             });
-        });
-    </script>";
-    unset($_SESSION['error_message']);
-}
+        </script>";
+        unset($_SESSION['error_message']);
+    }
 
+    if (isset($_POST['name'], $_POST['email'], $_POST['cnpj'], $_POST['telephone'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
+        $nome = $_POST['name'];
+        $email = $_POST['email'];
+        $cnpj = $_POST['cnpj'];
+        $telefone = $_POST['telephone'];
+        $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $cep = $_POST['CEP'];
+        $rua = $_POST['road'];
+        $numero = $_POST['num'];
+        $bairro = $_POST['neighborhood'];
+        $cidade = $_POST['city'];
+        $estado = $_POST['state'];
+        $pais = $_POST['country'];
+        $complemento = $_POST['complement'];
+
+        $obj = conecta_db();
+
+        $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
+        $stmt_check_email = $obj->prepare($query_check_email);
+        $stmt_check_email->bind_param("s", $email);
+        $stmt_check_email->execute();
+        $stmt_check_email->store_result();
+
+        $query_check_cnpj = "SELECT id_usuario FROM ong WHERE cnpj = ?";
+        $stmt_check_cnpj = $obj->prepare($query_check_cnpj);
+        $stmt_check_cnpj->bind_param("s", $cnpj);
+        $stmt_check_cnpj->execute();
+        $stmt_check_cnpj->store_result();
+
+        if ($stmt_check_email->num_rows > 0 || $stmt_check_cnpj->num_rows > 0) {
+            $_SESSION['error_message'] = "Usuário já cadastrado!";
+            header("Location: register-ong.php");
+            exit();
+        }
+
+        try {
+            $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
+            $stmt_usuario = $obj->prepare($query_usuario);
+            $stmt_usuario->bind_param("ss", $nome, $senha);
+            $stmt_usuario->execute();
+
+            if ($stmt_usuario->affected_rows > 0) {
+                $id_usuario = $obj->insert_id;
+
+                $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+                $stmt_contato = $obj->prepare($query_contato);
+                $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+                $stmt_contato->execute();
+
+                $query_ong = "INSERT INTO ong (id_usuario, cnpj, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt_ong = $obj->prepare($query_ong);
+                $complemento = !empty($complemento) ? $complemento : null;
+                $stmt_ong->bind_param("isssssssss", $id_usuario, $cnpj, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
+                $stmt_ong->execute();
+
+                if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0) {
+                    $descricao = "Perfil de ONG";
+                    $foto = null;
+
+                    $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
+                    $stmt_perfil = $obj->prepare($query_perfil);
+                    $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
+                    $stmt_perfil->execute();
+
+                    $_SESSION['user_logged_in'] = true;
+                    $_SESSION['id_usuario'] = $id_usuario;
+                    header("Location: ../../../index.php");
+                    exit();
+                } else {
+                    echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados de contato, ONG ou endereço.</h5></span>";
+                }
+            } else {
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar usuário.</h5></span>";
+            }
+        } catch (Exception $e) {
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar: " . $e->getMessage() . "</h5></span>";
+        } finally {
+            $obj->close();
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -130,7 +127,6 @@ if (isset($_SESSION['error_message'])) {
                 <div class="back-btn">
                     <a href="../../assets/pages/login.php">Voltar</a>
                 </div>
-
             </section>
             
             <h1>Dados Cadastrais - ONG</h1>
@@ -176,8 +172,6 @@ if (isset($_SESSION['error_message'])) {
                         </div>
                     </div>
 
-        
-        
                     <h1>Endereço</h1>
         
                     <div class="container-row">
@@ -249,8 +243,6 @@ if (isset($_SESSION['error_message'])) {
                         </select>
                         <span class="span-required">Selecione um estado válido.</span>
                     </div>
-
-
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
                             <input type="text" name="country" id="country" class="mid-inputUser required" data-type="país" data-required="true" placeholder="Insira o país">
@@ -264,7 +256,6 @@ if (isset($_SESSION['error_message'])) {
                     </div>
 
                     <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event, this.form)">
-
                 </form>
             </section>
         </section>
@@ -273,6 +264,7 @@ if (isset($_SESSION['error_message'])) {
     <footer class="footer">
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
+
     <script src="../../scripts/register-validation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     

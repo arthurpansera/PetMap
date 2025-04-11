@@ -1,4 +1,4 @@
-.no-account, .has-account{
+.no-account, .has-account {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,12 +9,14 @@
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
 }
-.has-account{
+
+.has-account {
     border-radius: 20px;
     border-top-left-radius: 100px;
     border-bottom-left-radius: 100px;
 }
-.no-account h1, .has-account h1{
+
+.no-account h1, .has-account h1 {
     display: flex;
     flex-direction: column;
     text-align: center;
@@ -23,12 +25,14 @@
     padding: 15px 0px;
     color: white;
 }
-.no-account h3, .has-account h3{
+
+.no-account h3, .has-account h3 {
     font-size: clamp(1rem,1.3rem, 3rem);
     padding: 20px 0px;
     color: white;
 }
-.no-account a,  .has-account a{
+
+.no-account a,  .has-account a {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -43,12 +47,14 @@
     transition-duration: 0.2s;
     cursor: pointer;
 }
-.no-account a:hover{
+
+.no-account a:hover {
     background-color: white;
     color: var(--purple-color);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
-.has-account  a:hover{
+
+.has-account  a:hover {
     background-color: white;
     color: var(--purple-color);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)

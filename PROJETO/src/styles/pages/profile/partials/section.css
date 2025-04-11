@@ -199,7 +199,7 @@ button, .profile-logout, .profile-edit, .profile-delete {
     color: #666;
 }
 
-.column-style{
+.column-style {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -211,7 +211,7 @@ button, .profile-logout, .profile-edit, .profile-delete {
     justify-content: space-between;
 }
 
-.row-style-content{
+.row-style-content {
     width: 45%;
 }
 
@@ -231,7 +231,7 @@ button, .profile-logout, .profile-edit, .profile-delete {
     margin-bottom: 5px;
 }
 
-input.input-adm{
+input.input-adm {
     max-width: 450px !important;
 
 }
@@ -264,9 +264,11 @@ input.input-adm{
 .modal select:focus {
     color: #000000;
 }
+
 .modal select option:checked {
     color: var(--dark-purple);
 }
+
 .modal select option {
     color: #8A8A8A;
 }

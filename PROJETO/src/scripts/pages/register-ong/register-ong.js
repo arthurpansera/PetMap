@@ -2,8 +2,6 @@ const form = document.getElementById('form')
 const inputs = document.querySelectorAll('.required')
 const spans = document.querySelectorAll('.span-required')
 
-
-
 function btnRegisterOnClick(event) {
     let hasError = false;
 
@@ -101,11 +99,13 @@ function setError(index) {
     spans[index].style.display = 'block'
     inputs[index].focus()
 }
+
 // Function remove the red border
 function removeError(index) {
     inputs[index].style.border = ''
     spans[index].style.display = 'none'
 }
+
 // Function creates error alert for input that is not filled in
 function errorAlert(message, index) {
     Swal.fire({
@@ -135,6 +135,7 @@ function inputWithoutNumbersValidate(index) {
         removeError(index)
     }
 }
+
 function emailValidate() {
     if (inputs[1].value === "") {
         removeError(1)
@@ -144,6 +145,7 @@ function emailValidate() {
         removeError(1)
     }
 }
+
 function cnpjValidate() {
     if (inputs[2].value === "") {
         removeError(2)
@@ -153,6 +155,7 @@ function cnpjValidate() {
         removeError(2)
     }
 }
+
 function telephoneValidate() {
     if (inputs[3].value === "") {
         removeError(3)
@@ -162,6 +165,7 @@ function telephoneValidate() {
         removeError(3)
     }
 }
+
 function passwordValidate() {
     if (inputs[4].value === "") {
         removeError(4)
@@ -171,6 +175,7 @@ function passwordValidate() {
         removeError(4)
     }
 }
+
 function confirmPasswordValidate() {
     if (inputs[5].value === "") {
         removeError(5)
@@ -180,6 +185,7 @@ function confirmPasswordValidate() {
         removeError(5)
     }
 }
+
 function cepValidate() {
     if (inputs[6].value === "") {
         removeError(6)
@@ -189,6 +195,7 @@ function cepValidate() {
         removeError(6)
     }
 }
+
 function roadValidate() {
     if (inputs[7].value === "") {
         removeError(7)
@@ -198,6 +205,7 @@ function roadValidate() {
         removeError(7)
     }
 }
+
 function numValidate() {
     if (inputs[8].value === "") {
         removeError(8)
@@ -215,36 +223,43 @@ function inputWithoutNumbers(index) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(index)
 }
+
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     return re.test(email)
 }
+
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
     const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
+
 // Function to check if is a valid password
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
 }
+
 // Function to check if is a valid CNPJ
 function isCNPJ(cnpj) {
     const re = /^(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|\d{14})$/
     return re.test(cnpj)
 }
+
 // Function to check if is a valid CEP
 function isCEP(cep){
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
+
 // Function to check if is a valid road
 function isRoad(road){
     const re = /^[A-Za-z0-9\s]+$/
     return re.test(road)
 }
+
 // Function to check if is positive numbers
 function isNum(num) {
     return !isNaN(num) && num > 0

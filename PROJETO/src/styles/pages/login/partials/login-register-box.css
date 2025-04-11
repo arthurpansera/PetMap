@@ -1,8 +1,9 @@
-.login-box, .register-box{
+.login-box, .register-box {
     display: flex;
     flex-direction: column;
     width: 50%;
 }
+
 .login-box h1, .register-box h1 {
     font-size: clamp(2rem, 2.4rem, 4rem);
     padding: 40px 0px;
@@ -13,7 +14,8 @@
     justify-content: flex-end;
     margin-right: 40px;
 }
-.input-box, .user-options{
+
+.input-box, .user-options {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -28,11 +30,11 @@
     padding-left: 13px;
 }
 
-.label-input{
+.label-input {
     margin: 0 18%;
 }
 
-.login-btn{
+.login-btn {
     display: flex;
     align-items: center;
     margin: 40px auto;
@@ -48,19 +50,23 @@
     cursor: pointer;
     margin-bottom: 4.9rem;
 }
-.login-btn:hover{
+
+.login-btn:hover {
     background-color: var(--dark-purple);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
-.user-options{
+
+.user-options {
     font-size: 24px;
     color: rgb(106, 106, 106);
 }
-.user-options:hover{
+
+.user-options:hover {
     background-color: rgb(215, 215, 215);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
-.user-options-box{
+
+.user-options-box {
     margin: 1rem 0;
     margin-bottom: 2.7rem;
 }

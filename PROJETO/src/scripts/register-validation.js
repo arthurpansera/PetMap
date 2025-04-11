@@ -57,11 +57,9 @@ document.querySelectorAll('.required').forEach((input) => {
             case "número":
                 !isNum(value) ? setError(input) : removeError(input);
                 break;
-
         }
     });
 });
-
 
 function btnRegisterOnClick(event, formElement) {
     console.log("Clique detectado");
@@ -93,7 +91,6 @@ function btnRegisterOnClick(event, formElement) {
         }
     }
 }
-
 
 function setError(input) {
     input.style.border = '2px solid #e63636';
@@ -135,16 +132,19 @@ function inputWithoutNumbers(value) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/
     return re.test(value)
 }
+
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     return re.test(email)
 }
+
 // Function to check if is a valid CNPJ
 function isCNPJ(cnpj) {
     const re = /^(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}|\d{14})$/
     return re.test(cnpj)
 }
+
 // Function to check if is a valid CPF
 function isCPF(cpf){
     const re = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
@@ -165,7 +165,6 @@ function isBirthYear(date) {
     }
 
     const daysInMonth = [31, 28 + (isLeapYear(year) ? 1 : 0), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
     return day > 0 && month > 0 && month <= 12 && day <= daysInMonth[month - 1];
 }
 
@@ -173,11 +172,13 @@ function isBirthYear(date) {
 function isLeapYear(year) {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
+
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
     const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
+
 // Function to check if is a valid password
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
@@ -189,11 +190,13 @@ function isCEP(cep){
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
+
 // Function to check if is a valid road
 function isRoad(road){
     const re = /^[A-Za-z0-9\s]+$/
     return re.test(road)
 }
+
 // Function to check if is positive numbers
 function isNum(num) {
     return !isNaN(num) && num > 0

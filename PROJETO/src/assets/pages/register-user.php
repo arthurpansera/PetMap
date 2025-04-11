@@ -1,133 +1,132 @@
 <?php
-include('../../../conecta_db.php');
+    include('../../../conecta_db.php');
 
-session_start();
+    session_start();
 
-if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'], $_POST['email'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
-    $nome = $_POST['name'];
-    $cpf = $_POST['cpf'];
-    $data_nascimento = DateTime::createFromFormat('d/m/Y', $_POST['birthYear'])->format('Y-m-d');
-    $telefone = $_POST['telephone'];
-    $email = $_POST['email'];
-    $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $cep = $_POST['CEP'];
-    $rua = $_POST['road'];
-    $numero = $_POST['num'];
-    $bairro = $_POST['neighborhood'];
-    $cidade = $_POST['city'];
-    $estado = $_POST['state'];
-    $pais = $_POST['country'];
-    $complemento = $_POST['complement'];
-
-    $obj = conecta_db();
-
-    $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
-    $stmt_check_email = $obj->prepare($query_check_email);
-    $stmt_check_email->bind_param("s", $email);
-    $stmt_check_email->execute();
-    $stmt_check_email->store_result();
-
-    $query_check_cpf = "SELECT id_usuario FROM cidadao WHERE cpf = ?";
-    $stmt_check_cpf = $obj->prepare($query_check_cpf);
-    $stmt_check_cpf->bind_param("s", $cpf);
-    $stmt_check_cpf->execute();
-    $stmt_check_cpf->store_result();
-
-
-    if ($stmt_check_email->num_rows > 0 || $stmt_check_cpf->num_rows > 0) {
-        $_SESSION['error_message'] = "Usuário já cadastrado!";
-        header("Location: register-user.php");
-        exit();
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
     }
 
-    $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
-    $stmt = $obj->prepare($query);
-    
-    if (!$stmt) {
-        die("<span class='alert alert-danger'><h5>Erro na preparação da query de usuário: " . $obj->error . "</h5></span>");
-    }
+    if (isset($_POST['name'], $_POST['cpf'], $_POST['birthYear'], $_POST['telephone'], $_POST['email'], $_POST['password'], $_POST['CEP'], $_POST['road'], $_POST['num'], $_POST['neighborhood'], $_POST['city'], $_POST['state'], $_POST['country'], $_POST['complement'])) {
+        $nome = $_POST['name'];
+        $cpf = $_POST['cpf'];
+        $data_nascimento = DateTime::createFromFormat('d/m/Y', $_POST['birthYear'])->format('Y-m-d');
+        $telefone = $_POST['telephone'];
+        $email = $_POST['email'];
+        $senha = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $cep = $_POST['CEP'];
+        $rua = $_POST['road'];
+        $numero = $_POST['num'];
+        $bairro = $_POST['neighborhood'];
+        $cidade = $_POST['city'];
+        $estado = $_POST['state'];
+        $pais = $_POST['country'];
+        $complemento = $_POST['complement'];
 
-    $stmt->bind_param("ss", $nome, $senha);
-    if (!$stmt->execute()) {
-        die("<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário: " . $stmt->error . "</h5></span>");
-    }
+        $obj = conecta_db();
 
-    if ($stmt->affected_rows > 0) {
-        $id_usuario = $obj->insert_id;
+        $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
+        $stmt_check_email = $obj->prepare($query_check_email);
+        $stmt_check_email->bind_param("s", $email);
+        $stmt_check_email->execute();
+        $stmt_check_email->store_result();
 
-        $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
-        $stmt_contato = $obj->prepare($query_contato);
+        $query_check_cpf = "SELECT id_usuario FROM cidadao WHERE cpf = ?";
+        $stmt_check_cpf = $obj->prepare($query_check_cpf);
+        $stmt_check_cpf->bind_param("s", $cpf);
+        $stmt_check_cpf->execute();
+        $stmt_check_cpf->store_result();
+
+        if ($stmt_check_email->num_rows > 0 || $stmt_check_cpf->num_rows > 0) {
+            $_SESSION['error_message'] = "Usuário já cadastrado!";
+            header("Location: register-user.php");
+            exit();
+        }
+
+        $query = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
+        $stmt = $obj->prepare($query);
         
-        if (!$stmt_contato) {
-            die("<span class='alert alert-danger'><h5>Erro na preparação da query de contato: " . $obj->error . "</h5></span>");
+        if (!$stmt) {
+            die("<span class='alert alert-danger'><h5>Erro na preparação da query de usuário: " . $obj->error . "</h5></span>");
         }
 
-        $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
-        if (!$stmt_contato->execute()) {
-            die("<span class='alert alert-danger'><h5>Erro ao cadastrar o contato: " . $stmt_contato->error . "</h5></span>");
+        $stmt->bind_param("ss", $nome, $senha);
+        if (!$stmt->execute()) {
+            die("<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário: " . $stmt->error . "</h5></span>");
         }
 
-        $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nasc, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt_cidadao = $obj->prepare($query_cidadao);
-        
-        if (!$stmt_cidadao) {
-            die("<span class='alert alert-danger'><h5>Erro na preparação da query de cidadão: " . $obj->error . "</h5></span>");
-        }
+        if ($stmt->affected_rows > 0) {
+            $id_usuario = $obj->insert_id;
 
-        $complemento = !empty($complemento) ? $complemento : null;
-        $stmt_cidadao->bind_param("issssssssss", $id_usuario, $cpf, $data_nascimento, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
-        if (!$stmt_cidadao->execute()) {
-            die("<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão: " . $stmt_cidadao->error . "</h5></span>");
-        }
-
-        if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
-            $descricao = "Perfil de cidadão";
-            $foto = null;
-
-            $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
-            $stmt_perfil = $obj->prepare($query_perfil);
-
-            if (!$stmt_perfil) {
-                die("<span class='alert alert-danger'><h5>Erro na preparação da query de perfil: " . $obj->error . "</h5></span>");
+            $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+            $stmt_contato = $obj->prepare($query_contato);
+            
+            if (!$stmt_contato) {
+                die("<span class='alert alert-danger'><h5>Erro na preparação da query de contato: " . $obj->error . "</h5></span>");
             }
 
-            $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
-            if (!$stmt_perfil->execute()) {
-                die("<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil: " . $stmt_perfil->error . "</h5></span>");
+            $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+            if (!$stmt_contato->execute()) {
+                die("<span class='alert alert-danger'><h5>Erro ao cadastrar o contato: " . $stmt_contato->error . "</h5></span>");
             }
 
-            if ($stmt_perfil->affected_rows > 0) {
-                $_SESSION['user_logged_in'] = true;
-                $_SESSION['id_usuario'] = $id_usuario;
-                header("Location: ../../../index.php");
-                exit();
+            $query_cidadao = "INSERT INTO cidadao (id_usuario, cpf, data_nasc, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt_cidadao = $obj->prepare($query_cidadao);
+            
+            if (!$stmt_cidadao) {
+                die("<span class='alert alert-danger'><h5>Erro na preparação da query de cidadão: " . $obj->error . "</h5></span>");
+            }
+
+            $complemento = !empty($complemento) ? $complemento : null;
+            $stmt_cidadao->bind_param("issssssssss", $id_usuario, $cpf, $data_nascimento, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
+            if (!$stmt_cidadao->execute()) {
+                die("<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão: " . $stmt_cidadao->error . "</h5></span>");
+            }
+
+            if ($stmt_cidadao->affected_rows > 0 && $stmt_contato->affected_rows > 0) {
+                $descricao = "Perfil de cidadão";
+                $foto = null;
+
+                $query_perfil = "INSERT INTO perfil (id_usuario, descricao, foto) VALUES (?, ?, ?)";
+                $stmt_perfil = $obj->prepare($query_perfil);
+
+                if (!$stmt_perfil) {
+                    die("<span class='alert alert-danger'><h5>Erro na preparação da query de perfil: " . $obj->error . "</h5></span>");
+                }
+
+                $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
+                if (!$stmt_perfil->execute()) {
+                    die("<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil: " . $stmt_perfil->error . "</h5></span>");
+                }
+
+                if ($stmt_perfil->affected_rows > 0) {
+                    $_SESSION['user_logged_in'] = true;
+                    $_SESSION['id_usuario'] = $id_usuario;
+                    header("Location: ../../../index.php");
+                    exit();
+                } else {
+                    echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil!</h5></span>";
+                }
             } else {
-                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o perfil!</h5></span>";
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão ou contato!</h5></span>";
             }
         } else {
-            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o cidadão ou contato!</h5></span>";
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
         }
-    } else {
-        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
     }
-}
-
-if (isset($_SESSION['error_message'])) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Erro!',
-                text: '{$_SESSION['error_message']}',
-                icon: 'error',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#7A00CC',
-                allowOutsideClick: true,
-                heightAuto: false
-            });
-        });
-    </script>";
-    unset($_SESSION['error_message']);
-}
 ?>
 
 <!DOCTYPE html>
@@ -155,10 +154,8 @@ if (isset($_SESSION['error_message'])) {
                 <div class="back-btn">
                     <a href="../../assets/pages/login.php">Voltar</a>
                 </div>
-
             </section>
             
-
             <h1>Dados Cadastrais - Cidadão</h1>
 
             <section class="input-register">
@@ -198,9 +195,9 @@ if (isset($_SESSION['error_message'])) {
                     </div>
             
                     <div class="full-inputBox">
-                            <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
-                            <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
+                        <label for="password"><b>Senha: *</b></label>
+                        <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
+                        <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
@@ -279,8 +276,6 @@ if (isset($_SESSION['error_message'])) {
                         </select>
                         <span class="span-required">Selecione um estado válido.</span>
                     </div>
-
-
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
                             <input type="text" name="country" id="country" class="mid-inputUser required" data-type="país" data-required="true" placeholder="Insira o país">
@@ -294,7 +289,6 @@ if (isset($_SESSION['error_message'])) {
                     </div>
 
                     <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event, this.form)">
-
                 </form>
             </section>
         </section>
@@ -303,7 +297,9 @@ if (isset($_SESSION['error_message'])) {
     <footer class="footer">
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/register-validation.js"></script>
+    
 </body>
 </html>

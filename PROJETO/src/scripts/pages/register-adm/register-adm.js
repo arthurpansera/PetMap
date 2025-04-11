@@ -51,11 +51,13 @@ function setError(index) {
     spans[index].style.display = 'block'
     inputs[index].focus()
 }
+
 // Function remove the red border
 function removeError(index) {
     inputs[index].style.border = ''
     spans[index].style.display = 'none'
 }
+
 // Function creates error alert for input that is not filled in
 function errorAlert(message, index) {
     Swal.fire({
@@ -85,6 +87,7 @@ function inputWithoutNumbersValidate(index) {
         removeError(index)
     }
 }
+
 function emailValidate() {
     if (inputs[1].value === "") {
         removeError(1)
@@ -94,6 +97,7 @@ function emailValidate() {
         removeError(1)
     }
 }
+
 function telephoneValidate() {
     if (inputs[2].value === "") {
         removeError(2)
@@ -103,6 +107,7 @@ function telephoneValidate() {
         removeError(2)
     }
 }
+
 function passwordValidate() {
     if (inputs[3].value === "") {
         removeError(3)
@@ -112,6 +117,7 @@ function passwordValidate() {
         removeError(3)
     }
 }
+
 function confirmPasswordValidate() {
     if (inputs[4].value === "") {
         removeError(4)
@@ -129,19 +135,21 @@ function inputWithoutNumbers(index) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/;
     return re.test(index)
 }
+
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     return re.test(email)
 }
+
 // Function to check if is a valid telephone
 function isTelephone(telephone) {
     const re = /^(?:\+55\s?)?(?:\(?\d{2}\)?\s?)?9\d{4}-?\d{4}$/;
     return re.test(telephone);
 }
+
 // Function to check if is a valid password
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
 }
-

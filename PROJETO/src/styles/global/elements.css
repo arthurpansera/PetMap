@@ -15,7 +15,7 @@
     }
 }
 
-html, body{
+html, body {
     display: flex;
     flex-direction: column;
     background-color: var(--light-grey);
