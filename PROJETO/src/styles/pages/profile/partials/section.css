@@ -9,7 +9,7 @@
     text-align: center;
     width: 100%;
     max-width: 1000px;
-    max-height: 800px;
+    max-height: 1300px;
     margin-top: 150px;
     margin-bottom: 40px;
     box-sizing: border-box;
@@ -91,6 +91,37 @@ button, .profile-logout, .profile-edit, .profile-delete {
 .profile-logout:hover {
     background-color: #8a8a8a;
     transform: scale(1.05);
+}
+
+.profile-details {
+    width: 100%;
+    margin-top: 20px;
+    padding: 0px 30px;
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+}
+
+.profile-details p {
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+}
+
+.profile-details p:last-child {
+    border-bottom: none;
+}
+
+.profile-details .label {
+    font-weight: 600;
+    width: 200px;
+    text-align: left;
+}
+
+.profile-details span {
+    flex: 1;
+    text-align: left;
 }
 
 @media (min-width: 1200px) and (max-width: 1800px) {
