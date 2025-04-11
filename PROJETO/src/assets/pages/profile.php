@@ -16,6 +16,9 @@ include('../../../conecta_db.php');
 $id_usuario = $_SESSION['id_usuario'];
 
 $obj = conecta_db();
+date_default_timezone_set('America/Sao_Paulo');
+setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
+
 
 $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
             o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
@@ -32,6 +35,12 @@ $stmt = $obj->prepare($query);
 $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
+
+$query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
+$stmt_posts = $obj->prepare($query_posts);
+$stmt_posts->bind_param("i", $id_usuario);
+$stmt_posts->execute();
+$result_posts = $stmt_posts->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
@@ -127,6 +136,33 @@ if (isset($_POST['update_profile'])) {
     if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
         $stmt_endereco->execute();
     }
+
+    header("Location: profile.php");
+    exit();
+}
+
+if (isset($_POST['make_post'])) {
+    $titulo = $_POST['titulo'];
+    $conteudo = $_POST['conteudo'];
+    $tipoPublicacao = $_POST['tipo_publicacao'];
+    $dataCriacao = date('Y-m-d H:i:s');
+
+    $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $obj->prepare($insertQuery);
+    $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
+    $stmt->execute();
+
+    header('Location: profile.php');
+    exit;
+}
+
+if (isset($_POST['delete_post'])) {
+    $post_id = $_POST['post_id'];
+
+    $query_delete = "DELETE FROM publicacao WHERE id_publicacao = ? AND id_usuario = ?";
+    $stmt_delete = $obj->prepare($query_delete);
+    $stmt_delete->bind_param("ii", $post_id, $id_usuario);
+    $stmt_delete->execute();
 
     header("Location: profile.php");
     exit();
@@ -297,6 +333,47 @@ if (isset($_SESSION['error_message'])) {
             </div>
         </div>
     </section>
+    <section class="content">
+        <div class="user-posts">
+            <h2>Minhas Publicações</h2>
+
+            <?php if ($result_posts->num_rows > 0): ?>
+                <?php while ($post = $result_posts->fetch_assoc()): ?>
+                    <div class="post-item">
+                        <p class="post-info">
+                            <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
+                            <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
+                        </p>
+                        <?php
+                            $tiposFormatados = [
+                                'animal' => 'Animal',
+                                'resgate' => 'Resgate',
+                                'informacao' => 'Informação',
+                                'cidadao' => 'Cidadão',
+                                'outro' => 'Outro'
+                            ];
+                        ?>
+                        <p class="post-type">
+                            <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                        </p>
+                        <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
+                        <p><?php echo $post['conteudo']; ?></p>
+                        
+                        <div class="post-actions">
+                            <form method="POST" action="profile.php">
+                                <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
+                                <button type="submit" name="edit_post" class="edit-button">✏️ Editar</button>
+                            </form>
+                            <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
+                                <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
+                                <button type="submit" name="delete_post" class="delete-button">🗑️ Excluir</button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endwhile; ?>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
         <button class="floating-button" title="Nova Publicação" onclick="openPostModal()">
@@ -308,7 +385,7 @@ if (isset($_SESSION['error_message'])) {
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="processar_publicacao.php" method="POST">
+            <form action="profile.php" method="POST">
                 <div class="form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -317,7 +394,16 @@ if (isset($_SESSION['error_message'])) {
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-                <button type="submit">Publicar</button>
+                <div class="form-group">
+                    <label for="tipo_publicacao">Tipo de Publicação</label>
+                    <select id="tipo_publicacao" name="tipo_publicacao" required>
+                        <option value="animal">Animal</option>
+                        <option value="resgate">Resgate</option>
+                        <option value="informacao">Informação</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <button type="submit" name="make_post" class="create-post" onclick="">Publicar</button>
             </form>
         </div>
     </div>

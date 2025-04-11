@@ -131,13 +131,13 @@
                                 <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
                             </p>
                             <?php
-                            $tiposFormatados = [
-                                'animal' => 'Animal',
-                                'resgate' => 'Resgate',
-                                'informacao' => 'Informação',
-                                'cidadao' => 'Cidadão',
-                                'outro' => 'Outro'
-                            ];
+                                $tiposFormatados = [
+                                    'animal' => 'Animal',
+                                    'resgate' => 'Resgate',
+                                    'informacao' => 'Informação',
+                                    'cidadao' => 'Cidadão',
+                                    'outro' => 'Outro'
+                                ];
                             ?>
                             <p class="post-type">
                                 <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
