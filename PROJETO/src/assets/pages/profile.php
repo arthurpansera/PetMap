@@ -54,20 +54,19 @@ if (isset($_POST['update_profile'])) {
         $fileTmpPath = $_FILES['foto_perfil']['tmp_name'];
         $fileName = $_FILES['foto_perfil']['name'];
         $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
         if (in_array($fileExtension, $allowedExtensions)) {
             $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
-            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/src/assets/images/uploads/profile/';
-            $destPath = $uploadFileDir . $newFileName;
+            $uploadFileDir = realpath(__DIR__. '/../images/uploads/profile/');
 
-            if (!is_dir($uploadFileDir)) {
+            if (!$uploadFileDir) {
+                $uploadFileDir = __DIR__ . '/../images/uploads/profile/';
                 mkdir($uploadFileDir, 0777, true);
             }
+            $destPath = $uploadFileDir . $newFileName;
             
-            if (move_uploaded_file($fileTmpPath, $destPath)) {
-                echo "<p style='color:green;'>✅ Imagem enviada com sucesso para: $destPath</p>";
-            
+            if (move_uploaded_file($fileTmpPath, $destPath)) {            
                 $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
                 $stmt_foto = $obj->prepare($query_foto);
                 $stmt_foto->bind_param("si", $newFileName, $user['id_usuario']);
@@ -279,11 +278,14 @@ if (isset($_SESSION['error_message'])) {
     <section class="profile">
         <div class="profile-info">
             <div class="profile-header">
-                <?php if (!empty($user['foto'])): ?>
-                    <img src="/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
-                <?php else: ?>
-                    <img src="../images/perfil-images/imagem-perfil-teste.png" alt="Foto padrão" class="profile-picture">
-                <?php endif; ?>
+                <div class="photo-container">
+                    <?php if (!empty($user['foto'])): ?>
+                        <img src="/../images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
+                    <?php else: ?>
+                        <img src="../images/perfil-images/imagem-perfil-teste.png" alt="Foto padrão" class="profile-picture">
+                    <?php endif; ?>
+                </div>
+                
                 <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
             </div>
             <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>

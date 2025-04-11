@@ -32,7 +32,7 @@ CREATE TABLE ong (
     endereco_cidade VARCHAR(50) NOT NULL,
     endereco_estado CHAR(2) NOT NULL,
     endereco_pais VARCHAR(20) NOT NULL,
-    endereco_cep CHAR(8) NOT NULL,
+    endereco_cep CHAR(9) NOT NULL,
     PRIMARY KEY (cnpj),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -48,7 +48,7 @@ CREATE TABLE cidadao (
     endereco_cidade VARCHAR(50) NOT NULL,
     endereco_estado CHAR(2) NOT NULL,
     endereco_pais VARCHAR(20) NOT NULL,
-    endereco_cep CHAR(8) NOT NULL,
+    endereco_cep CHAR(9) NOT NULL,
     PRIMARY KEY (cpf),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -57,7 +57,7 @@ CREATE TABLE perfil (
     id_perfil INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     descricao TEXT,
-    foto BLOB,
+    foto VARCHAR(255),
     PRIMARY KEY (id_perfil),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
