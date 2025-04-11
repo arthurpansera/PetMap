@@ -299,10 +299,28 @@ if (isset($_SESSION['error_message'])) {
     </section>
 
     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
-        <button class="floating-button" title="Nova Publicação" onclick="">
+        <button class="floating-button" title="Nova Publicação" onclick="openPostModal()">
             +
         </button>
     <?php endif; ?>
+
+    <div id="postModal" class="post-modal">
+        <div class="post-modal-content">
+            <span class="post-modal-close" onclick="closePostModal()">&times;</span>
+            <h2>Criar Nova Publicação</h2>
+            <form action="processar_publicacao.php" method="POST">
+                <div class="form-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo</label>
+                    <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
+                </div>
+                <button type="submit">Publicar</button>
+            </form>
+        </div>
+    </div>
 
     <div id="editModal" class="modal">
 
@@ -414,7 +432,7 @@ if (isset($_SESSION['error_message'])) {
             </form>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
 

@@ -157,3 +157,86 @@ body.swal2-shown {
     background-color: var(--dark-purple);
     transform: scale(1.1);
 }
+
+/* --- POST MODAL --- */
+
+.post-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: auto;
+}
+
+.post-modal-content {
+    background-color: #fff;
+    margin: 3% auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+    justify-content: center;
+}
+
+.post-modal-close {
+    color: #333;
+    font-size: 30px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+}
+
+.post-modal-close:hover,
+.post-modal-close:focus {
+    color: #666;
+}
+
+.post-modal .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.post-modal input[type="text"],
+.post-modal textarea,
+.post-modal button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.post-modal button {
+    background-color: rgb(0, 167, 36);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    margin-top: 30px;
+    padding: 15px;
+    border-radius: 6px;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    width: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.post-modal button:hover {
+    background-color: rgb(0, 133, 29);
+    transform: scale(1.05);
+}
