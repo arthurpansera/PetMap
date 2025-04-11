@@ -137,10 +137,11 @@ button, .profile-logout, .profile-edit, .profile-delete {
     padding-top: 0;
 }
 
-.form-content{
+.form-content {
     display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: center;
 }
 
 .modal-content {
@@ -149,7 +150,7 @@ button, .profile-logout, .profile-edit, .profile-delete {
     padding: 30px;
     border: 1px solid #ccc;
     width: 90%;
-    max-width: 1000px;
+    max-width: 500px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-family: Arial, sans-serif;
@@ -161,6 +162,19 @@ button, .profile-logout, .profile-edit, .profile-delete {
     margin-bottom: 20px;
     font-size: 24px;
     color: #333;
+}
+
+.adress-modal {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+    position: relative;
 }
 
 .close {
@@ -178,8 +192,29 @@ button, .profile-logout, .profile-edit, .profile-delete {
     color: #666;
 }
 
+.column-style{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.row-style {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.row-style-content{
+    width: 45%;
+}
+
 .form-group {
     margin-bottom: 20px;
+    width: 100%;
+}
+
+.adm-input{
+    width: 90%;
 }
 
 .form-group label {
@@ -189,10 +224,16 @@ button, .profile-logout, .profile-edit, .profile-delete {
     margin-bottom: 5px;
 }
 
+input.input-adm{
+    max-width: 450px !important;
+
+}
+
 input[type="text"],
 input[type="email"],
 input[type="file"],
 input[type="password"],
+select,
 button {
     width: 100%;
     padding: 12px;
@@ -204,12 +245,23 @@ button {
 
 input[type="text"],
 input[type="email"],
-input[type="password"] {
+input[type="password"],
+select {
     background-color: #f9f9f9;
 }
 
 input[type="file"] {
     padding: 5px;
+}
+
+select:focus {
+    color: #000000;
+}
+select option:checked {
+    color: var(--dark-purple);
+}
+select option {
+    color: #8A8A8A;
 }
 
 button.profile-save {
@@ -222,7 +274,7 @@ button.profile-save {
     padding: 15px;
     border-radius: 6px;
     transition: transform 0.2s ease, background-color 0.2s ease;
-    width: 60%;
+    width: 50%;
     display: block;
     margin-left: auto;
     margin-right: auto;

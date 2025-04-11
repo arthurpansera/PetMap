@@ -2,6 +2,8 @@ const form = document.getElementById('form')
 const inputs = document.querySelectorAll('.required')
 const spans = document.querySelectorAll('.span-required')
 
+
+
 function btnRegisterOnClick(event) {
     let hasError = false;
 

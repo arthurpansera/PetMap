@@ -195,7 +195,7 @@ if (isset($_SESSION['error_message'])) {
             <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
             <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
-            <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
+            <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
                 <p><span class="label">Endereço:</span> <?php echo 'Rua '. htmlspecialchars($user['endereco_rua']) . ', ' . htmlspecialchars($user['endereco_numero']); ?></p>
                 <?php if (!empty($user['endereco_complemento'])): ?>
                     <p><span class="label">Complemento:</span> <?php echo htmlspecialchars($user['endereco_complemento']); ?></p>
@@ -222,84 +222,147 @@ if (isset($_SESSION['error_message'])) {
     </section>
 
     <div id="editModal" class="modal">
-        <div class="modal-content">
+
+        <div class="modal-content<?php 
+            if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão') {
+                    echo ' adress-modal'; 
+            } 
+        ?>">
+
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Editar Perfil</h2>
             <form action="profile.php" method="POST" enctype="multipart/form-data">
                 <div class="form-content">
-                    <div>
-                        <div class="form-group">
-                            <label for="nome">Nome:</label>
-                            <input type="text" id="nome" name="nome" value="<?php echo htmlspecialchars($user['nome']); ?>" required>
-                        </div>
+                    <div class="form-input<?php 
+                        if ($user['tipo_conta'] == 'Perfil de moderador') {
+                            echo ' adm-input'; 
+                        } 
+                    ?>">
+                        <div class="column-style">
+                            <div class="form-group">
+                                <label for="nome">Nome:</label>
+                                <input type="text" id="nome" name="nome" class="required" value="<?php echo htmlspecialchars($user['nome']); ?>" required data-type="nome" data-required="true">
+                                <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="email">E-mail:</label>
-                            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                        </div>
+                            <div class="form-group">
+                                <label for="email">E-mail:</label>
+                                <input type="email" id="email" name="email" class="required" value="<?php echo htmlspecialchars($user['email']); ?>" required data-type="e-mail" data-required="true">
+                                <span class="span-required">Por favor, insira um e-mail válido</span>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="telefone">Telefone:</label>
-                            <input type="text" id="telefone" name="telefone" value="<?php echo htmlspecialchars($user['telefone']); ?>" required>
-                        </div>
+                            <div class="form-group">
+                                <label for="telefone">Telefone:</label>
+                                <input type="text" id="telefone" name="telefone" class="required" value="<?php echo htmlspecialchars($user['telefone']); ?>" required data-type="telefone" data-required="true">
+                                <span class="span-required">Por favor, insira um telefone válido</span>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="senha">Senha:</label>
-                            <input type="password" id="senha" name="senha" placeholder="Digite sua nova senha">
-                        </div>
+                            <div class="form-group">
+                                <label for="senha">Senha:</label>
+                                <input type="password" id="senha" name="senha" class="required" placeholder="Digite sua nova senha" data-type="senha" data-required="true">
+                                <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="confirmar_senha">Confirmar Senha:</label>
-                            <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Confirme sua nova senha">
+                            <div class="form-group">
+                                <label for="confirmar_senha">Confirmar Senha:</label>
+                                <input type="password" id="confirmar_senha" name="confirmar_senha" class="required" placeholder="Confirme sua nova senha" data-type="confirmar senha" data-required="true">
+                                <span class="span-required">As senhas não coincidem.</span>
+                            </div> 
                         </div>
+                        
                     </div>
 
-                    <?php if ($user['tipo_conta'] == 'Perfil de ONG'): ?>
-                        <div>
-                            <div class="form-group">
-                                <label for="endereco_rua">Rua:</label>
-                                <input type="text" id="endereco_rua" name="endereco_rua" value="<?php echo htmlspecialchars($user['endereco_rua']); ?>">
+                    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
+                        <div class="row-style">
+                            <div class="row-style-content">
+                                <div class="form-group">
+                                    <label for="endereco_rua">Rua:</label>
+                                    <input type="text" id="endereco_rua" name="endereco_rua" class="required" value="<?php echo htmlspecialchars($user['endereco_rua']); ?>" data-type="rua" data-required="true">
+                                    <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endereco_numero">Número:</label>
+                                    <input type="text" id="endereco_numero" name="endereco_numero" class="required" value="<?php echo htmlspecialchars($user['endereco_numero']); ?>" data-type="número" data-required="true">
+                                    <span class="span-required">Número não pode conter letras ou caracteres especiais.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endereco_complemento">Complemento:</label>
+                                    <input type="text" id="endereco_complemento" name="endereco_complemento" class="required" value="<?php echo htmlspecialchars($user['endereco_complemento']); ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label for="endereco_bairro">Bairro:</label>
+                                    <input type="text" id="endereco_bairro" name="endereco_bairro" class="required" value="<?php echo htmlspecialchars($user['endereco_bairro']); ?>" data-type="bairro" data-required="true">
+                                    <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                                </div>
+                                
                             </div>
-                            <div class="form-group">
-                                <label for="endereco_numero">Número:</label>
-                                <input type="text" id="endereco_numero" name="endereco_numero" value="<?php echo htmlspecialchars($user['endereco_numero']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_complemento">Complemento:</label>
-                                <input type="text" id="endereco_complemento" name="endereco_complemento" value="<?php echo htmlspecialchars($user['endereco_complemento']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_bairro">Bairro:</label>
-                                <input type="text" id="endereco_bairro" name="endereco_bairro" value="<?php echo htmlspecialchars($user['endereco_bairro']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_cidade">Cidade:</label>
-                                <input type="text" id="endereco_cidade" name="endereco_cidade" value="<?php echo htmlspecialchars($user['endereco_cidade']); ?>">
+                
+
+                            <div class="row-style-content">
+                                <div class="form-group">
+                                    <label for="endereco_cidade">Cidade:</label>
+                                    <input type="text" id="endereco_cidade" name="endereco_cidade" class="required" value="<?php echo htmlspecialchars($user['endereco_cidade']); ?>" data-type="cidade" data-required="true">
+                                    <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="endereco_estado"><b>Estado: *</b></label>
+                                    <select name="endereco_estado" id="endereco_estado" class="required" data-type="estado" data-required="true">
+                                        <option value="">Selecione um estado</option>
+                                        <option value="AC" <?php echo ($user['endereco_estado'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                                        <option value="AL" <?php echo ($user['endereco_estado'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                                        <option value="AP" <?php echo ($user['endereco_estado'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                                        <option value="AM" <?php echo ($user['endereco_estado'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                                        <option value="BA" <?php echo ($user['endereco_estado'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                                        <option value="CE" <?php echo ($user['endereco_estado'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                                        <option value="DF" <?php echo ($user['endereco_estado'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                                        <option value="ES" <?php echo ($user['endereco_estado'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                                        <option value="GO" <?php echo ($user['endereco_estado'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                                        <option value="MA" <?php echo ($user['endereco_estado'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                                        <option value="MT" <?php echo ($user['endereco_estado'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                                        <option value="MS" <?php echo ($user['endereco_estado'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                                        <option value="MG" <?php echo ($user['endereco_estado'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                                        <option value="PA" <?php echo ($user['endereco_estado'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                                        <option value="PB" <?php echo ($user['endereco_estado'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                                        <option value="PR" <?php echo ($user['endereco_estado'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                                        <option value="PE" <?php echo ($user['endereco_estado'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                                        <option value="PI" <?php echo ($user['endereco_estado'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                                        <option value="RJ" <?php echo ($user['endereco_estado'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                                        <option value="RN" <?php echo ($user['endereco_estado'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                                        <option value="RS" <?php echo ($user['endereco_estado'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                                        <option value="RO" <?php echo ($user['endereco_estado'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                                        <option value="RR" <?php echo ($user['endereco_estado'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                                        <option value="SC" <?php echo ($user['endereco_estado'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                                        <option value="SP" <?php echo ($user['endereco_estado'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                                        <option value="SE" <?php echo ($user['endereco_estado'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                                        <option value="TO" <?php echo ($user['endereco_estado'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                                    </select>
+                                    <span class="span-required">Selecione um estado válido.</span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="endereco_pais">País:</label>
+                                    <input type="text" id="endereco_pais" name="endereco_pais" class="required" value="<?php echo htmlspecialchars($user['endereco_pais']); ?>" data-type="país" data-required="true">
+                                    <span class="span-required">País não pode conter números ou caracteres especiais.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="endereco_cep">CEP:</label>
+                                    <input type="text" id="endereco_cep" name="endereco_cep" class="required" value="<?php echo htmlspecialchars($user['endereco_cep']); ?>" data-type="CEP" data-required="true">
+                                    <span class="span-required">Por favor, insira um CEP válido</span>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="form-group">
-                                <label for="endereco_estado">Estado:</label>
-                                <input type="text" id="endereco_estado" name="endereco_estado" value="<?php echo htmlspecialchars($user['endereco_estado']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_pais">País:</label>
-                                <input type="text" id="endereco_pais" name="endereco_pais" value="<?php echo htmlspecialchars($user['endereco_pais']); ?>">
-                            </div>
-                            <div class="form-group">
-                                <label for="endereco_cep">CEP:</label>
-                                <input type="text" id="endereco_cep" name="endereco_cep" value="<?php echo htmlspecialchars($user['endereco_cep']); ?>">
-                            </div>
-                        </div>
+           
                     <?php endif; ?>
                 </div>
-                <button type="submit" name="update_profile" class="profile-save">Salvar Alterações</button>
+                <button type="submit" name="update_profile" class="profile-save" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
             </form>
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
+    <script src="../../scripts/register-validation.js"></script>
 
 </body>
 </html>

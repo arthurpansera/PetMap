@@ -118,35 +118,35 @@ if (isset($_SESSION['error_message'])) {
                 <form id="form" name="form" method="POST" action="register-adm.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
-                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo" oninput="inputWithoutNumbersValidate(0)">
+                        <input type="text" id="name" name="name" class="full-inputUser required" data-type="nome" data-required="true" placeholder="Insira seu nome completo">
                         <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="text"><b>E-mail: *</b></label>
-                        <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com" oninput="emailValidate()">
+                        <input type="text" id="email" name="email"class="full-inputUser required" data-type="e-mail" data-required="true" placeholder="exemplo@gmail.com">
                         <span class="span-required">Insira um e-mail válido!</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="telephone"><b>Telefone: *</b></label>
-                        <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="(XX) XXXXX-XXXX" oninput="telephoneValidate()">
+                        <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX">
                         <span class="span-required">Insira um telefone válido</span>
                      </div>
             
                     <div class="full-inputBox">
                             <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha" oninput="passwordValidate()">
+                            <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
                             <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="confirm-pass"><b>Confirme sua senha: *</b></label>
-                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha" oninput="confirmPasswordValidate()">
+                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" data-type="confirmar senha" data-required="true" placeholder="Repita a senha">
                         <span class="span-required">As senhas não coincidem.</span>
                     </div>
                 
-                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
+                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event, this.form)">
 
                 </form>
             </section>
@@ -157,7 +157,7 @@ if (isset($_SESSION['error_message'])) {
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
 
-    <script src="../../scripts/pages/register-adm/register-adm.js"></script>
+    <script src="../../scripts/register-validation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>

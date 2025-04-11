@@ -88,6 +88,20 @@ label {
     margin-top: 1.5rem;
 }
 
+
+select.mid-inputUser {
+    color: #8A8A8A;
+}
+select.mid-inputUser:focus {
+    color: #000000;
+}
+select.mid-inputUser option:checked {
+    color: var(--dark-purple);
+}
+select.mid-inputUser option {
+    color: #8A8A8A;
+}
+
 .complement{
     margin-bottom:70px;
 }

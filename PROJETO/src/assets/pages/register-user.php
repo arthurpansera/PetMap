@@ -156,20 +156,20 @@ if (isset($_SESSION['error_message'])) {
                 <form id="form" name="form" method="POST" action="register-user.php">
                     <div class="full-inputBox">
                         <label for="name"><b>Nome: *</b></label>
-                        <input type="text" id="name" name="name" class="full-inputUser required" placeholder="Insira seu nome completo" oninput="inputWithoutNumbersValidate(0)">
+                        <input type="text" id="name" name="name" class="full-inputUser required" data-type="nome" data-required="true" placeholder="Insira seu nome completo">
                         <span class="span-required">Nome não pode conter números e caracteres especiais.</span>
                     </div>
 
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="cpf"><b>CPF: *</b></label>
-                            <input type="text" name="cpf" id="cpf" class="mid-inputUser required" placeholder="XXX.XXX.XXX-XX" oninput="cpfValidate()">
+                            <input type="text" name="cpf" id="cpf" class="mid-inputUser required" data-type="CPF" data-required="true" placeholder="XXX.XXX.XXX-XX">
                             <span class="span-required">Por faovr, insira um CPF válido</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="birthYear"><b>Data de Nascimento: *</b></label>
-                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" placeholder="DD/MM/AAAA" oninput="birthYearValidate()">
+                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" data-type="data de nascimento" data-required="true" placeholder="DD/MM/AAAA">
                             <span class="span-required">Insira uma data de nascimento válida.</span>
                         </div>
                     </div>
@@ -177,26 +177,26 @@ if (isset($_SESSION['error_message'])) {
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="telephone"><b>Telefone: *</b></label>
-                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" placeholder="(XX) XXXXX-XXXX" oninput="telephoneValidate()">
+                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX">
                             <span class="span-required">Insira um telefone válido</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="text"><b>E-mail: *</b></label>
-                            <input type="text" id="email" name="email"class="full-inputUser required" placeholder="exemplo@gmail.com" oninput="emailValidate()">
+                            <input type="text" id="email" name="email"class="full-inputUser required" data-type="e-mail" data-required="true" placeholder="exemplo@gmail.com">
                             <span class="span-required">Insira um e-mail válido!</span>
                         </div>
                     </div>
             
                     <div class="full-inputBox">
                             <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" placeholder="Crie uma senha" oninput="passwordValidate()">
+                            <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
                             <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">
                         <label for="confirm-pass"><b>Confirme sua senha: *</b></label>
-                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" placeholder="Repita a senha" oninput="confirmPasswordValidate()">
+                        <input type="password" name="confirm-pass" id="confirm-pass" class="full-inputUser required" data-type="confirmar senha" data-required="true" placeholder="Repita a senha">
                         <span class="span-required">As senhas não coincidem.</span>
                     </div>
 
@@ -205,19 +205,18 @@ if (isset($_SESSION['error_message'])) {
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="CEP"><b>CEP: *</b></label>
-                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" placeholder="XXXXX-XXX" oninput="cepValidate()">
+                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" data-type="CEP" data-required="true" placeholder="XXXXX-XXX">
                             <span class="span-required">Por favor, insira um CEP válido</span>
                         </div>
-
                         <div class="mid-inputBox">
                             <label for="road"><b>Rua: *</b></label>
-                            <input type="text" name="road" id="road" class="mid-inputUser required" placeholder="Insira o nome da rua" oninput="roadValidate()">
+                            <input type="text" name="road" id="road" class="mid-inputUser required" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
                             <span class="span-required"> Rua não pode conter caracteres especias.</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="num"><b>Número: *</b></label>
-                            <input type="text" name="num" id="num" class="mid-inputUser required" placeholder="Insira o número" oninput="numValidate()">
+                            <input type="text" name="num" id="num" class="mid-inputUser required" data-type="número" data-required="true" placeholder="Insira o número">
                             <span class="span-required">Número não pode conter letras ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -225,12 +224,12 @@ if (isset($_SESSION['error_message'])) {
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="neighborhood"><b>Bairro: *</b></label>
-                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" placeholder="Insira o bairro" oninput="inputWithoutNumbersValidate(9)">
+                            <input type="text" name="neighborhood" id="neighborhood" class="mid-inputUser required" data-type="bairro" data-required="true" placeholder="Insira o bairro">
                             <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
                         </div>
                         <div class="mid-inputBox">
                             <label for="city"><b>Cidade: *</b></label>
-                            <input type="text" name="city" id="city" class="mid-inputUser required" placeholder="Insira a cidade" oninput="inputWithoutNumbersValidate(10)">
+                            <input type="text" name="city" id="city" class="mid-inputUser required" data-type="cidade" data-required="true" placeholder="Insira a cidade">
                             <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -239,7 +238,7 @@ if (isset($_SESSION['error_message'])) {
 
                     <div class="mid-inputBox">
                         <label for="state"><b>Estado: *</b></label>
-                        <select name="state" id="state" class="mid-inputUser required">
+                        <select name="state" id="state" class="mid-inputUser required" data-type="estado" data-required="true">
                             <option value="">Selecione um estado</option>
                             <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
                             <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
@@ -275,7 +274,7 @@ if (isset($_SESSION['error_message'])) {
 
                         <div class="mid-inputBox">
                             <label for="country"><b>País: *</b></b></label>
-                            <input type="text" name="country" id="country" class="mid-inputUser required" placeholder="Insira o país" oninput="inputWithoutNumbersValidate(12)">
+                            <input type="text" name="country" id="country" class="mid-inputUser required" data-type="país" data-required="true" placeholder="Insira o país">
                             <span class="span-required">País não pode conter números ou caracteres especiais.</span>
                         </div>
                     </div>
@@ -285,7 +284,7 @@ if (isset($_SESSION['error_message'])) {
                         <input type="text" name="complement" id="complement" class="full-inputUser" placeholder="Insira o complemento">
                     </div>
 
-                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event)">
+                    <input type="submit" value="Cadastrar-se" class="register-btn" onclick="btnRegisterOnClick(event, this.form)">
 
                 </form>
             </section>
@@ -296,7 +295,7 @@ if (isset($_SESSION['error_message'])) {
         <p>&copy;2025 - PetMap - Onde tem pet, tem PetMap!. Todos os direitos reservados.</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../scripts/pages/register-user/register-user.js"></script>
+    <script src="../../scripts/register-validation.js"></script>
 </body>
 </html>
 

@@ -47,12 +47,51 @@ function btnRegisterOnClick(event) {
     } else if (inputs[6].value !== inputs[5].value) {
         confirmPasswordValidate();
         hasError = true;
+    } else if (inputs[7].value === "") {
+        errorAlert('Preenchimento obrigatório: CEP');
+        hasError = true;
+    } else if (!isCEP(inputs[7].value)) {
+        cepValidate();
+        hasError = true;
+    }else if (inputs[8].value === "") {
+        errorAlert('Preenchimento obrigatório: Rua');
+        hasError = true;
+    } else if (!isRoad(inputs[8].value)) {
+        roadValidate();
+        hasError = true;
+    }else if (inputs[9].value === "") {
+        errorAlert('Preenchimento obrigatório: Número');
+        hasError = true;
+    } else if (!isNum(parseInt(inputs[9].value))) {
+        numValidate();
+        hasError = true;
+    } else if (inputs[10].value === "") {
+        errorAlert('Preenchimento obrigatório: Bairro');
+        hasError = true;
+    } else if (!inputWithoutNumbers(inputs[10].value)) {
+        inputWithoutNumbersValidate(10);
+        hasError = true;
+    } else if (inputs[11].value === "") {
+        errorAlert('Preenchimento obrigatório: Cidade');
+        hasError = true;
+    } else if (!inputWithoutNumbers(inputs[11].value)) {
+        inputWithoutNumbersValidate(11);
+        hasError = true;
+    } else if (inputs[12].value === "") {
+        errorAlert('Preenchimento obrigatório: Estado');
+        hasError = true;
+    } else if (inputs[13].value === "") {
+        errorAlert('Preenchimento obrigatório: País');
+        hasError = true;
+    } else if (!inputWithoutNumbers(inputs[13].value)) {
+        inputWithoutNumbersValidate(13);
+        hasError = true;
     }
 
     if (hasError) {
         event.preventDefault();
     } else {
-        form.submit();
+                form.submit();
         document.getElementById('submit').disabled = true;
     }
 }
@@ -156,6 +195,34 @@ function confirmPasswordValidate() {
     }
 }
 
+function cepValidate() {
+    if (inputs[7].value === "") {
+        removeError(7)
+    } else if (!isCEP(inputs[7].value)) {
+        setError(7)
+    } else{
+        removeError(7)
+    }
+}
+function roadValidate() {
+    if (inputs[8].value === "") {
+        removeError(8)
+    } else if (!isRoad(inputs[8].value)) {
+        setError(8)
+    } else{
+        removeError(8)
+    }
+}
+function numValidate() {
+    if (inputs[9].value === "") {
+        removeError(9)
+    } else if (!isNum(inputs[9].value)) {
+        setError(9)
+    } else{
+        removeError(9)
+    }
+}
+
 // ----- REGEX ----- //
 
 // Function to check if the input contains numbers
@@ -168,8 +235,6 @@ function isCPF(cpf){
     const re = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
     return re.test(cpf) 
 }
-
-
 
 function isBirthYear(date) {
     const re = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -193,9 +258,6 @@ function isBirthYear(date) {
 function isLeapYear(year) {
     return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
 }
-
-
-
 // Function to check if is a valid email
 function isEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -210,4 +272,18 @@ function isTelephone(telephone) {
 function validPassword(password) {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&.])[A-Za-z\d#@$!%*?&.]{8,}$/;
     return re.test(password);
+}
+// Function to check if is a valid CEP
+function isCEP(cep){
+    const re = /^\d{2}\.?\d{3}-?\d{3}$/
+    return re.test(cep)
+}
+// Function to check if is a valid road
+function isRoad(road){
+    const re = /^[A-Za-z0-9\s]+$/
+    return re.test(road)
+}
+// Function to check if is positive numbers
+function isNum(num) {
+    return !isNaN(num) && num > 0
 }
