@@ -299,7 +299,7 @@ if (isset($_SESSION['error_message'])) {
     </section>
 
     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
-        <button class="floating-button" title="Nova Publicação" onclick="">
+        <button class="floating-button" title="Nova Publicação" onclick="openPostModal()">
             +
         </button>
     <?php endif; ?>
@@ -321,6 +321,7 @@ if (isset($_SESSION['error_message'])) {
             </form>
         </div>
     </div>
+
 
     <div id="editModal" class="modal">
 
@@ -474,7 +475,7 @@ if (isset($_SESSION['error_message'])) {
             </form>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
