@@ -416,39 +416,48 @@ if (isset($_SESSION['error_message'])) {
                                     <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
                                 </div>
                                 
+                                <?php
+                                    $estado_usuario = '';
+                                    if ($user['tipo_conta'] == 'Perfil de ONG') {
+                                        $estado_usuario = $user['ong_endereco_estado'];
+                                    } elseif ($user['tipo_conta'] == 'Perfil de cidadão') {
+                                        $estado_usuario = $user['cidadao_endereco_estado'];
+                                    }
+                                ?>
+
                                 <div class="form-group">
                                     <label for="endereco_estado"><b>Estado: *</b></label>
                                     <select name="endereco_estado" id="endereco_estado" class="required" data-type="estado" data-required="true" value="<?php echo htmlspecialchars(
                                         $user['tipo_conta'] == 'Perfil de ONG' ? $user['ong_endereco_estado'] : $user['cidadao_endereco_estado']
                                     ); ?>">
                                         <option value="">Selecione um estado</option>
-                                        <option value="AC" <?php echo ($user['endereco_estado'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
-                                        <option value="AL" <?php echo ($user['endereco_estado'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
-                                        <option value="AP" <?php echo ($user['endereco_estado'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
-                                        <option value="AM" <?php echo ($user['endereco_estado'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
-                                        <option value="BA" <?php echo ($user['endereco_estado'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
-                                        <option value="CE" <?php echo ($user['endereco_estado'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
-                                        <option value="DF" <?php echo ($user['endereco_estado'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
-                                        <option value="ES" <?php echo ($user['endereco_estado'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
-                                        <option value="GO" <?php echo ($user['endereco_estado'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
-                                        <option value="MA" <?php echo ($user['endereco_estado'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
-                                        <option value="MT" <?php echo ($user['endereco_estado'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
-                                        <option value="MS" <?php echo ($user['endereco_estado'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
-                                        <option value="MG" <?php echo ($user['endereco_estado'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
-                                        <option value="PA" <?php echo ($user['endereco_estado'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
-                                        <option value="PB" <?php echo ($user['endereco_estado'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
-                                        <option value="PR" <?php echo ($user['endereco_estado'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
-                                        <option value="PE" <?php echo ($user['endereco_estado'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
-                                        <option value="PI" <?php echo ($user['endereco_estado'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
-                                        <option value="RJ" <?php echo ($user['endereco_estado'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
-                                        <option value="RN" <?php echo ($user['endereco_estado'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
-                                        <option value="RS" <?php echo ($user['endereco_estado'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
-                                        <option value="RO" <?php echo ($user['endereco_estado'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
-                                        <option value="RR" <?php echo ($user['endereco_estado'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
-                                        <option value="SC" <?php echo ($user['endereco_estado'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
-                                        <option value="SP" <?php echo ($user['endereco_estado'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
-                                        <option value="SE" <?php echo ($user['endereco_estado'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
-                                        <option value="TO" <?php echo ($user['endereco_estado'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                                        <option value="AC" <?php echo ($estado_usuario === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                                        <option value="AL" <?php echo ($estado_usuario === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                                        <option value="AP" <?php echo ($estado_usuario === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                                        <option value="AM" <?php echo ($estado_usuario === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                                        <option value="BA" <?php echo ($estado_usuario === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                                        <option value="CE" <?php echo ($estado_usuario === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                                        <option value="DF" <?php echo ($estado_usuario === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                                        <option value="ES" <?php echo ($estado_usuario === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                                        <option value="GO" <?php echo ($estado_usuario === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                                        <option value="MA" <?php echo ($estado_usuario === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                                        <option value="MT" <?php echo ($estado_usuario === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                                        <option value="MS" <?php echo ($estado_usuario === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                                        <option value="MG" <?php echo ($estado_usuario === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                                        <option value="PA" <?php echo ($estado_usuario === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                                        <option value="PB" <?php echo ($estado_usuario === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                                        <option value="PR" <?php echo ($estado_usuario === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                                        <option value="PE" <?php echo ($estado_usuario === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                                        <option value="PI" <?php echo ($estado_usuario === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                                        <option value="RJ" <?php echo ($estado_usuario === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                                        <option value="RN" <?php echo ($estado_usuario === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                                        <option value="RS" <?php echo ($estado_usuario === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                                        <option value="RO" <?php echo ($estado_usuario === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                                        <option value="RR" <?php echo ($estado_usuario === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                                        <option value="SC" <?php echo ($estado_usuario === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                                        <option value="SP" <?php echo ($estado_usuario === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                                        <option value="SE" <?php echo ($estado_usuario === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                                        <option value="TO" <?php echo ($estado_usuario === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
                                     </select>
                                     <span class="span-required">Selecione um estado válido.</span>
                                 </div>
