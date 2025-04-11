@@ -49,6 +49,40 @@ if ($result->num_rows > 0) {
     exit();
 }
 
+if (isset($_POST['update_profile'])) {
+    if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['foto_perfil']['tmp_name'];
+        $fileName = $_FILES['foto_perfil']['name'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array($fileExtension, $allowedExtensions)) {
+            $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
+            $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/src/assets/images/uploads/profile/';
+            $destPath = $uploadFileDir . $newFileName;
+
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0777, true);
+            }
+            
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                echo "<p style='color:green;'>✅ Imagem enviada com sucesso para: $destPath</p>";
+            
+                $query_foto = "UPDATE perfil SET foto = ? WHERE id_usuario = ?";
+                $stmt_foto = $obj->prepare($query_foto);
+                $stmt_foto->bind_param("si", $newFileName, $user['id_usuario']);
+                $stmt_foto->execute();
+            
+            } else {
+                $_SESSION['error_message'] = "Erro ao mover a imagem.";
+            }
+            
+        } else {
+            $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas imagens são permitidas.";
+        }
+    }
+}
+
 if (isset($_POST['logout'])) {
     session_destroy();
     header("Location: ../../assets/pages/login.php");
@@ -231,7 +265,11 @@ if (isset($_SESSION['error_message'])) {
     <section class="profile">
         <div class="profile-info">
             <div class="profile-header">
-                <img src="<?php echo $user['foto'] ? $user['foto'] : '../images/perfil-images/imagem-perfil-teste.png'; ?>" alt="Foto de Perfil">
+                <?php if (!empty($user['foto'])): ?>
+                    <img src="/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
+                <?php else: ?>
+                    <img src="../images/perfil-images/imagem-perfil-teste.png" alt="Foto padrão" class="profile-picture">
+                <?php endif; ?>
                 <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
             </div>
             <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>
@@ -425,6 +463,10 @@ if (isset($_SESSION['error_message'])) {
                         } 
                     ?>">
                         <div class="column-style">
+                            <div class="form-group">
+                                <label for="foto_perfil">Escolher imagem:</label>
+                                <input type="file" name="foto_perfil" id="foto_perfil" required>
+                            </div>
                             <div class="form-group">
                                 <label for="nome">Nome:</label>
                                 <input type="text" id="nome" name="nome" class="required" value="<?php echo htmlspecialchars($user['nome']); ?>" required data-type="nome" data-required="true">
