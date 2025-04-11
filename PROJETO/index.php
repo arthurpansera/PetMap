@@ -6,6 +6,8 @@
     $isModerator = false;
 
     $obj = conecta_db();
+    date_default_timezone_set('America/Sao_Paulo');
+    setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
     if ($isLoggedIn) {
         $userId = $_SESSION['id_usuario'];
@@ -19,6 +21,28 @@
         if ($userProfile && $userProfile['descricao'] === 'Perfil de moderador') {
             $isModerator = true;
         }
+    }
+
+    $query = "SELECT p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+          FROM publicacao p 
+          JOIN usuario u ON p.id_usuario = u.id_usuario 
+          ORDER BY p.data_criacao DESC";
+
+    $result = $obj->query($query);
+
+    if (isset($_POST['make_post'])) {
+        $titulo = $_POST['titulo'];
+        $conteudo = $_POST['conteudo'];
+        $tipoPublicacao = $_POST['tipo_publicacao'];
+        $dataCriacao = date('Y-m-d H:i:s');
+
+        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $obj->prepare($insertQuery);
+        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+        $stmt->execute();
+
+        header('Location: index.php');
+        exit;
     }
 ?>
 
@@ -75,7 +99,7 @@
             <hr class="line"></hr>
             <div class="menu-post">
                 <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14:30</span></p>
+                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
                     <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
                     <div class="post-actions">
                         <button class="like-button">
@@ -87,7 +111,7 @@
                     </div>
                 </div>
                 <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14:30</span></p>
+                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
                     <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
                     <img src="src/assets/images/example-images/imagem-cao-teste.png" alt="Logo PetMap">
                     <div class="post-actions">
@@ -99,6 +123,40 @@
                         </button>
                     </div>
                 </div>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($post = $result->fetch_assoc()): ?>
+                        <div class="post-item">
+                            <p class="post-info">
+                                <span class="author-name"><?php echo $post['nome']; ?></span> • 
+                                <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
+                            </p>
+                            <?php
+                            $tiposFormatados = [
+                                'animal' => 'Animal',
+                                'resgate' => 'Resgate',
+                                'informacao' => 'Informação',
+                                'cidadao' => 'Cidadão',
+                                'outro' => 'Outro'
+                            ];
+                            ?>
+                            <p class="post-type">
+                                <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                            </p>
+                            <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
+                            <p><?php echo $post['conteudo']; ?></p>
+                            <div class="post-actions">
+                                <button class="like-button">
+                                    <i class="like-icon">⬆️</i> Impulsionar
+                                </button>
+                                <button class="comment-button">
+                                    <i class="comment-icon">💬</i> Comentar
+                                </button>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p>Não há publicações disponíveis.</p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -113,7 +171,7 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="processar_publicacao.php" method="POST">
+            <form action="index.php" method="POST">
                 <div class="form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -122,7 +180,16 @@
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-                <button type="submit">Publicar</button>
+                <div class="form-group">
+                    <label for="tipo_publicacao">Tipo de Publicação</label>
+                    <select id="tipo_publicacao" name="tipo_publicacao" required>
+                        <option value="animal">Animal</option>
+                        <option value="resgate">Resgate</option>
+                        <option value="informacao">Informação</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <button type="submit" name="make_post" class="create-post" onclick="">Publicar</button>
             </form>
         </div>
     </div>

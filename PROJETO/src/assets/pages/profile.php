@@ -320,8 +320,7 @@ if (isset($_SESSION['error_message'])) {
                 <button type="submit">Publicar</button>
             </form>
         </div>
-    </div>
-
+    </div>
 
     <div id="editModal" class="modal">
 
