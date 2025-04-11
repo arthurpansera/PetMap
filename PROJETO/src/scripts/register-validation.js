@@ -1,4 +1,3 @@
-// ✅ Validação em tempo real (input)
 document.querySelectorAll('.required').forEach((input) => {
     input.addEventListener('input', () => {
         const type = input.dataset.type;
@@ -65,7 +64,7 @@ document.querySelectorAll('.required').forEach((input) => {
 
 
 function btnRegisterOnClick(event, formElement) {
-    event.preventDefault();
+    console.log("Clique detectado");
 
     const inputs = formElement.querySelectorAll('.required');
     let hasError = false;
@@ -75,14 +74,12 @@ function btnRegisterOnClick(event, formElement) {
         const isRequired = input.dataset.required === "true";
         const value = input.value.trim();
 
-        if (input.tagName === "SELECT" && isRequired && value === "") {
-            setError(input);
-            errorAlert(`Preenchimento obrigatório: ${type}`, input);
-            hasError = true;
-            break; 
+        if (type === "senha" && value === "" || type === "confirmar senha" && value === "") {
+            continue;
         }
 
         if (isRequired && value === "") {
+            console.log("Campo obrigatório não preenchido:", type);
             setError(input);
             errorAlert(`Preenchimento obrigatório: ${type}`, input);
             hasError = true;
@@ -90,8 +87,14 @@ function btnRegisterOnClick(event, formElement) {
         }
     }
 
-    if (!hasError) {
+    if (hasError) {
+        event.preventDefault();
+    } else {
         formElement.submit();
+        const submitBtn = document.getElementById('submit');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
     }
 }
 

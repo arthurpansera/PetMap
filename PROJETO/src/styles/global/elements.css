@@ -28,6 +28,10 @@ body.swal2-shown {
     overflow: auto !important;
 }
 
+.swal2-container {
+    z-index: 99999;
+}
+
 /* --- top navigation menu --- */
 
 .nav {
@@ -163,7 +167,7 @@ body.swal2-shown {
 .post-modal {
     display: none;
     position: fixed;
-    z-index: 9999;
+    z-index: 9990;
     left: 0;
     top: 0;
     width: 100%;

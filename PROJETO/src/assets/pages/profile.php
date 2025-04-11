@@ -373,7 +373,7 @@ if (isset($_SESSION['error_message'])) {
                         
                     </div>
 
-                    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de Cidadão'): ?>
+                    <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
                         <div class="row-style">
                             <div class="row-style-content">
                                 <div class="form-group">
@@ -481,6 +481,7 @@ if (isset($_SESSION['error_message'])) {
                     <?php endif; ?>
                 </div>
                 <button type="submit" name="update_profile" class="profile-save" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
+
             </form>
         </div>
     </div>
