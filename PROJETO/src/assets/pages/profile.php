@@ -341,9 +341,6 @@
 
                 </div>
             </div>
-        </div>
-
-
     </section>
     <section class="content">
         <div class="user-posts">
