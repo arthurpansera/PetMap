@@ -128,8 +128,8 @@
                             </p>
                             <?php
                                 $tiposFormatados = [
-                                    'animal' => 'Animal',
-                                    'resgate' => 'Resgate',
+                                    'animal' => 'Animal Perdido',
+                                    'resgate' => 'Resgate de Animal',
                                     'informacao' => 'Informação',
                                     'cidadao' => 'Cidadão',
                                     'outro' => 'Outro'
@@ -151,8 +151,8 @@
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <p>Não há publicações disponíveis.</p>
-                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil">
+                    <p class="no-posts-message">Não há publicações disponíveis.</p>
+                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil" class="no-posts-image">
                 <?php endif; ?>
             </div>
         </div>
@@ -180,8 +180,8 @@
                 <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>
-                        <option value="animal">Animal</option>
-                        <option value="resgate">Resgate</option>
+                        <option value="animal">Animal Perdido</option>
+                        <option value="resgate">Resgate de Animal</option>
                         <option value="informacao">Informação</option>
                         <option value="outro">Outro</option>
                     </select>

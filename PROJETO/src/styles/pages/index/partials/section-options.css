@@ -27,7 +27,7 @@ body {
     padding: 30px;
     border-radius: 10px;
     margin: 30px auto;
-    max-width: 900px;
+    width: 900px;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -102,6 +102,16 @@ body {
     margin: 0 auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     object-fit: cover;
+}
+
+.no-posts-message {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+.no-posts-image {
+    width: 80%;
 }
 
 @media (min-width: 1200px) {
