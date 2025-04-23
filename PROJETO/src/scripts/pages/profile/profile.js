@@ -6,24 +6,12 @@ function closeModal() {
     document.getElementById("editModal").style.display = "none";
 }
 
-window.onclick = function(event) {
-    if (event.target == document.getElementById("editModal")) {
-        closeModal();
-    }
-}
-
 function openPostModal() {
     document.getElementById("postModal").style.display = "block";
 }
 
 function closePostModal() {
     document.getElementById("postModal").style.display = "none";
-}
-
-window.onclick = function(event) {
-    if (event.target === document.getElementById("postModal")) {
-        closePostModal();
-    }
 }
 
 function openEditPostModal() {
@@ -34,8 +22,14 @@ function closeEditPostModal() {
     document.getElementById("postEditModal").style.display = "none";
 }
 
-window.onclick = function(event) {
+window.addEventListener("click", function(event) {
+    if (event.target === document.getElementById("editModal")) {
+        closeModal();
+    }
+    if (event.target === document.getElementById("postModal")) {
+        closePostModal();
+    }
     if (event.target === document.getElementById("postEditModal")) {
         closeEditPostModal();
     }
-}
+})

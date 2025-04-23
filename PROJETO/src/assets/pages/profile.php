@@ -262,6 +262,7 @@
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="../../../index.php">Animais Resgatados</a></li>
                 <li><a href="../../../index.php">Animais Perdidos</a></li>
+                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
                 <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -355,8 +356,8 @@
                         </p>
                         <?php
                             $tiposFormatados = [
-                                'animal' => 'Animal',
-                                'resgate' => 'Resgate',
+                                'animal' => 'Animal Perdido',
+                                'resgate' => 'Resgate de Animal',
                                 'informacao' => 'Informação',
                                 'cidadao' => 'Cidadão',
                                 'outro' => 'Outro'
@@ -406,8 +407,8 @@
                 <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>
-                        <option value="animal">Animal</option>
-                        <option value="resgate">Resgate</option>
+                        <option value="animal">Animal Perdido</option>
+                        <option value="resgate">Resgate de Animal</option>
                         <option value="informacao">Informação</option>
                         <option value="outro">Outro</option>
                     </select>
@@ -598,8 +599,8 @@
                 <div class="edit-post-form-group">
                     <label for="edit_tipo_publicacao">Tipo de Publicação</label>
                     <select id="edit_tipo_publicacao" name="tipo_publicacao" required>
-                        <option value="animal">Animal</option>
-                        <option value="resgate">Resgate</option>
+                        <option value="animal">Animal Perdido</option>
+                        <option value="resgate">Resgate de Animal</option>
                         <option value="informacao">Informação</option>
                         <option value="outro">Outro</option>
                     </select>
