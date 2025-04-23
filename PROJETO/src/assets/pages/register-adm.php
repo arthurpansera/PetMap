@@ -36,7 +36,7 @@
 
         if ($stmt_check_email->num_rows > 0) {
             $_SESSION['error_message'] = "Usuário já cadastrado!";
-            header("Location: register-ong.php");
+            header("Location: register-adm.php");
             exit();
         }
 

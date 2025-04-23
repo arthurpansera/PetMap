@@ -33,3 +33,44 @@ window.addEventListener("click", function(event) {
         closeEditPostModal();
     }
 })
+const input = document.getElementById('foto_perfil');
+const label = document.getElementById('label_foto');
+
+input.addEventListener('change', function () {
+    if (this.files && this.files.length > 0) {
+    label.textContent = '📁 ' + this.files[0].name;
+    } else {
+    label.textContent = '📁 Escolher imagem';
+    }
+});
+
+function confirmDelete(event) {
+    event.preventDefault();
+
+    Swal.fire({
+        title: 'Excluir conta?',
+        text: 'Essa ação não pode ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#cc4a2a',
+        cancelButtonColor: '#4CAF50',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Excluindo...',
+                text: 'Aguarde um momento.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(() => {
+                event.target.form.submit();
+            }, 1500);
+        }
+    });
+}
