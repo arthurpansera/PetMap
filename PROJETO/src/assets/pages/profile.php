@@ -72,10 +72,14 @@
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
+        
             if (in_array($fileExtension, $allowedExtensions)) {
                 $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
-                $uploadFileDir = $_SERVER['DOCUMENT_ROOT'] . '/src/assets/images/uploads/profile/';
+            
+                $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
+            
                 $destPath = $uploadFileDir . $newFileName;
+                
 
                 if (!is_dir($uploadFileDir)) {
                     mkdir($uploadFileDir, 0777, true);
@@ -273,60 +277,73 @@
     </section>
 
     <section class="profile">
-        <div class="profile-info">
+
+        <div class="logout-button">
+            <form action="profile.php" method="POST" class="tooltip-wrapper">
+                <button type="submit" name="logout">
+                    <img src="../images/perfil-images/sair.png" alt="Sair da Conta">
+                </button>
+                <span class="tooltip-text">Sair da conta</span>
+            </form>
+        </div>
+
+        <div class="profile-content">
             <div class="profile-header">
-                <div class="profile-header">
+                <div>
                     <?php if (!empty($user['foto'])): ?>
-                        <img src="/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
+                        <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
                     <?php else: ?>
                         <img src="../images/perfil-images/imagem-perfil-teste.png" alt="Foto padrão" class="profile-picture">
                     <?php endif; ?>
-                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
                 </div>
-            </div>
-            
-            <div class="profile-details">
-                <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>
-                <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
-                <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
 
-                <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
-                    <div class="address-grid">
-                        <div>
-                            <p><span class="label">Endereço:</span>
-                                <?php
-                                    $rua = ($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_rua'] : $user['cidadao_endereco_rua'];
-                                    $numero = ($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_numero'] : $user['cidadao_endereco_numero'];
-                                    echo (stripos($rua, 'Rua ') !== 0 ? 'Rua ' : '') . htmlspecialchars($rua) . ', ' . htmlspecialchars($numero);
-                                ?>
-                            </p>
-                            <?php if (!empty($user['ong_endereco_complemento']) || !empty($user['cidadao_endereco_complemento'])): ?>
-                                <p><span class="label">Complemento:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_complemento'] : $user['cidadao_endereco_complemento']); ?></p>
-                            <?php endif; ?>
-                            <p><span class="label">Bairro:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_bairro'] : $user['cidadao_endereco_bairro']); ?></p>
-                        </div>
-                        <div>
-                            <p><span class="label">Cidade:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_cidade'] : $user['cidadao_endereco_cidade']); ?></p>
-                            <p><span class="label">Estado:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_estado'] : $user['cidadao_endereco_estado']); ?></p>
-                            <p><span class="label">País:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_pais'] : $user['cidadao_endereco_pais']); ?></p>
-                            <p><span class="label">CEP:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_cep'] : $user['cidadao_endereco_cep']); ?></p>
+                <div class="profile-info">
+                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
+
+                    <div class="profile-details">
+                        <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>
+                        <p><span class="label">E-mail:</span> <?php echo htmlspecialchars($user['email']); ?></p>
+                        <p><span class="label">Telefone:</span> <?php echo htmlspecialchars($user['telefone']); ?></p>
+
+                        <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
+                            <div class="address-grid">
+                                <div>
+                                    <p><span class="label">Endereço:</span>
+                                        <?php
+                                            $rua = ($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_rua'] : $user['cidadao_endereco_rua'];
+                                            $numero = ($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_numero'] : $user['cidadao_endereco_numero'];
+                                            echo (stripos($rua, 'Rua ') !== 0 ? 'Rua ' : '') . htmlspecialchars($rua) . ', ' . htmlspecialchars($numero);
+                                        ?>
+                                    </p>
+                                    <?php if (!empty($user['ong_endereco_complemento']) || !empty($user['cidadao_endereco_complemento'])): ?>
+                                        <p><span class="label">Complemento:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_complemento'] : $user['cidadao_endereco_complemento']); ?></p>
+                                    <?php endif; ?>
+                                    <p><span class="label">Bairro:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_bairro'] : $user['cidadao_endereco_bairro']); ?></p>
+                                </div>
+                                <div>
+                                    <p><span class="label">Cidade:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_cidade'] : $user['cidadao_endereco_cidade']); ?></p>
+                                    <p><span class="label">Estado:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_estado'] : $user['cidadao_endereco_estado']); ?></p>
+                                    <p><span class="label">País:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_pais'] : $user['cidadao_endereco_pais']); ?></p>
+                                    <p><span class="label">CEP:</span> <?php echo htmlspecialchars(($user['tipo_conta'] == 'Perfil de ONG') ? $user['ong_endereco_cep'] : $user['cidadao_endereco_cep']); ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="profile-buttons">
+                        <div class="functions-buttons">
+                            <a href="#" class="profile-edit" onclick="openModal()">Editar Informações</a>
+                            <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
+                                <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
+                            </form>
                         </div>
                     </div>
-                <?php endif; ?>
-            </div>
 
-            <div class="profile-buttons">
-                <form action="profile.php" method="POST">
-                    <button type="submit" name="logout" class="profile-logout">Sair da Conta</button>
-                </form>
-                <div class="functions-buttons">
-                    <a href="#" class="profile-edit" onclick="openModal()">Editar Informações</a>
-                    <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
-                        <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
-                    </form>
                 </div>
             </div>
         </div>
+
+
     </section>
     <section class="content">
         <div class="user-posts">

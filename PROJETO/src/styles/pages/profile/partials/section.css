@@ -3,7 +3,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    align-items: center;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
@@ -13,28 +12,47 @@
     margin-top: 150px;
     margin-bottom: 40px;
     box-sizing: border-box;
-    margin-left: 410px;
 }
 
 .profile-image {
     padding-right: 16px;
 }
 
+
+.profile-content{
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+}
+
 .profile-header {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex:  row;
+    gap: 5%;
+    margin-left: 40px;
     margin-bottom: 15px;
-    font-size: 25px;
+    font-size: 22px;
 }
 
 .profile-header img {
     border-radius: 50%;
     margin-bottom: 30px;
-    width: auto;
-    max-width: 250px;
-    height: auto;
-    max-height: 250px;
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-info{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 20px;
+    margin-top: 15px;
+}
+
+.profile-info h2 {
+    margin-bottom: 15px;
 }
 
 .profile-buttons {
@@ -52,8 +70,8 @@
     justify-content: center;
 }
 
-button, .profile-logout, .profile-edit, .profile-delete {
-    color: white;
+.profile-edit, .profile-delete {
+    color: rgb(255, 255, 255);
     padding: 12px 20px;
     border-radius: 10px;
     cursor: pointer;
@@ -65,6 +83,64 @@ button, .profile-logout, .profile-edit, .profile-delete {
     width: auto;
     text-align: center;
 }
+.logout-button {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    padding: 12px 20px;  
+}
+
+.logout-button button {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.logout-button img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;  
+}
+
+.logout-button img:hover {
+    transform: scale(1.12);
+}
+
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+  }
+  
+  .tooltip-text {
+    visibility: hidden;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+  }
+  
+  .tooltip-wrapper:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  
 
 .profile-edit {
     background-color: #dbc500;
@@ -84,19 +160,13 @@ button, .profile-logout, .profile-edit, .profile-delete {
     transform: scale(1.05);
 }
 
-.profile-logout {
-    background-color: #a7a7a7;
-}
-
 .profile-logout:hover {
-    background-color: #8a8a8a;
     transform: scale(1.05);
 }
 
 .profile-details {
     width: 100%;
     margin-top: 20px;
-    padding: 0px 30px;
     display: flex;
     flex-direction: column;
     font-size: 18px;
@@ -104,9 +174,9 @@ button, .profile-logout, .profile-edit, .profile-delete {
 
 .profile-details p {
     margin: 0;
-    display: flex;
-    justify-content: space-between;
     padding-bottom: 10px;
+    display: flex;
+
 }
 
 .profile-details p:last-child {
@@ -394,7 +464,7 @@ input.input-adm {
 
 .edit-button, .delete-button {
     color: black;
-    background-color: #e4e4e4;
+    background-color:#e4e4e4;
     border: none;
     padding: 10px 20px;
     font-size: 14px;
