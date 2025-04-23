@@ -18,6 +18,24 @@
         unset($_SESSION['error_message']);
     }
 
+    
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
+    
     if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
         header("Location: ../../assets/pages/login.php");
         exit();
@@ -75,12 +93,9 @@
         
             if (in_array($fileExtension, $allowedExtensions)) {
                 $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
-            
                 $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
-            
                 $destPath = $uploadFileDir . $newFileName;
                 
-
                 if (!is_dir($uploadFileDir)) {
                     mkdir($uploadFileDir, 0777, true);
                 }
@@ -100,6 +115,35 @@
         }
     }
 
+    if (isset($_POST['remove_foto'])) {
+        if (!empty($user['foto'])) {
+            $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
+            $fotoPath = $uploadFileDir . $user['foto'];
+    
+            if (file_exists($fotoPath)) {
+                unlink($fotoPath);
+            }
+
+            $query_remover = "UPDATE perfil SET foto = NULL WHERE id_usuario = ?";
+            $stmt_remover = $obj->prepare($query_remover);
+            $stmt_remover->bind_param("i", $user['id_usuario']);
+            $stmt_remover->execute();
+
+            $query_user = "SELECT * FROM perfil WHERE id_usuario = ?";
+            $stmt_user = $obj->prepare($query_user);
+            $stmt_user->bind_param("i", $user['id_usuario']);
+            $stmt_user->execute();
+            $result = $stmt_user->get_result();
+            $_SESSION['user'] = $result->fetch_assoc();
+            $_SESSION['success_message'] = "Foto de perfil removida com sucesso.";
+
+        }
+        header("Location: profile.php");
+
+        exit();
+    }
+    
+
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: ../../assets/pages/login.php");
@@ -107,6 +151,7 @@
     }
 
     if (isset($_POST['delete_account'])) {
+
         $query_perfil = "DELETE FROM perfil WHERE id_usuario = ?";
         $stmt_perfil = $obj->prepare($query_perfil);
         $stmt_perfil->bind_param("i", $user['id_usuario']);
@@ -187,6 +232,9 @@
         if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão') {
             $stmt_endereco->execute();
         }
+
+        $_SESSION['success_message'] = "Informações atualizadas com sucesso.";
+
 
         header("Location: profile.php");
         exit();
@@ -293,8 +341,13 @@
                 <div>
                     <?php if (!empty($user['foto'])): ?>
                         <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
+                        <form method="post">
+                            <button type="submit" name="remove_foto" class="btn-remove-photo">
+                                Remover Foto de Perfil
+                            </button>
+                        </form>
                     <?php else: ?>
-                        <img src="../images/perfil-images/imagem-perfil-teste.png" alt="Foto padrão" class="profile-picture">
+                        <img src="../images/perfil-images/default-profile-photo.png" alt="Foto padrão" class="profile-picture">
                     <?php endif; ?>
                 </div>
 
@@ -334,8 +387,9 @@
                     <div class="profile-buttons">
                         <div class="functions-buttons">
                             <a href="#" class="profile-edit" onclick="openModal()">Editar Informações</a>
-                            <form action="profile.php" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta?');">
-                                <button type="submit" name="delete_account" class="profile-delete">Excluir Conta</button>
+                            <form action="profile.php" method="POST">
+                                <button type="submit" onclick="confirmDelete(event)" name="delete_account" class="profile-delete">Excluir Conta</button>
+                                <input type="hidden" name="delete_account" value="1">
                             </form>
                         </div>
                     </div>
@@ -430,10 +484,13 @@
                         } 
                     ?>">
                         <div class="column-style">
+
+
                             <div class="form-group">
-                                <label for="foto_perfil">Escolher imagem:</label>
+                                <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem:</label>
                                 <input type="file" name="foto_perfil" id="foto_perfil">
                             </div>
+
                             <div class="form-group">
                                 <label for="nome">Nome:</label>
                                 <input type="text" id="nome" name="nome" class="required" value="<?php echo htmlspecialchars($user['nome']); ?>" required data-type="nome" data-required="true">
