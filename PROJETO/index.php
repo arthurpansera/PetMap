@@ -152,6 +152,7 @@
                     <?php endwhile; ?>
                 <?php else: ?>
                     <p>Não há publicações disponíveis.</p>
+                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil">
                 <?php endif; ?>
             </div>
         </div>
