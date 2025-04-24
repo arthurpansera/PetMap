@@ -260,7 +260,7 @@
             $stmt_endereco->execute();
         }
 
-        $_SESSION['success_message'] = "Informações atualizadas com sucesso.";
+        $_SESSION['success_message'] = "Informações salvas.";
 
         header("Location: profile.php");
         exit();
