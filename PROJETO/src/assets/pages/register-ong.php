@@ -55,27 +55,27 @@
             exit();
         }
 
-        try {
-            $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
-            $stmt_usuario = $obj->prepare($query_usuario);
-            $stmt_usuario->bind_param("ss", $nome, $senha);
-            $stmt_usuario->execute();
+        $query_usuario = "INSERT INTO usuario (nome, senha) VALUES (?, ?)";
+        $stmt_usuario = $obj->prepare($query_usuario);
+        $stmt_usuario->bind_param("ss", $nome, $senha);
+        $stmt_usuario->execute();
 
-            if ($stmt_usuario->affected_rows > 0) {
-                $id_usuario = $obj->insert_id;
+        if ($stmt_usuario->affected_rows > 0) {
+            $id_usuario = $obj->insert_id;
 
-                $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
-                $stmt_contato = $obj->prepare($query_contato);
-                $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
-                $stmt_contato->execute();
+            $query_contato = "INSERT INTO contato (id_usuario, telefone, email) VALUES (?, ?, ?)";
+            $stmt_contato = $obj->prepare($query_contato);
+            $stmt_contato->bind_param("iss", $id_usuario, $telefone, $email);
+            $stmt_contato->execute();
 
+            if ($stmt_contato->affected_rows > 0) {
                 $query_ong = "INSERT INTO ong (id_usuario, cnpj, endereco_cep, endereco_rua, endereco_numero, endereco_bairro, endereco_cidade, endereco_estado, endereco_pais, endereco_complemento) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt_ong = $obj->prepare($query_ong);
                 $complemento = !empty($complemento) ? $complemento : null;
                 $stmt_ong->bind_param("isssssssss", $id_usuario, $cnpj, $cep, $rua, $numero, $bairro, $cidade, $estado, $pais, $complemento);
                 $stmt_ong->execute();
 
-                if ($stmt_contato->affected_rows > 0 && $stmt_ong->affected_rows > 0) {
+                if ($stmt_ong->affected_rows > 0) {
                     $descricao = "Perfil de ONG";
                     $foto = null;
 
@@ -84,21 +84,25 @@
                     $stmt_perfil->bind_param("iss", $id_usuario, $descricao, $foto);
                     $stmt_perfil->execute();
 
-                    $_SESSION['user_logged_in'] = true;
-                    $_SESSION['id_usuario'] = $id_usuario;
-                    header("Location: ../../../index.php");
-                    exit();
+                    if ($stmt_perfil->affected_rows > 0) {
+                        $_SESSION['user_logged_in'] = true;
+                        $_SESSION['id_usuario'] = $id_usuario;
+                        header("Location: ../../../index.php");
+                        exit();
+                    } else {
+                        echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados do perfil.</h5></span>";
+                    }
                 } else {
-                    echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados de contato, ONG ou endereço.</h5></span>";
+                    echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados da ONG.</h5></span>";
                 }
             } else {
-                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar usuário.</h5></span>";
+                echo "<span class='alert alert-danger'><h5>Erro ao cadastrar dados de contato.</h5></span>";
             }
-        } catch (Exception $e) {
-            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar: " . $e->getMessage() . "</h5></span>";
-        } finally {
-            $obj->close();
+        } else {
+            echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário.</h5></span>";
         }
+
+        $obj->close();
     }
 ?>
 

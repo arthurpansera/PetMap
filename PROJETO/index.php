@@ -94,31 +94,6 @@
         </nav> 
         <div class="content">
             <div class="menu-post">
-                <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
-                    <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
-                    <div class="post-actions">
-                        <button class="like-button">
-                            <i class="like-icon">⬆️</i> Impulsionar
-                        </button>
-                        <button class="comment-button">
-                            <i class="comment-icon">💬</i> Comentar
-                        </button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
-                    <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
-                    <img src="src/assets/images/example-images/imagem-cao-teste.png" alt="Logo PetMap">
-                    <div class="post-actions">
-                        <button class="like-button">
-                            <i class="like-icon">⬆️</i> Impulsionar
-                        </button>
-                        <button class="comment-button">
-                            <i class="comment-icon">💬</i> Comentar
-                        </button>
-                    </div>
-                </div>
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
                         <div class="post-item">
@@ -128,8 +103,8 @@
                             </p>
                             <?php
                                 $tiposFormatados = [
-                                    'animal' => 'Animal',
-                                    'resgate' => 'Resgate',
+                                    'animal' => 'Animal Perdido',
+                                    'resgate' => 'Resgate de Animal',
                                     'informacao' => 'Informação',
                                     'cidadao' => 'Cidadão',
                                     'outro' => 'Outro'
@@ -151,8 +126,8 @@
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <p>Não há publicações disponíveis.</p>
-                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil">
+                    <p class="no-posts-message">Não há publicações disponíveis.</p>
+                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil" class="no-posts-image">
                 <?php endif; ?>
             </div>
         </div>
@@ -180,8 +155,8 @@
                 <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>
-                        <option value="animal">Animal</option>
-                        <option value="resgate">Resgate</option>
+                        <option value="animal">Animal Perdido</option>
+                        <option value="resgate">Resgate de Animal</option>
                         <option value="informacao">Informação</option>
                         <option value="outro">Outro</option>
                     </select>
@@ -192,6 +167,6 @@
     </div>
 
     <script src="src/scripts/pages/index/index.js"></script>
-
+    
 </body>
 </html>

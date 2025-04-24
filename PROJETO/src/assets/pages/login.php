@@ -93,15 +93,14 @@
                     <div class="back-btn">
                         <a href="../../../index.php">Voltar</a>
                     </div>
-
                     <h1>Login</h1>
-                        <form id="form" name="form" method="POST" action="login.php">
-                            <label for="email" class="label-input">E-mail: </label>
-                            <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
-                            <label for="password" class="label-input">Senha:</label>
-                            <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
-                            <input type="submit" value="Login" class="login-btn">
-                        </form>
+                    <form id="form" name="form" method="POST" action="login.php">
+                        <label for="email" class="label-input">E-mail: </label>
+                        <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
+                        <label for="password" class="label-input">Senha:</label>
+                        <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
+                        <input type="submit" value="Login" class="login-btn">
+                    </form>
                 </section>
             </section>
     
@@ -113,6 +112,7 @@
                     </div>
 
                     <h1>Selecione o tipo de Cadastro</h1>
+                    
                     <div class="user-options-box">
                         <a class="user-options" href="./register-user.php">Cidadão</a>
                         <a class="user-options" href="./register-ong.php">ONG</a>
@@ -135,5 +135,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/login/login.js"></script>
+
 </body>
 </html>

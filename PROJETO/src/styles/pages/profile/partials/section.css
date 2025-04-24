@@ -70,7 +70,7 @@
     justify-content: center;
 }
 
-.profile-edit, .profile-delete{
+.profile-edit, .profile-delete {
     color: rgb(255, 255, 255);
     padding: 12px 20px;
     border-radius: 10px;
@@ -106,8 +106,7 @@
     transform: scale(1.05);
 }
 
-
-.btn-remove-photo{
+.btn-remove-photo {
     color: rgb(255, 255, 255);
     padding: 10px 16px;
     border-radius: 10px;
@@ -121,7 +120,7 @@
     text-align: center;
 }
 
-.btn-remove-photo{
+.btn-remove-photo {
     background-color: #adadad;
 }
 
@@ -199,7 +198,6 @@
     margin: 0;
     padding-bottom: 10px;
     display: flex;
-
 }
 
 .profile-details p:last-child {
@@ -222,7 +220,6 @@
     width: 4em;
     height: 4em;
 }
-
 
 @media (min-width: 1200px) and (max-width: 1800px) {
     .profile {
@@ -353,7 +350,6 @@
 
 .adm-input{
     width: 100%;
-    
 }
 
 .form-group label {
