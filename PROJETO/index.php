@@ -94,31 +94,6 @@
         </nav> 
         <div class="content">
             <div class="menu-post">
-                <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
-                    <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
-                    <div class="post-actions">
-                        <button class="like-button">
-                            <i class="like-icon">⬆️</i> Impulsionar
-                        </button>
-                        <button class="comment-button">
-                            <i class="comment-icon">💬</i> Comentar
-                        </button>
-                    </div>
-                </div>
-                <div class="post-item">
-                    <p class="post-info"><span class="author-name">João Silva</span> • <span class="post-time">23 de março de 2025, 14h30</span></p>
-                    <p>Hoje, encontramos um cãozinho perdido na rua X. Ele está saudável e pronto para adoção. Acompanhe mais detalhes!</p>
-                    <img src="src/assets/images/example-images/imagem-cao-teste.png" alt="Logo PetMap">
-                    <div class="post-actions">
-                        <button class="like-button">
-                            <i class="like-icon">⬆️</i> Impulsionar
-                        </button>
-                        <button class="comment-button">
-                            <i class="comment-icon">💬</i> Comentar
-                        </button>
-                    </div>
-                </div>
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
                         <div class="post-item">
@@ -192,6 +167,6 @@
     </div>
 
     <script src="src/scripts/pages/index/index.js"></script>
-
+    
 </body>
 </html>

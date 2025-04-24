@@ -14,8 +14,18 @@ function closePostModal() {
     document.getElementById("postModal").style.display = "none";
 }
 
-function openEditPostModal() {
-    document.getElementById("postEditModal").style.display = "block";
+function openEditPostModal(button) {
+    const postId = button.getAttribute('data-id');
+    const titulo = button.getAttribute('data-titulo');
+    const conteudo = button.getAttribute('data-conteudo');
+    const tipo = button.getAttribute('data-tipo');
+
+    document.getElementById('edit_post_id').value = postId;
+    document.getElementById('edit_titulo').value = titulo;
+    document.getElementById('edit_conteudo').value = conteudo;
+    document.getElementById('edit_tipo_publicacao').value = tipo;
+
+    document.getElementById('postEditModal').style.display = 'block';
 }
 
 function closeEditPostModal() {
@@ -33,6 +43,7 @@ window.addEventListener("click", function(event) {
         closeEditPostModal();
     }
 })
+
 const input = document.getElementById('foto_perfil');
 const label = document.getElementById('label_foto');
 

@@ -18,7 +18,6 @@
         unset($_SESSION['error_message']);
     }
 
-    
     if (isset($_SESSION['success_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -53,6 +52,34 @@
     $obj = conecta_db();
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
+
+    function excluir_fotos_orfas($conn) {
+        $query = "SELECT foto FROM perfil WHERE foto IS NOT NULL";
+        $result = $conn->query($query);
+
+        $fotos_vinculadas = [];
+        while ($row = $result->fetch_assoc()) {
+            $fotos_vinculadas[] = $row['foto'];
+        }
+
+        $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
+        $files = scandir($uploadFileDir);
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            if (!in_array($file, $fotos_vinculadas)) {
+                $filePath = $uploadFileDir . $file;
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+        }
+    }
+
+    excluir_fotos_orfas($obj);
 
     $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
                 o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
@@ -90,7 +117,6 @@
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
 
-        
             if (in_array($fileExtension, $allowedExtensions)) {
                 $newFileName = uniqid('profile_', true) . '.' . $fileExtension;
                 $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
@@ -138,12 +164,11 @@
             $_SESSION['success_message'] = "Foto de perfil removida com sucesso.";
 
         }
-        header("Location: profile.php");
 
+        header("Location: profile.php");
         exit();
     }
     
-
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: ../../assets/pages/login.php");
@@ -151,7 +176,6 @@
     }
 
     if (isset($_POST['delete_account'])) {
-
         $query_perfil = "DELETE FROM perfil WHERE id_usuario = ?";
         $stmt_perfil = $obj->prepare($query_perfil);
         $stmt_perfil->bind_param("i", $user['id_usuario']);
@@ -235,7 +259,6 @@
 
         $_SESSION['success_message'] = "Informações atualizadas com sucesso.";
 
-
         header("Location: profile.php");
         exit();
     }
@@ -259,10 +282,11 @@
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
+        $id_publicacao = $_POST['post_id'];
 
-        $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_usuario = ?";
+        $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_publicacao = ? AND id_usuario = ?";
         $stmt_post = $obj->prepare($query_post);
-        $stmt_post->bind_param("sssi", $titulo, $conteudo, $tipoPublicacao, $user['id_usuario']);
+        $stmt_post->bind_param("sssii", $titulo, $conteudo, $tipoPublicacao, $id_publicacao, $user['id_usuario']);
         $stmt_post->execute();
 
         header('Location: profile.php');
@@ -326,7 +350,6 @@
     </section>
 
     <section class="profile">
-
         <div class="logout-button">
             <form action="profile.php" method="POST" class="tooltip-wrapper">
                 <button type="submit" name="logout">
@@ -397,9 +420,9 @@
                 </div>
             </div>
     </section>
+
     <section class="content">
         <div class="user-posts">
-
             <?php if ($result_posts->num_rows > 0): ?>
                 <h2>Minhas Publicações</h2>
                 <?php while ($post = $result_posts->fetch_assoc()): ?>
@@ -425,7 +448,15 @@
                         
                         <div class="post-actions">
                             <form method="POST" action="profile.php">
-                                <button type="button" name="update_post" class="edit-button" onclick="openEditPostModal();">✏️ Editar</button>
+                                <button 
+                                    type="button" 
+                                    class="edit-button" 
+                                    onclick="openEditPostModal(this);"
+                                    data-id="<?php echo $post['id_publicacao']; ?>"
+                                    data-titulo="<?php echo htmlspecialchars($post['titulo']); ?>"
+                                    data-conteudo="<?php echo htmlspecialchars($post['conteudo']); ?>"
+                                    data-tipo="<?php echo $post['tipo_publicacao']; ?>"
+                                >✏️ Editar</button>
                             </form>
                             <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
                                 <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
@@ -435,7 +466,6 @@
                     </div>
                 <?php endwhile; ?>
             <?php endif; ?>
-
         </div>
     </section>
 
@@ -484,8 +514,6 @@
                         } 
                     ?>">
                         <div class="column-style">
-
-
                             <div class="form-group">
                                 <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem:</label>
                                 <input type="file" name="foto_perfil" id="foto_perfil">
@@ -521,7 +549,6 @@
                                 <span class="span-required">As senhas não coincidem.</span>
                             </div> 
                         </div>
-                        
                     </div>
 
                     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
@@ -554,9 +581,7 @@
                                     ); ?>">
                                     <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
                                 </div>
-                                
                             </div>
-                
 
                             <div class="row-style-content">
                                 <div class="form-group">

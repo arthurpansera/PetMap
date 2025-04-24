@@ -214,6 +214,7 @@
                             <input type="text" name="CEP" id="CEP" class="mid-inputUser required" data-type="CEP" data-required="true" placeholder="XXXXX-XXX">
                             <span class="span-required">Por favor, insira um CEP válido</span>
                         </div>
+                        
                         <div class="mid-inputBox">
                             <label for="road"><b>Rua: *</b></label>
                             <input type="text" name="road" id="road" class="mid-inputUser required" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
