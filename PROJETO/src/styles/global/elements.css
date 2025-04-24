@@ -24,7 +24,6 @@ html, body {
     overflow-x: hidden;
 }
 
-
 body.swal2-shown {
     overflow: auto !important;
 }
@@ -33,8 +32,7 @@ body.swal2-shown {
     z-index: 99999;
 }
 
-
-body{
+body {
     background-image: url(../../assets/images/background-image/background-image.png);
 }
 
