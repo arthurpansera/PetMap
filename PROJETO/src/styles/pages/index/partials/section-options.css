@@ -1,7 +1,3 @@
-body {
-    background-image: url(../../../../assets/images/background-image/background-image-maior-2.png);
-}
-
 .content {
     display: flex;
     flex-direction: column;

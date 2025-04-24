@@ -255,6 +255,7 @@
         exit;
     }
 
+
     if (isset($_POST['update_post'])) {
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
