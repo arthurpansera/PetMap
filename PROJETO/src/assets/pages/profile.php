@@ -56,24 +56,27 @@
     function excluir_fotos_orfas($conn) {
         $query = "SELECT foto FROM perfil WHERE foto IS NOT NULL";
         $result = $conn->query($query);
-
+    
         $fotos_vinculadas = [];
         while ($row = $result->fetch_assoc()) {
             $fotos_vinculadas[] = $row['foto'];
         }
-
-        $uploadFileDir = __DIR__ . '/../../assets/images/uploads/profile/';
-        $files = scandir($uploadFileDir);
-
-        foreach ($files as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            if (!in_array($file, $fotos_vinculadas)) {
-                $filePath = $uploadFileDir . $file;
-                if (file_exists($filePath)) {
-                    unlink($filePath);
+    
+        $uploadFileDir = realpath(__DIR__ . '/../../assets/images/uploads/profile/');
+    
+        if ($uploadFileDir && is_dir($uploadFileDir)) {
+            $files = scandir($uploadFileDir);
+    
+            foreach ($files as $file) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+    
+                if (!in_array($file, $fotos_vinculadas)) {
+                    $filePath = $uploadFileDir . DIRECTORY_SEPARATOR . $file;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
                 }
             }
         }

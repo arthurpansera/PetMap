@@ -12,14 +12,19 @@
     if ($isLoggedIn) {
         $userId = $_SESSION['id_usuario'];
         
-        $query = "SELECT descricao FROM perfil WHERE id_usuario = ?";
+        $query = "SELECT nome, descricao FROM usuario u 
+                  JOIN perfil p ON u.id_usuario = p.id_usuario 
+                  WHERE u.id_usuario = ?";
         $stmt = $obj->prepare($query);
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $userProfile = $stmt->get_result()->fetch_assoc();
-
-        if ($userProfile && $userProfile['descricao'] === 'Perfil de moderador') {
-            $isModerator = true;
+    
+        if ($userProfile) {
+            $userName = $userProfile['nome'];
+            if ($userProfile['descricao'] === 'Perfil de moderador') {
+                $isModerator = true;
+            }
         }
     }
 
@@ -63,9 +68,16 @@
                 </a>
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
-                        <a class="profile-image" href="src/assets/pages/profile.php">
-                            <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
-                        </a>
+                        <?php
+                            $nomes = explode(' ', trim($userName));
+                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                        ?>
+                        <li class="user-info">
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <a class="profile-image" href="src/assets/pages/profile.php">
+                                <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
+                            </a>
+                        </li>
                     <?php else: ?>
                         <a class="btn" href="src/assets/pages/login.php">Entrar</a>
                     <?php endif; ?>
@@ -126,8 +138,10 @@
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>
-                    <p class="no-posts-message">Não há publicações disponíveis.</p>
-                    <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil" class="no-posts-image">
+                    <div class="no-posts-error">
+                        <p class="no-posts-message">Não há publicações disponíveis.</p>
+                        <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil" class="no-posts-image">
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

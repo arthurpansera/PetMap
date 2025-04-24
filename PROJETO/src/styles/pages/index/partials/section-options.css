@@ -100,14 +100,21 @@
     object-fit: cover;
 }
 
+.no-posts-error {
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 10px;
+    border-radius: 10px;
+}
+
 .no-posts-message {
-    font-size: 30px;
-    margin-top: 10px;
-    margin-bottom: 40px;
+    font-size: 25px;
+    margin-top: 20px;
+    margin-bottom: 30px;
 }
 
 .no-posts-image {
     width: 80%;
+    margin-bottom: 10px;
 }
 
 @media (min-width: 1200px) {

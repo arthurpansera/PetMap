@@ -52,7 +52,6 @@
 
 .profile-info h2 {
     margin-bottom: 15px;
-
 }
 
 .profile-buttons {
@@ -161,7 +160,7 @@
     position: relative;
     display: inline-block;
     cursor: pointer;
-  }
+}
   
 .tooltip-text {
     visibility: hidden;
@@ -390,7 +389,7 @@ input.input-adm {
 
 #foto_perfil {
     display: none;
-  }
+}
   
 .custom-file-label {
     display: inline-block;
@@ -452,6 +451,14 @@ input.input-adm {
     max-width: 1000px;
     height: auto;
     box-sizing: border-box;
+}
+
+.content h2 {
+    color: white;
+    background-color: #b1b1b1;
+    display: inline-block;
+    padding: 20px 30px;
+    border-radius: 10px;
 }
 
 .user-posts {

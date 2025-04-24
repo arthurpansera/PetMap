@@ -51,6 +51,23 @@ body {
     z-index: 1000;
 }
 
+.nav .ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome-message {
+    color: white;
+}
+
 .nav ul a {
     display: block;
     color: white;
