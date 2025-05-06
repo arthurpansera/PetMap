@@ -58,6 +58,7 @@ CREATE TABLE perfil (
     id_usuario INT NOT NULL,
     descricao TEXT,
     foto VARCHAR(255),
+    status_perfil ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     PRIMARY KEY (id_perfil),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -76,6 +77,7 @@ CREATE TABLE publicacao (
     titulo VARCHAR(255) NOT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_publicacao ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     tipo_publicacao ENUM('animal', 'resgate', 'informacao', 'outro') NOT NULL,
     endereco_rua VARCHAR(100),
     endereco_bairro VARCHAR(50),
@@ -99,6 +101,7 @@ CREATE TABLE comentario (
     id_publicacao INT NOT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status_comentario ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     PRIMARY KEY (id_comentario),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
