@@ -63,9 +63,10 @@ CREATE TABLE perfil (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE moderador_gerencia_perfil (
+CREATE TABLE moderador_valida_perfil (
     id_moderador INT NOT NULL,
     id_perfil INT NOT NULL,
+    descricao_validacao TEXT NOT NULL,
     data_gerencia DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
     FOREIGN KEY (id_perfil) REFERENCES perfil(id_perfil) ON DELETE CASCADE
@@ -90,6 +91,7 @@ CREATE TABLE publicacao (
 CREATE TABLE moderador_valida_publicacao (
     id_moderador INT NOT NULL,
     id_publicacao INT NOT NULL,
+    descricao_validacao TEXT NOT NULL,
     data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
     FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
@@ -124,6 +126,7 @@ CREATE TABLE imagem (
 CREATE TABLE moderador_valida_comentario (
     id_moderador INT NOT NULL,
     id_comentario INT NOT NULL,
+    descricao_validacao TEXT NOT NULL,
     data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
     FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
