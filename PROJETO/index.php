@@ -28,27 +28,61 @@
         }
     }
 
-    $query = "SELECT p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
-          FROM publicacao p 
-          JOIN usuario u ON p.id_usuario = u.id_usuario 
-          ORDER BY p.data_criacao DESC";
-
+    $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+            FROM publicacao p 
+            JOIN usuario u ON p.id_usuario = u.id_usuario 
+            ORDER BY p.data_criacao DESC";
     $result = $obj->query($query);
 
-    if (isset($_POST['make_post'])) {
-        $titulo = $_POST['titulo'];
-        $conteudo = $_POST['conteudo'];
-        $tipoPublicacao = $_POST['tipo_publicacao'];
-        $dataCriacao = date('Y-m-d H:i:s');
+if (isset($_POST['make_post'])) {
+    $titulo = $_POST['titulo'];
+    $conteudo = $_POST['conteudo'];
+    $tipoPublicacao = $_POST['tipo_publicacao'];
+    $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $obj->prepare($insertQuery);
-        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
-        $stmt->execute();
+    $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $obj->prepare($insertQuery);
+    $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+    $stmt->execute();
 
-        header('Location: index.php');
-        exit;
+    $id_publicacao = $stmt->insert_id;
+
+    if (isset($_FILES['foto_publicacao']) && $_FILES['foto_publicacao']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'];
+        $fileName = $_FILES['foto_publicacao']['name'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+        if (getimagesize($fileTmpPath) === false) {
+            $_SESSION['error_message'] = "O arquivo enviado não é uma imagem válida.";
+            header("Location: index.php");
+            exit;
+        }
+
+        if (in_array($fileExtension, $allowedExtensions)) {
+            $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+            $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0777, true);
+            }
+            $destPath = $uploadFileDir . $newFileName;
+
+            if (move_uploaded_file($fileTmpPath, $destPath)) {
+                $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                $stmt_foto = $obj->prepare($query_foto);
+                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                $stmt_foto->execute();
+            } else {
+                $_SESSION['error_message'] = "Erro ao mover a imagem.";
+            }
+        } else {
+            $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas JPG, JPEG e PNG são permitidos.";
+        }
     }
+
+    header("Location: index.php");
+    exit;
+}  
 ?>
 
 <!DOCTYPE html>
@@ -108,6 +142,19 @@
             <div class="menu-post">
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
+
+                        <?php
+                            $idPost = $post['id_publicacao'];
+                            $img = null;
+
+                            $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
+                            $stmtImg = $obj->prepare($imgQuery);
+                            $stmtImg->bind_param("i", $idPost);
+                            $stmtImg->execute();
+                            $imgResult = $stmtImg->get_result();
+                            $img = $imgResult->fetch_assoc();
+                        ?>
+
                         <div class="post-item">
                             <p class="post-info">
                                 <span class="author-name"><?php echo $post['nome']; ?></span> • 
@@ -126,7 +173,16 @@
                                 <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                             </p>
                             <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
+
                             <p><?php echo $post['conteudo']; ?></p>
+
+                            <?php if (!empty($img['imagem_url'])): ?>
+                                <div class="imagem-publicacao-container">
+                                    <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($img['imagem_url']); ?>" alt="Imagem da publicação">
+                                </div>
+                            <?php endif; ?>
+
+
                             <div class="post-actions">
                                 <button class="like-button">
                                     <i class="like-icon">⬆️</i> Impulsionar
@@ -157,15 +213,22 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="index.php" method="POST">
+            <form action="index.php" method="POST" enctype="multipart/form-data">
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
                 </div>
+
                 <div class="post-form-group">
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
+
+                <div class="post-form-group">
+                    <label for="foto_publicacao" class="custom-file-label" id="label_foto_post">📁 Escolher imagem:</label>
+                    <input type="file" name="foto_publicacao" id="foto_publicacao">
+                </div>
+
                 <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>

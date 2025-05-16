@@ -214,15 +214,11 @@ body {
     padding: 30px;
     border: 1px solid #ccc;
     width: 90%;
-    max-width: 400px;
+    max-width: 600px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     font-family: Arial, sans-serif;
     position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
 }
 
 .post-modal-close {
@@ -245,6 +241,34 @@ body {
     width: 100%;
 }
 
+
+.post-form-group label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.post-form-group > .custom-file-label {
+    font-weight: normal;
+}
+
+#foto_publicacao {
+    display: none;
+}
+
+.custom-file-label {
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
 .post-modal input[type="text"],
 .post-modal textarea,
 .post-modal button,
@@ -255,6 +279,12 @@ body {
     border: 1px solid #ddd;
     box-sizing: border-box;
     font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+.post-modal textarea {
+    height: 130px;
+    resize: none;
 }
 
 .post-modal button {
@@ -285,13 +315,4 @@ body {
     background-position: right 12px center;
     background-size: 16px 16px;
     cursor: pointer;
-}
-
-.post-form-group {
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.post-form-group label {
-    font-weight: bold;
 }
