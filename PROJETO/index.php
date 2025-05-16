@@ -124,7 +124,7 @@
             <ul>
                 <li><a href="index.php">Página Principal</a></li>
                 <li><a href="index.php">Animais Resgatados</a></li>
-                <li><a href="index.php">Animais Perdidos</a></li>
+                <li><a href="src/assets/pages/lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="index.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="index.php">Usuários Cadastrados</a></li>
@@ -196,7 +196,7 @@
                 <?php else: ?>
                     <div class="no-posts-error">
                         <p class="no-posts-message">Não há publicações disponíveis.</p>
-                        <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Perfil" class="no-posts-image">
+                        <img src="src/assets/images/no-posts-image/sem-posts.png" alt="Ícone de Erro" class="no-posts-image">
                     </div>
                 <?php endif; ?>
             </div>

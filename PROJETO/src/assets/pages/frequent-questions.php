@@ -66,7 +66,7 @@
             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="../../../index.php">Animais Resgatados</a></li>
-                <li><a href="../../../index.php">Animais Perdidos</a></li>
+                <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
