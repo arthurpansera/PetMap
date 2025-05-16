@@ -21,8 +21,9 @@
     font-size: 35px;
 }
 
-.content .support-info {
+.content .questions {
     text-align: justify;
+    font-size: 16px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
@@ -33,12 +34,33 @@
     line-height: 1.5em;
 }
 
-.content .support-info-1 {
+.content .faq-info-1 {
     padding-bottom: 30px;
 }
 
-.content .support-info-2 {
+li {
     padding-bottom: 30px;
+}
+
+.content .faq-info-3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content .faq-info-3 a {
+    display: inline-block;
+    padding: 8px 15px;
+    color: white;
+    background-color: var(--purple-color);
+    text-decoration: none;
+    border-radius: 10px;
+    transition-duration: 0.3s;
+}
+
+.content .faq-info-3 a:hover {
+    background-color: var(--dark-purple);
+    color: rgb(228, 228, 228);
 }
 
 @media (min-width: 1200px) {

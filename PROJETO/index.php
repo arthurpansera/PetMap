@@ -130,7 +130,7 @@
                     <li><a href="index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="index.php">Sobre Nós</a></li>
-                <li><a href="index.php">Perguntas Frequentes</a></li>
+                <li><a href="src/assets/pages/frequent-questions.php">Perguntas Frequentes</a></li>
                 <li><a href="src/assets/pages/support.php">Suporte</a></li>
             </ul>
             <div class="footer">

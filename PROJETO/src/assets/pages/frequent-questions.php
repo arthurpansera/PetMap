@@ -32,8 +32,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetMap | Suporte</title>
-    <link rel="stylesheet" href="../../styles/pages/support/support.css">
+    <title>PetMap | Perguntas Frequentes</title>
+    <link rel="stylesheet" href="../../styles/pages/frequent-questions/frequent-questions.css">
 </head>
 <body>
     <header>
@@ -81,23 +81,43 @@
             </div>
         </nav>
         <div class="content">
-            <h2>Suporte PetMap</h2>
-            <div class="support-info">
-                <div class="support-info-1">
-                    <p>O PetMap é uma plataforma colaborativa dedicada à proteção e ao bem-estar dos animais. Nosso objetivo é conectar pessoas, ONGs e comunidades para facilitar o resgate de animais perdidos ou abandonados.</p>
-                    <p>Se você tiver dúvidas, encontrar algum problema na plataforma ou quiser enviar sugestões, nossa equipe de suporte está pronta para ajudar.</p>
+            <h2>Perguntas Frequentes</h2>
+            <div class="questions">
+                <div class="faq-info-1">
+                    <p>O PetMap foi criado para facilitar a conexão entre pessoas, ONGs e comunidades que se preocupam com o bem-estar animal. Aqui reunimos as perguntas mais frequentes para ajudar você a entender melhor como a plataforma funciona e como utilizá-la da melhor forma.</p>
+                    <p>Se você está com alguma dúvida sobre como registrar um animal perdido, relatar um avistamento ou interagir com ONGs, esta seção foi feita para você.</p>
                 </div>
-                <div class="support-info-2">
-                    <p>Entre em contato com a gente:</p>
+                <div class="faq-info-2">
+                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
                     <ul>
-                        <li><strong>Email:</strong> suportepetmap@gmail.com</li>
-                        <li><strong>WhatsApp:</strong> (41) 99123-4567</li>
-                        <li><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</li>
+                        <li><strong>Como faço para me cadastrar como ONG, cidadão ou moderador?</strong><br>
+                            Você pode escolher o tipo de conta durante o processo de cadastro. Após isso, é só preencher o formulário com as informações solicitadas.</li>
+
+                        <li><strong>Posso alterar meu perfil depois de me cadastrar?</strong><br>
+                            Sim. É possível editar informações pessoais e atualizar a foto do perfil acessando a página de perfil.</li>
+
+                        <li><strong>Quem pode fazer publicações na plataforma?</strong><br>
+                            Usuários com perfil de cidadão ou ONG podem criar publicações. Elas podem ser sobre animais perdidos, resgates, informações ou outros temas ligados à causa animal.</li>
+
+                        <li><strong>É possível editar ou remover uma publicação ou um comentário?</strong><br>
+                            Sim, acesse a área do seu perfil e vá até a seção de publicações ou comentários para editar ou excluir quando necessário.</li>
+
+                        <li><strong>Vi um animal abandonado na rua. O que posso fazer?</strong><br>
+                            Você pode criar uma publicação do tipo "Animal Perdido", incluindo fotos e a localização aproximada. Isso permite que ONGs e outros usuários visualizem e possam oferecer ajuda rapidamente.</li>
+
+                        <li><strong>Como entrar em contato com uma ONG?</strong><br>
+                            Acesse o perfil da ONG diretamente pela plataforma. Lá, você encontrará o e-mail e o telefone para contato. Além disso, as ONGs podem comentar nas publicações e interagir com você por meio delas.</li>
                     </ul>
+                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
                 </div>
-                <div>
-                    <p>Obrigado por fazer parte dessa rede de cuidado e solidariedade com os animais.</p>
-                    <p>Com você, o PetMap vai mais longe!</p>
+                <div class="faq-info-3">
+                    <div>
+                        <p>Se a sua dúvida não foi respondida aqui, entre em contato com nosso suporte.</p>
+                        <p>Juntos, podemos fazer a diferença na vida de muitos animais!</p>
+                    </div>
+                    <div>
+                        <a href="support.php">Suporte</a>
+                    </div>
                 </div>
             </div>
         </div>
