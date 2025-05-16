@@ -32,8 +32,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetMap | Suporte</title>
-    <link rel="stylesheet" href="../../styles/pages/support/support.css">
+    <title>PetMap | Sobre Nós</title>
+    <link rel="stylesheet" href="../../styles/pages/about-us/about-us.css">
 </head>
 <body>
     <header>
@@ -81,23 +81,22 @@
             </div>
         </nav>
         <div class="content">
-            <h2>Suporte PetMap</h2>
-            <div class="support-info">
-                <div class="support-info-1">
-                    <p>O PetMap é uma plataforma colaborativa dedicada à proteção e ao bem-estar dos animais. Nosso objetivo é conectar pessoas, ONGs e comunidades para facilitar o resgate de animais perdidos ou abandonados.</p>
-                    <p>Se você tiver dúvidas, encontrar algum problema na plataforma ou quiser enviar sugestões, nossa equipe de suporte está pronta para ajudar.</p>
+            <h2>Sobre Nós</h2>
+            <div class="about-us-info">
+                <div class="about-us-info-1">
+                    <p>O PetMap é uma plataforma colaborativa dedicada à causa animal. Nosso objetivo é conectar pessoas e ONGs em um espaço voltado ao cuidado, resgate e proteção dos pets.</p>
                 </div>
-                <div class="support-info-2">
-                    <p>Entre em contato com a gente:</p>
-                    <ul>
-                        <li><strong>Email:</strong> suportepetmap@gmail.com</li>
-                        <li><strong>WhatsApp:</strong> (41) 99123-4567</li>
-                        <li><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</li>
-                    </ul>
+                <div class="about-us-image-1">
+                    <img src="../images/example-images/imagem-cao-sobre-nos.jpg" alt="Foto de um Cachorro">
                 </div>
-                <div class="support-info-3">
-                    <p>Obrigado por fazer parte dessa rede de cuidado e solidariedade com os animais.</p>
-                    <p>Com você, o PetMap vai mais longe!</p>
+                <div class="about-us-info-2">
+                    <p>Através do PetMap, é possível registrar animais desaparecidos, relatar avistamentos, compartilhar informações importantes e se comunicar diretamente com organizações que acolhem e cuidam dos animais.</p>
+                </div>
+                <div class="about-us-image-2">
+                    <img src="../images/example-images/imagem-gato-sobre-nos.jpg" alt="Foto de um Gato">
+                </div>
+                <div class="about-us-info-3">
+                    <p>Mais do que uma ferramenta, o PetMap é uma rede de apoio que fortalece a comunidade ao incentivar ações de empatia, responsabilidade e amor pelos animais.</p>
                 </div>
             </div>
         </div>

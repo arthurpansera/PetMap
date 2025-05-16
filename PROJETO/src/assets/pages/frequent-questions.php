@@ -71,7 +71,7 @@
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
-                <li><a href="../../../index.php">Sobre Nós</a></li>
+                <li><a href="about-us.php">Sobre Nós</a></li>
                 <li><a href="frequent-questions.php">Perguntas Frequentes</a></li>
                 <li><a href="support.php">Suporte</a></li>
             </ul>

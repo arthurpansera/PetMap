@@ -30,7 +30,6 @@
     border-radius: 10px;
     margin: 30px auto;
     width: 900px;
-    transition: transform 0.3s ease-in-out;
     line-height: 1.5em;
 }
 
@@ -55,7 +54,7 @@ li {
     background-color: var(--purple-color);
     text-decoration: none;
     border-radius: 10px;
-    transition-duration: 0.3s;
+    transition-duration: 0.2s;
 }
 
 .content .faq-info-3 a:hover {

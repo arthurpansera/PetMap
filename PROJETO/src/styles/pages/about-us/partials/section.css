@@ -21,7 +21,7 @@
     font-size: 35px;
 }
 
-.content .support-info {
+.content .about-us-info {
     text-align: justify;
     font-size: 16px;
     background-color: #fff;
@@ -33,11 +33,11 @@
     line-height: 1.5em;
 }
 
-.content .support-info-1 {
+.content .about-us-info-1 {
     padding-bottom: 30px;
 }
 
-.content .support-info-2 {
+.content .about-us-info-2 {
     padding-bottom: 30px;
 }
 
