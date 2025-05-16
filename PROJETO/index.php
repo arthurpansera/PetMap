@@ -131,7 +131,7 @@ if (isset($_POST['make_post'])) {
                 <?php endif; ?>
                 <li><a href="index.php">Sobre Nós</a></li>
                 <li><a href="index.php">Perguntas Frequentes</a></li>
-                <li><a href="index.php">Suporte</a></li>
+                <li><a href="src/assets/pages/support.php">Suporte</a></li>
             </ul>
             <div class="footer">
                 <p>&copy;2025 - PetMap.</p>
