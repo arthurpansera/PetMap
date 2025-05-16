@@ -34,55 +34,55 @@
             ORDER BY p.data_criacao DESC";
     $result = $obj->query($query);
 
-if (isset($_POST['make_post'])) {
-    $titulo = $_POST['titulo'];
-    $conteudo = $_POST['conteudo'];
-    $tipoPublicacao = $_POST['tipo_publicacao'];
-    $dataCriacao = date('Y-m-d H:i:s');
+    if (isset($_POST['make_post'])) {
+        $titulo = $_POST['titulo'];
+        $conteudo = $_POST['conteudo'];
+        $tipoPublicacao = $_POST['tipo_publicacao'];
+        $dataCriacao = date('Y-m-d H:i:s');
 
-    $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $obj->prepare($insertQuery);
-    $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
-    $stmt->execute();
+        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $obj->prepare($insertQuery);
+        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+        $stmt->execute();
 
-    $id_publicacao = $stmt->insert_id;
+        $id_publicacao = $stmt->insert_id;
 
-    if (isset($_FILES['foto_publicacao']) && $_FILES['foto_publicacao']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'];
-        $fileName = $_FILES['foto_publicacao']['name'];
-        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        if (isset($_FILES['foto_publicacao']) && $_FILES['foto_publicacao']['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'];
+            $fileName = $_FILES['foto_publicacao']['name'];
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-        if (getimagesize($fileTmpPath) === false) {
-            $_SESSION['error_message'] = "O arquivo enviado não é uma imagem válida.";
-            header("Location: index.php");
-            exit;
-        }
-
-        if (in_array($fileExtension, $allowedExtensions)) {
-            $newFileName = uniqid('post_', true) . '.' . $fileExtension;
-            $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
-            if (!is_dir($uploadFileDir)) {
-                mkdir($uploadFileDir, 0777, true);
+            if (getimagesize($fileTmpPath) === false) {
+                $_SESSION['error_message'] = "O arquivo enviado não é uma imagem válida.";
+                header("Location: index.php");
+                exit;
             }
-            $destPath = $uploadFileDir . $newFileName;
 
-            if (move_uploaded_file($fileTmpPath, $destPath)) {
-                $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                $stmt_foto = $obj->prepare($query_foto);
-                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                $stmt_foto->execute();
+            if (in_array($fileExtension, $allowedExtensions)) {
+                $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+                $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+                if (!is_dir($uploadFileDir)) {
+                    mkdir($uploadFileDir, 0777, true);
+                }
+                $destPath = $uploadFileDir . $newFileName;
+
+                if (move_uploaded_file($fileTmpPath, $destPath)) {
+                    $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                    $stmt_foto = $obj->prepare($query_foto);
+                    $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                    $stmt_foto->execute();
+                } else {
+                    $_SESSION['error_message'] = "Erro ao mover a imagem.";
+                }
             } else {
-                $_SESSION['error_message'] = "Erro ao mover a imagem.";
+                $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas JPG, JPEG e PNG são permitidos.";
             }
-        } else {
-            $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas JPG, JPEG e PNG são permitidos.";
         }
-    }
 
-    header("Location: index.php");
-    exit;
-}  
+        header("Location: index.php");
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
