@@ -38,7 +38,16 @@
 }
 
 .content .about-us-info-2 {
-    padding-bottom: 30px;
+    padding-bottom: 20px;
+}
+
+.about-us-image img {
+    width: 600px;
+    height: 400px;
+    display: block;
+    margin: 0 auto 30px auto;
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 @media (min-width: 1200px) {

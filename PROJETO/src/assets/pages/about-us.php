@@ -86,14 +86,11 @@
                 <div class="about-us-info-1">
                     <p>O PetMap é uma plataforma colaborativa dedicada à causa animal. Nosso objetivo é conectar pessoas e ONGs em um espaço voltado ao cuidado, resgate e proteção dos pets.</p>
                 </div>
-                <div class="about-us-image-1">
+                <div class="about-us-image">
                     <img src="../images/example-images/imagem-cao-sobre-nos.jpg" alt="Foto de um Cachorro">
                 </div>
                 <div class="about-us-info-2">
                     <p>Através do PetMap, é possível registrar animais desaparecidos, relatar avistamentos, compartilhar informações importantes e se comunicar diretamente com organizações que acolhem e cuidam dos animais.</p>
-                </div>
-                <div class="about-us-image-2">
-                    <img src="../images/example-images/imagem-gato-sobre-nos.jpg" alt="Foto de um Gato">
                 </div>
                 <div class="about-us-info-3">
                     <p>Mais do que uma ferramenta, o PetMap é uma rede de apoio que fortalece a comunidade ao incentivar ações de empatia, responsabilidade e amor pelos animais.</p>
