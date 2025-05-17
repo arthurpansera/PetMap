@@ -335,7 +335,7 @@
         <nav class="left-menu">
             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
-                <li><a href="../../../index.php">Animais Resgatados</a></li>
+                <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
                 <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>

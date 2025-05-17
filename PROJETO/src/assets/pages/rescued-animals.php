@@ -29,7 +29,7 @@
     $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
             FROM publicacao p 
             JOIN usuario u ON p.id_usuario = u.id_usuario
-            WHERE p.tipo_publicacao = 'animal'
+            WHERE p.tipo_publicacao = 'resgate'
             ORDER BY p.data_criacao DESC";
     $result = $obj->query($query);
 ?>
@@ -39,8 +39,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetMap | Animais Perdidos</title>
-    <link rel="stylesheet" href="../../styles/pages/lost-animals/lost-animals.css">
+    <title>PetMap | Animais Resgatados</title>
+    <link rel="stylesheet" href="../../styles/pages/rescued-animals/rescued-animals.css">
 </head>
 <body>
     <header>
@@ -66,7 +66,7 @@
                     <?php endif; ?>
                 </ul>
             </nav>
-        </div> 
+        </div>
     </header>
     <section class="options">
         <nav class="left-menu">
@@ -88,9 +88,9 @@
             </div>
         </nav>
         <div class="content">
-            <div class="lost-animal-post">
+            <div class="rescued-animal-post">
                 <?php if ($result->num_rows > 0): ?>
-                    <h2>Animais Perdidos</h2>
+                    <h2>Animais Resgatados</h2>
                     <?php while ($post = $result->fetch_assoc()): ?>
 
                         <?php
