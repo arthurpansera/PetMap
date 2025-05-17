@@ -468,8 +468,8 @@ input.input-adm {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
-    margin: 50px auto;
-    max-width: 900px;
+    margin: 30px auto;
+    width: 900px;
     transition: transform 0.3s ease-in-out;
 }
 
@@ -534,13 +534,14 @@ input.input-adm {
 
 .post-item img {
     width: 100%;
-    max-width: 800px;
+    max-width: 600px;
     height: auto;
     border-radius: 10px;
     display: block;
-    margin: 0 auto;
+    margin: 0 auto 20px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     object-fit: cover;
+    transition: transform 0.3s ease; 
 }
 
 .post-edit-modal {
