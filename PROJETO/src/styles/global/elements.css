@@ -22,6 +22,7 @@ html, body {
     font-family: "Inter", sans-serif;
     height: 100%;
     overflow-x: hidden;
+    margin: 0;
 }
 
 body.swal2-shown {
@@ -34,6 +35,11 @@ body.swal2-shown {
 
 body {
     background-image: url(../../assets/images/background-image/background-image.png);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    width: 100%;
 }
 
 /* --- top navigation menu --- */
