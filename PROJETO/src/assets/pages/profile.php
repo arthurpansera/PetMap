@@ -277,9 +277,54 @@
         $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
         $stmt->execute();
 
+        $id_publicacao = $stmt->insert_id;
+
+        if (isset($_FILES['foto_publicacao'])) {
+            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+                        ? count($_FILES['foto_publicacao']['name']) 
+                        : 0;
+
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+            for ($i = 0; $i < $fileCount; $i++) {
+                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                    $fileName = $_FILES['foto_publicacao']['name'][$i];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                    if (getimagesize($fileTmpPath) === false) {
+                        continue;
+                    }
+
+                    if (in_array($fileExtension, $allowedExtensions)) {
+                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                        $rootPath = realpath(__DIR__ . '/../../..');
+                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
+                        if (!is_dir($uploadFileDir)) {
+                            mkdir($uploadFileDir, 0777, true);
+                        }
+
+                        $destPath = $uploadFileDir . $newFileName;
+
+                        if (move_uploaded_file($fileTmpPath, $destPath)) {
+                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                            $stmt_foto = $obj->prepare($query_foto);
+
+                            if ($stmt_foto) {
+                                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                                $stmt_foto->execute();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         header('Location: profile.php');
         exit;
     }
+
 
     if (isset($_POST['update_post'])) {
         $titulo = $_POST['titulo'];
@@ -427,50 +472,118 @@
     <section class="content">
         <div class="user-posts">
             <?php if ($result_posts->num_rows > 0): ?>
-                <h2>Minhas Publicações</h2>
-                <?php while ($post = $result_posts->fetch_assoc()): ?>
-                    <div class="post-item">
-                        <p class="post-info">
-                            <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
-                            <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
-                        </p>
-                        <?php
-                            $tiposFormatados = [
-                                'animal' => 'Animal Perdido',
-                                'resgate' => 'Resgate de Animal',
-                                'informacao' => 'Informação',
-                                'cidadao' => 'Cidadão',
-                                'outro' => 'Outro'
-                            ];
+            <h2>Minhas Publicações</h2>
+            <?php while ($post = $result_posts->fetch_assoc()): ?>
+
+                <?php
+                    $idPost = $post['id_publicacao'];
+                    $images = [];
+
+                    $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
+                    $stmtImg = $obj->prepare($imgQuery);
+                    $stmtImg->bind_param("i", $idPost);
+                    $stmtImg->execute();
+                    $imgResult = $stmtImg->get_result();
+
+                    while ($row = $imgResult->fetch_assoc()) {
+                        $images[] = $row['imagem_url'];
+                    }
+                ?>
+
+                <div class="post-item">
+                <p class="post-info">
+                    <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
+                    <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
+                </p>
+
+                <?php
+                    $tiposFormatados = [
+                        'animal' => 'Animal Perdido',
+                        'resgate' => 'Resgate de Animal',
+                        'informacao' => 'Informação',
+                        'cidadao' => 'Cidadão',
+                        'outro' => 'Outro'
+                    ];
+                ?>
+                <p class="post-type">
+                    <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                </p>
+
+                <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
+                <p><?php echo $post['conteudo']; ?></p>
+
+                <?php
+                    $images = $images ?? [];
+                    $totalImages = count($images);
+                    $maxVisible = 3;
+
+                    $galleryClass = 'multiple-images';
+                    if ($totalImages == 1) {
+                        $galleryClass = 'single-image';
+                    } elseif ($totalImages == 2) {
+                        $galleryClass = 'two-images';
+                    }
+
+                    $visibleImages = array_slice($images, 0, $maxVisible);
+                    $moreCount = max(0, $totalImages - $maxVisible);
+                ?>
+
+                <div class="image-gallery <?php echo $galleryClass; ?>">
+                    <?php foreach ($visibleImages as $index => $imagem): ?>
+                        <?php 
+                            $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                            $dataImagesJson = $isLastVisibleWithMore ? json_encode($images) : json_encode([$imagem]);
                         ?>
-                        <p class="post-type">
-                            <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
-                        </p>
-                        <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
-                        <p><?php echo $post['conteudo']; ?></p>
-                        
-                        <div class="post-actions">
-                            <form method="POST" action="profile.php">
-                                <button 
-                                    type="button" 
-                                    class="edit-button" 
-                                    onclick="openEditPostModal(this);"
-                                    data-id="<?php echo $post['id_publicacao']; ?>"
-                                    data-titulo="<?php echo htmlspecialchars($post['titulo']); ?>"
-                                    data-conteudo="<?php echo htmlspecialchars($post['conteudo']); ?>"
-                                    data-tipo="<?php echo $post['tipo_publicacao']; ?>"
-                                >✏️ Editar</button>
-                            </form>
-                            <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
-                                <button type="submit" name="delete_post" class="delete-button">🗑️ Excluir</button>
-                            </form>
+                        <div 
+                            class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                            data-images='<?php echo $dataImagesJson; ?>'
+                            data-index="<?php echo $index; ?>"
+                        >
+                            <?php if ($isLastVisibleWithMore): ?>
+                                <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                            <?php endif; ?>
+                            <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
                         </div>
-                    </div>
-                <?php endwhile; ?>
+                    <?php endforeach; ?>
+                </div>
+
+
+                <div class="post-actions">
+                    <form method="POST" action="profile.php">
+                    <button 
+                        type="button" 
+                        class="edit-button" 
+                        onclick="openEditPostModal(this);"
+                        data-id="<?php echo $post['id_publicacao']; ?>"
+                        data-titulo="<?php echo htmlspecialchars($post['titulo']); ?>"
+                        data-conteudo="<?php echo htmlspecialchars($post['conteudo']); ?>"
+                        data-tipo="<?php echo $post['tipo_publicacao']; ?>"
+                    >✏️ Editar</button>
+                    </form>
+                    <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
+                    <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
+                    <button type="submit" name="delete_post" class="delete-button">🗑️ Excluir</button>
+                    </form>
+                </div>
+                </div>
+
+            <?php endwhile; ?>
             <?php endif; ?>
         </div>
+
+        <div id="modal-images-posts" class="modal-images-posts">
+            <div class="modal-content-images-posts">
+                <span class="close-images-posts">&times;</span>
+                <button id="prevImage" class="modal-nav-button" aria-label="Imagem anterior">&#10094;</button>
+                <div class="modal-gallery-images-posts">
+                <img id="modalImage" src="" alt="Imagem Modal">
+                </div>
+                <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
+            </div>
+        </div>
+
     </section>
+
 
     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
         <button class="floating-button" title="Nova Publicação" onclick="openPostModal()">
@@ -482,15 +595,22 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="profile.php" method="POST">
+            <form action="profile.php" method="POST" enctype="multipart/form-data">
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
                 </div>
+
                 <div class="post-form-group">
                     <label for="conteudo">Conteúdo</label>
                     <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
+
+                <div class="post-form-group">
+                    <label for="foto_publicacao" class="custom-file-label" id="label_foto_post">📁 Escolher imagem:</label>
+                    <input type="file" name="foto_publicacao[]" id="foto_publicacao" multiple accept="image/*">
+                </div>
+
                 <div class="post-form-group">
                     <label for="tipo_publicacao">Tipo de Publicação</label>
                     <select id="tipo_publicacao" name="tipo_publicacao" required>

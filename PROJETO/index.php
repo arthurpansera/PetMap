@@ -145,14 +145,17 @@
 
                         <?php
                             $idPost = $post['id_publicacao'];
-                            $img = null;
+                            $images = [];
 
                             $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
                             $stmtImg = $obj->prepare($imgQuery);
                             $stmtImg->bind_param("i", $idPost);
                             $stmtImg->execute();
                             $imgResult = $stmtImg->get_result();
-                            $img = $imgResult->fetch_assoc();
+
+                            while ($row = $imgResult->fetch_assoc()) {
+                                $images[] = $row['imagem_url'];
+                            }
                         ?>
 
                         <div class="post-item">
@@ -176,12 +179,40 @@
 
                             <p><?php echo $post['conteudo']; ?></p>
 
-                            <?php if (!empty($img['imagem_url'])): ?>
-                                <div class="imagem-publicacao-container">
-                                    <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($img['imagem_url']); ?>" alt="Imagem da publicação">
-                                </div>
-                            <?php endif; ?>
+                            <?php
+                                $images = $images ?? [];
+                                $totalImages = count($images);
+                                $maxVisible = 3;
 
+                                $galleryClass = 'multiple-images';
+                                if ($totalImages == 1) {
+                                    $galleryClass = 'single-image';
+                                } elseif ($totalImages == 2) {
+                                    $galleryClass = 'two-images';
+                                }
+
+                                $visibleImages = array_slice($images, 0, $maxVisible);
+                                $moreCount = max(0, $totalImages - $maxVisible);
+                            ?>
+
+                            <div class="image-gallery <?php echo $galleryClass; ?>">
+                                <?php foreach ($visibleImages as $index => $imagem): ?>
+                                    <?php 
+                                        $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                                        $dataImagesJson = $isLastVisibleWithMore ? json_encode($images) : json_encode([$imagem]);
+                                    ?>
+                                    <div 
+                                        class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                        data-images='<?php echo $dataImagesJson; ?>'
+                                        data-index="<?php echo $index; ?>"
+                                    >
+                                        <?php if ($isLastVisibleWithMore): ?>
+                                            <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                        <?php endif; ?>
+                                        <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
 
                             <div class="post-actions">
                                 <button class="like-button">
@@ -200,6 +231,18 @@
                     </div>
                 <?php endif; ?>
             </div>
+
+             <div id="modal-images-posts" class="modal-images-posts">
+                <div class="modal-content-images-posts">
+                    <span class="close-images-posts">&times;</span>
+                    <button id="prevImage" class="modal-nav-button" aria-label="Imagem anterior">&#10094;</button>
+                    <div class="modal-gallery-images-posts">
+                    <img id="modalImage" src="" alt="Imagem Modal">
+                    </div>
+                    <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
+                </div>
+            </div>
+
         </div>
     </section>
     
