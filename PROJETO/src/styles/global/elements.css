@@ -85,7 +85,6 @@ body {
     margin-left: auto;
     border: #fff 3px solid;
     border-radius: 50%;
-
 }
 
 .profile-nav-img img {
@@ -124,7 +123,6 @@ body {
     margin-top: auto;
     position: relative;
 }
-
 
 /* --- INPUT REQUIRED SPAN --- */
 
@@ -401,15 +399,15 @@ body {
 
 #prevImage {
   order: 0; 
-
 }
+
 #nextImage {
   order: 2;  
 }
+
 .modal-nav-button:hover {
   background-color: rgba(80, 80, 80, 0.9);
 }
-
 
 .close-images-posts {
   position: absolute;

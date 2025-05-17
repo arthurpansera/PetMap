@@ -6,6 +6,9 @@
     $isModerator = false;
 
     $obj = conecta_db();
+    $obj->query("SET lc_time_names = 'pt_BR'");
+    date_default_timezone_set('America/Sao_Paulo');
+    setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
     if ($isLoggedIn) {
         $userId = $_SESSION['id_usuario'];
@@ -26,12 +29,39 @@
         }
     }
 
-    $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
-            FROM publicacao p 
-            JOIN usuario u ON p.id_usuario = u.id_usuario
-            WHERE p.tipo_publicacao = 'resgate'
-            ORDER BY p.data_criacao DESC";
-    $result = $obj->query($query);
+    $pesquisa = isset($_GET['pesquisa']) ? trim($_GET['pesquisa']) : '';
+
+    if (!empty($pesquisa)) {
+        $searchTerm = '%' . $pesquisa . '%';
+
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+                FROM publicacao p 
+                JOIN usuario u ON p.id_usuario = u.id_usuario 
+                WHERE (
+                    p.titulo LIKE ? 
+                    OR p.conteudo LIKE ? 
+                    OR u.nome LIKE ? 
+                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y') LIKE ? 
+                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y %H:%i') LIKE ?
+                    OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
+                    OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
+                    OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
+                )
+                AND p.tipo_publicacao = 'resgate'
+                ORDER BY p.data_criacao DESC";
+
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param("ssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+                FROM publicacao p 
+                JOIN usuario u ON p.id_usuario = u.id_usuario 
+                WHERE p.tipo_publicacao = 'resgate'
+                ORDER BY p.data_criacao DESC";
+        $result = $obj->query($query);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +79,10 @@
                 <a href="../../../index.php">
                     <img src="../images/logo-petmap/white-logo.png" alt="Logo PetMap">
                 </a>
+                <form class="search-bar" method="GET" action="rescued-animals.php">
+                    <input type="text" name="pesquisa" placeholder="Pesquisar..." value="<?php echo isset($_GET['pesquisa']) ? htmlspecialchars($_GET['pesquisa']) : ''; ?>">
+                    <button type="submit">🔍</button>
+                </form>
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
