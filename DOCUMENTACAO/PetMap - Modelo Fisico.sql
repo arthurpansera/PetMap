@@ -78,6 +78,7 @@ CREATE TABLE publicacao (
     titulo VARCHAR(255) NOT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    data_atualizacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_publicacao ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     tipo_publicacao ENUM('animal', 'resgate', 'informacao', 'outro') NOT NULL,
     endereco_rua VARCHAR(100),

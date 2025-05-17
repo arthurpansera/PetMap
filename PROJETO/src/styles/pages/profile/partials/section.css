@@ -101,6 +101,11 @@
     transform: scale(1.05);
 }
 
+.swal-title-custom {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .profile-logout:hover {
     transform: scale(1.05);
 }

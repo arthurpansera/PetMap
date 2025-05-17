@@ -251,7 +251,7 @@ body {
     font-weight: normal;
 }
 
-#foto_publicacao {
+#foto_publicacao, #foto_publicacao_edit {
     display: none;
 }
 

@@ -12,12 +12,15 @@ window.onclick = function(event) {
     }
 }
 
+
+// aparecer o nome do arquivo quando for postar uma publicação
 const inputPost = document.getElementById('foto_publicacao');
 const labelPost = document.getElementById('label_foto_post');
 
 inputPost.addEventListener('change', function () {
     if (this.files && this.files.length > 0) {
-        labelPost.textContent = '📁 ' + this.files[0].name;
+        const fileNames = Array.from(this.files).map(file => file.name);
+        labelPost.textContent = '📁 ' + fileNames.join(', ');
     } else {
         labelPost.textContent = '📁 Escolher imagem:';
     }

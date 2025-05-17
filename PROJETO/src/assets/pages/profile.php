@@ -45,6 +45,12 @@
         exit();
     }
 
+        $postDeleted = false;
+    if (!empty($_SESSION['postDeleted'])) {
+        $postDeleted = true;
+        unset($_SESSION['postDeleted']); // apaga para não repetir
+    }
+
     include('../../../conecta_db.php');
 
     $id_usuario = $_SESSION['id_usuario'];
@@ -100,7 +106,7 @@
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
+    $query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao, data_atualizacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
     $stmt_posts = $obj->prepare($query_posts);
     $stmt_posts->bind_param("i", $id_usuario);
     $stmt_posts->execute();
@@ -325,33 +331,115 @@
         exit;
     }
 
-
-    if (isset($_POST['update_post'])) {
+   if (isset($_POST['update_post'])) {
+        $postId = intval($_POST['post_id']);
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
-        $id_publicacao = $_POST['post_id'];
+        date_default_timezone_set('America/Sao_Paulo');
+        $dataAtualizacao = date('Y-m-d H:i:s'); 
 
-        $query_post = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ? WHERE id_publicacao = ? AND id_usuario = ?";
-        $stmt_post = $obj->prepare($query_post);
-        $stmt_post->bind_param("sssii", $titulo, $conteudo, $tipoPublicacao, $id_publicacao, $user['id_usuario']);
-        $stmt_post->execute();
+        $updateQuery = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ?, data_atualizacao = ? WHERE id_publicacao = ?";
+        $stmt = $obj->prepare($updateQuery);
+        $stmt->bind_param("ssssi", $titulo, $conteudo, $tipoPublicacao, $dataAtualizacao, $postId);
+        $stmt->execute();
+
+
+        $hasNewImages = isset($_FILES['foto_publicacao']) 
+                        && !empty($_FILES['foto_publicacao']['name'][0]);
+
+        if ($hasNewImages) {
+            $selectImgs = $obj->prepare("SELECT imagem_url FROM imagem WHERE id_publicacao = ?");
+            $selectImgs->bind_param("i", $postId);
+            $selectImgs->execute();
+            $resultImgs = $selectImgs->get_result();
+
+            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+
+            while ($row = $resultImgs->fetch_assoc()) {
+                $filePath = $uploadDir . '/' . $row['imagem_url'];
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            $deleteImgs = $obj->prepare("DELETE FROM imagem WHERE id_publicacao = ?");
+            $deleteImgs->bind_param("i", $postId);
+            $deleteImgs->execute();
+
+            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+                        ? count($_FILES['foto_publicacao']['name']) 
+                        : 0;
+
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+            for ($i = 0; $i < $fileCount; $i++) {
+                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                    $fileName = $_FILES['foto_publicacao']['name'][$i];
+                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                    if (getimagesize($fileTmpPath) === false) {
+                        continue;
+                    }
+
+                    if (in_array($fileExtension, $allowedExtensions)) {
+                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                        $rootPath = realpath(__DIR__ . '/../../..');
+                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
+                        if (!is_dir($uploadFileDir)) {
+                            mkdir($uploadFileDir, 0777, true);
+                        }
+
+                        $destPath = $uploadFileDir . $newFileName;
+
+                        if (move_uploaded_file($fileTmpPath, $destPath)) {
+                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                            $stmt_foto = $obj->prepare($query_foto);
+
+                            if ($stmt_foto) {
+                                $stmt_foto->bind_param("is", $postId, $newFileName);
+                                $stmt_foto->execute();
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         header('Location: profile.php');
         exit;
     }
 
-    if (isset($_POST['delete_post'])) {
-        $post_id = $_POST['post_id'];
+    if (isset($_POST['post_id'])) {
+        $postId = intval($_POST['post_id']);
 
-        $query_delete = "DELETE FROM publicacao WHERE id_publicacao = ? AND id_usuario = ?";
-        $stmt_delete = $obj->prepare($query_delete);
-        $stmt_delete->bind_param("ii", $post_id, $id_usuario);
-        $stmt_delete->execute();
+        $selectImgs = $obj->prepare("SELECT imagem_url FROM imagem WHERE id_publicacao = ?");
+        $selectImgs->bind_param("i", $postId);
+        $selectImgs->execute();
+        $resultImgs = $selectImgs->get_result();
 
-        header("Location: profile.php");
-        exit();
+        $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+        while ($row = $resultImgs->fetch_assoc()) {
+            $filePath = $uploadDir . '/' . $row['imagem_url'];
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        $deleteImgs = $obj->prepare("DELETE FROM imagem WHERE id_publicacao = ?");
+        $deleteImgs->bind_param("i", $postId);
+        $deleteImgs->execute();
+
+        $deletePost = $obj->prepare("DELETE FROM publicacao WHERE id_publicacao = ?");
+        $deletePost->bind_param("i", $postId);
+        $deletePost->execute();
+
+        header('Location: profile.php');
+        exit;
     }
+
 ?>
 
 <!DOCTYPE html>
@@ -491,10 +579,23 @@
                 ?>
 
                 <div class="post-item">
-                <p class="post-info">
-                    <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
-                    <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
-                </p>
+                    <p class="post-info">
+                        <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
+                        <span class="post-time">
+                            <?php 
+                                setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                            ?>
+
+                            <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                <em style="font-size: 0.85em; color: #777;">
+                                    (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                </em>
+                            <?php endif; ?>
+                        </span>
+
+
+                    </p>
 
                 <?php
                     $tiposFormatados = [
@@ -532,12 +633,12 @@
                     <?php foreach ($visibleImages as $index => $imagem): ?>
                         <?php 
                             $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
-                            $dataImagesJson = $isLastVisibleWithMore ? json_encode($images) : json_encode([$imagem]);
                         ?>
                         <div 
                             class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
-                            data-images='<?php echo $dataImagesJson; ?>'
-                            data-index="<?php echo $index; ?>"
+                            <?php if ($isLastVisibleWithMore): ?>
+                                data-images='<?php echo json_encode($images); ?>'
+                            <?php endif; ?>
                         >
                             <?php if ($isLastVisibleWithMore): ?>
                                 <div class="image-overlay">+<?php echo $moreCount; ?></div>
@@ -550,20 +651,45 @@
 
                 <div class="post-actions">
                     <form method="POST" action="profile.php">
-                    <button 
+
+                        <?php
+                            $images = $images ?? [];
+                            $totalImages = count($images);
+                            $maxVisible = 3;
+
+                            $galleryClass = 'multiple-images';
+                            if ($totalImages == 1) {
+                                $galleryClass = 'single-image';
+                            } elseif ($totalImages == 2) {
+                                $galleryClass = 'two-images';
+                            }
+
+                            $visibleImages = array_slice($images, 0, $maxVisible);
+                            $moreCount = max(0, $totalImages - $maxVisible);
+                        ?>
+
+                       <button 
                         type="button" 
                         class="edit-button" 
                         onclick="openEditPostModal(this);"
-                        data-id="<?php echo $post['id_publicacao']; ?>"
-                        data-titulo="<?php echo htmlspecialchars($post['titulo']); ?>"
-                        data-conteudo="<?php echo htmlspecialchars($post['conteudo']); ?>"
-                        data-tipo="<?php echo $post['tipo_publicacao']; ?>"
+                        data-id="<?= $post['id_publicacao']; ?>"
+                        data-titulo="<?= htmlspecialchars($post['titulo']); ?>"
+                        data-conteudo="<?= htmlspecialchars($post['conteudo']); ?>"
+                        data-tipo="<?= $post['tipo_publicacao']; ?>"
+                        data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8'); ?>'
                     >✏️ Editar</button>
                     </form>
-                    <form method="POST" action="profile.php" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
-                    <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
-                    <button type="submit" name="delete_post" class="delete-button">🗑️ Excluir</button>
+
+                    <form method="POST" action="profile.php">
+                        <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
+                        <button 
+                            type="button" 
+                            class="delete-button" 
+                            onclick="confirmDeletePost(this)"
+                        >🗑️ Excluir</button>
                     </form>
+
+
                 </div>
                 </div>
 
@@ -784,24 +910,34 @@
         </div>
     </div>
 
-    <div id="postEditModal" class="post-edit-modal">
-        <div class="post-edit-modal-content">
-            <span class="close" onclick="closeEditPostModal()">&times;</span>
+    <div id="postEditModal" class="post-modal">
+        <div class="post-modal-content">
+            <span class="post-modal-close" onclick="closeEditPostModal()">&times;</span>
             <h2>Editar Publicação</h2>
-            <form id="editPostForm" action="profile.php" method="POST">
+            <form id="editPostForm" action="profile.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="edit_post_id" name="post_id">
                 
-                <div class="edit-post-form-group">
+                <div class="post-form-group">
                     <label for="edit_titulo">Título</label>
                     <input type="text" id="edit_titulo" name="titulo" required>
                 </div>
 
-                <div class="edit-post-form-group">
+                <div class="post-form-group">
                     <label for="edit_conteudo">Conteúdo</label>
                     <textarea id="edit_conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
 
-                <div class="edit-post-form-group">
+                <div class="post-form-group">
+                    <label>Imagens atuais:</label>
+                    <div id="edit-image-gallery" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                </div>
+
+                <div class="post-form-group">
+                  <input type="file" name="foto_publicacao[]" id="foto_publicacao_edit" multiple accept="image/*">
+                    <label for="foto_publicacao_edit" class="custom-file-label" id="label_foto_post_edit">📁 Escolher imagem:</label>
+                </div>
+
+                <div class="post-form-group">
                     <label for="edit_tipo_publicacao">Tipo de Publicação</label>
                     <select id="edit_tipo_publicacao" name="tipo_publicacao" required>
                         <option value="animal">Animal Perdido</option>
@@ -811,14 +947,33 @@
                     </select>
                 </div>
 
-                <button type="submit" name="update_post" class="save-button">Salvar Alterações</button>
+                <button type="submit" name="update_post" class="create-post">Salvar Alterações</button>
             </form>
+
         </div>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (localStorage.getItem('postDeleted') === 'true') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Publicação excluída com sucesso!',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                timer: 5000,
+                timerProgressBar: true,
+                
+            });
+            localStorage.removeItem('postDeleted');
+            }
+        });
+    </script>
 
 </body>
 </html>

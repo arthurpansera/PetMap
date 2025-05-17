@@ -28,61 +28,72 @@
         }
     }
 
-    $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+    $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
             FROM publicacao p 
             JOIN usuario u ON p.id_usuario = u.id_usuario 
             ORDER BY p.data_criacao DESC";
     $result = $obj->query($query);
 
-    if (isset($_POST['make_post'])) {
-        $titulo = $_POST['titulo'];
-        $conteudo = $_POST['conteudo'];
-        $tipoPublicacao = $_POST['tipo_publicacao'];
-        $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $obj->prepare($insertQuery);
-        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
-        $stmt->execute();
+if (isset($_POST['make_post'])) {
+    $titulo = $_POST['titulo'];
+    $conteudo = $_POST['conteudo'];
+    $tipoPublicacao = $_POST['tipo_publicacao'];
+    $dataCriacao = date('Y-m-d H:i:s');
 
-        $id_publicacao = $stmt->insert_id;
+    $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $obj->prepare($insertQuery);
+    $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+    $stmt->execute();
 
-        if (isset($_FILES['foto_publicacao']) && $_FILES['foto_publicacao']['error'] === UPLOAD_ERR_OK) {
-            $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'];
-            $fileName = $_FILES['foto_publicacao']['name'];
-            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+    $id_publicacao = $stmt->insert_id;
 
-            if (getimagesize($fileTmpPath) === false) {
-                $_SESSION['error_message'] = "O arquivo enviado não é uma imagem válida.";
-                header("Location: index.php");
-                exit;
-            }
+    if (isset($_FILES['foto_publicacao'])) {
+        $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+                    ? count($_FILES['foto_publicacao']['name']) 
+                    : 0;
 
-            if (in_array($fileExtension, $allowedExtensions)) {
-                $newFileName = uniqid('post_', true) . '.' . $fileExtension;
-                $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
-                if (!is_dir($uploadFileDir)) {
-                    mkdir($uploadFileDir, 0777, true);
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                $fileName = $_FILES['foto_publicacao']['name'][$i];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                if (getimagesize($fileTmpPath) === false) {
+                    continue;
                 }
-                $destPath = $uploadFileDir . $newFileName;
 
-                if (move_uploaded_file($fileTmpPath, $destPath)) {
-                    $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                    $stmt_foto = $obj->prepare($query_foto);
-                    $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                    $stmt_foto->execute();
-                } else {
-                    $_SESSION['error_message'] = "Erro ao mover a imagem.";
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                    $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0777, true);
+                    }
+
+                    $destPath = $uploadFileDir . $newFileName;
+
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                        $stmt_foto = $obj->prepare($query_foto);
+
+                        if ($stmt_foto) {
+                            $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                            $stmt_foto->execute();
+                        }
+                    }
                 }
-            } else {
-                $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas JPG, JPEG e PNG são permitidos.";
             }
         }
-
-        header("Location: index.php");
-        exit;
     }
+
+    header('Location: index.php');
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -158,11 +169,25 @@
                             }
                         ?>
 
-                        <div class="post-item">
+                       <div class="post-item">
                             <p class="post-info">
                                 <span class="author-name"><?php echo $post['nome']; ?></span> • 
-                                <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
+                                <span class="post-time">
+                                    <?php 
+                                        setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                        echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                    ?>
+
+                                    <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                        <em style="font-size: 0.85em; color: #777;">
+                                            (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                        </em>
+                                    <?php endif; ?>
+                                </span>
+
+
                             </p>
+
                             <?php
                                 $tiposFormatados = [
                                     'animal' => 'Animal Perdido',
@@ -172,6 +197,7 @@
                                     'outro' => 'Outro'
                                 ];
                             ?>
+
                             <p class="post-type">
                                 <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                             </p>
@@ -195,25 +221,26 @@
                                 $moreCount = max(0, $totalImages - $maxVisible);
                             ?>
 
-                            <div class="image-gallery <?php echo $galleryClass; ?>">
-                                <?php foreach ($visibleImages as $index => $imagem): ?>
-                                    <?php 
-                                        $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
-                                        $dataImagesJson = $isLastVisibleWithMore ? json_encode($images) : json_encode([$imagem]);
-                                    ?>
-                                    <div 
-                                        class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
-                                        data-images='<?php echo $dataImagesJson; ?>'
-                                        data-index="<?php echo $index; ?>"
-                                    >
-                                        <?php if ($isLastVisibleWithMore): ?>
-                                            <div class="image-overlay">+<?php echo $moreCount; ?></div>
-                                        <?php endif; ?>
-                                        <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
+                         <div class="image-gallery <?php echo $galleryClass; ?>">
+                            <?php foreach ($visibleImages as $index => $imagem): ?>
+                                <?php 
+                                    $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                                ?>
+                                <div 
+                                    class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        data-images='<?php echo json_encode($images); ?>'
+                                    <?php endif; ?>
+                                >
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                    <?php endif; ?>
+                                    <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
 
+                        
                             <div class="post-actions">
                                 <button class="like-button">
                                     <i class="like-icon">⬆️</i> Impulsionar
@@ -269,7 +296,7 @@
 
                 <div class="post-form-group">
                     <label for="foto_publicacao" class="custom-file-label" id="label_foto_post">📁 Escolher imagem:</label>
-                    <input type="file" name="foto_publicacao" id="foto_publicacao">
+                    <input type="file" name="foto_publicacao[]" id="foto_publicacao" multiple accept="image/*">
                 </div>
 
                 <div class="post-form-group">
