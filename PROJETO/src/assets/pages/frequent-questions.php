@@ -88,27 +88,35 @@
                     <p>Se você está com alguma dúvida sobre como registrar um animal perdido, relatar um avistamento ou interagir com ONGs, esta seção foi feita para você.</p>
                 </div>
                 <div class="faq-info-2">
-                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
-                    <ul>
-                        <li><strong>Como faço para me cadastrar como ONG, cidadão ou moderador?</strong><br>
-                            Você pode escolher o tipo de conta durante o processo de cadastro. Após isso, é só preencher o formulário com as informações solicitadas.</li>
+                    <button class="accordion">Como faço para me cadastrar como ONG, cidadão ou moderador?</button>
+                    <div class="panel">
+                        <p>Você pode escolher o tipo de conta durante o processo de cadastro. Após isso, é só preencher o formulário com as informações solicitadas.</p>
+                    </div>
 
-                        <li><strong>Posso alterar meu perfil depois de me cadastrar?</strong><br>
-                            Sim. É possível editar informações pessoais e atualizar a foto do perfil acessando a página de perfil.</li>
+                    <button class="accordion">Posso alterar meu perfil depois de me cadastrar?</button>
+                    <div class="panel">
+                        <p>Sim. É possível editar informações pessoais e atualizar a foto do perfil acessando a página de perfil.</p>
+                    </div>
 
-                        <li><strong>Quem pode fazer publicações na plataforma?</strong><br>
-                            Usuários com perfil de cidadão ou ONG podem criar publicações. Elas podem ser sobre animais perdidos, resgates, informações ou outros temas ligados à causa animal.</li>
+                    <button class="accordion">Quem pode fazer publicações na plataforma?</button>
+                    <div class="panel">
+                        <p>Usuários com perfil de cidadão ou ONG podem criar publicações. Elas podem ser sobre animais perdidos, resgates, informações ou outros temas ligados à causa animal.</p>
+                    </div>
 
-                        <li><strong>É possível editar ou remover uma publicação ou um comentário?</strong><br>
-                            Sim, acesse a área do seu perfil e vá até a seção de publicações ou comentários para editar ou excluir quando necessário.</li>
+                    <button class="accordion">É possível editar ou remover uma publicação ou um comentário?</button>
+                    <div class="panel">
+                        <p>Sim, acesse a área do seu perfil e vá até a seção de publicações ou comentários para editar ou excluir quando necessário.</p>
+                    </div>
 
-                        <li><strong>Vi um animal abandonado na rua. O que posso fazer?</strong><br>
-                            Você pode criar uma publicação do tipo "Animal Perdido", incluindo fotos e a localização aproximada. Isso permite que ONGs e outros usuários visualizem e possam oferecer ajuda rapidamente.</li>
+                    <button class="accordion">Vi um animal abandonado na rua. O que posso fazer?</button>
+                    <div class="panel">
+                        <p>Você pode criar uma publicação do tipo "Animal Perdido", incluindo fotos e a localização aproximada. Isso permite que ONGs e outros usuários visualizem e possam oferecer ajuda rapidamente.</p>
+                    </div>
 
-                        <li><strong>Como entrar em contato com uma ONG?</strong><br>
-                            Acesse o perfil da ONG diretamente pela plataforma. Lá, você encontrará o e-mail e o telefone para contato. Além disso, as ONGs podem comentar nas publicações e interagir com você por meio delas.</li>
-                    </ul>
-                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
+                    <button class="accordion">Como entrar em contato com uma ONG?</button>
+                    <div class="panel">
+                        <p>Acesse o perfil da ONG diretamente pela plataforma. Lá, você encontrará o e-mail e o telefone para contato. Além disso, as ONGs podem comentar nas publicações e interagir com você por meio delas.</p>
+                    </div>
                 </div>
                 <div class="faq-info-3">
                     <div>
@@ -122,5 +130,8 @@
             </div>
         </div>
     </section>
+
+    <script src="../../scripts/pages/frequent-questions/frequent-questions.js"></script>
+
 </body>
 </html>
