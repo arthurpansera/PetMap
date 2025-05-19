@@ -163,7 +163,7 @@
                 <li><a href="index.php">Página Principal</a></li>
                 <li><a href="src/assets/pages/rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="src/assets/pages/lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="src/assets/pages/areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
