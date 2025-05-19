@@ -285,48 +285,51 @@
 
         $id_publicacao = $stmt->insert_id;
 
-        if (isset($_FILES['foto_publicacao'])) {
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+        $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+            ? count($_FILES['foto_publicacao']['name']) 
+            : 0;
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $maxImages = 8;
+        if ($fileCount > $maxImages) {
+            $fileCount = $maxImages;
+        }
 
-            for ($i = 0; $i < $fileCount; $i++) {
-                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
-                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
-                    $fileName = $_FILES['foto_publicacao']['name'][$i];
-                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-                    if (getimagesize($fileTmpPath) === false) {
-                        continue;
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                $fileName = $_FILES['foto_publicacao']['name'][$i];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                if (getimagesize($fileTmpPath) === false) {
+                    continue;
+                }
+
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                    $rootPath = realpath(__DIR__ . '/../../..');
+                    $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0777, true);
                     }
 
-                    if (in_array($fileExtension, $allowedExtensions)) {
-                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+                    $destPath = $uploadFileDir . $newFileName;
 
-                        $rootPath = realpath(__DIR__ . '/../../..');
-                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
-                        }
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                        $stmt_foto = $obj->prepare($query_foto);
 
-                        $destPath = $uploadFileDir . $newFileName;
-
-                        if (move_uploaded_file($fileTmpPath, $destPath)) {
-                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                            $stmt_foto = $obj->prepare($query_foto);
-
-                            if ($stmt_foto) {
-                                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                                $stmt_foto->execute();
-                            }
+                        if ($stmt_foto) {
+                            $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                            $stmt_foto->execute();
                         }
                     }
                 }
             }
         }
-
+        
         header('Location: profile.php');
         exit;
     }
@@ -344,22 +347,38 @@
         $stmt->bind_param("ssssi", $titulo, $conteudo, $tipoPublicacao, $dataAtualizacao, $postId);
         $stmt->execute();
 
+        if (isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
+            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+            
+            foreach ($_POST['delete_images'] as $imageName) {
+                $safeImageName = basename($imageName);
+                $filePath = $uploadDir . '/' . $safeImageName;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+
+                $deleteImage = $obj->prepare("DELETE FROM imagem WHERE id_publicacao = ? AND imagem_url = ?");
+                $deleteImage->bind_param("is", $postId, $safeImageName);
+                $deleteImage->execute();
+            }
+        }
 
         $hasNewImages = isset($_FILES['foto_publicacao']) 
                         && !empty($_FILES['foto_publicacao']['name'][0]);
 
         if ($hasNewImages) {
+            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+
             $selectImgs = $obj->prepare("SELECT imagem_url FROM imagem WHERE id_publicacao = ?");
             $selectImgs->bind_param("i", $postId);
             $selectImgs->execute();
             $resultImgs = $selectImgs->get_result();
 
-            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
-
             while ($row = $resultImgs->fetch_assoc()) {
                 $filePath = $uploadDir . '/' . $row['imagem_url'];
                 if (file_exists($filePath)) {
-                    unlink($filePath);
+                    unlink($filePath); 
                 }
             }
 
@@ -367,9 +386,22 @@
             $deleteImgs->bind_param("i", $postId);
             $deleteImgs->execute();
 
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+            $countQuery = $obj->prepare("SELECT COUNT(*) AS total FROM imagem WHERE id_publicacao = ?");
+            $countQuery->bind_param("i", $postId);
+            $countQuery->execute();
+            $countResult = $countQuery->get_result();
+            $countRow = $countResult->fetch_assoc();
+            $currentImageCount = $countRow['total'] ?? 0;
+
+            $deleteCount = isset($_POST['delete_images']) ? count($_POST['delete_images']) : 0;
+
+            $maxAllowed = 8;
+            $availableSlots = $maxAllowed - ($currentImageCount - $deleteCount);
+
+            $newImages = $_FILES['foto_publicacao'];
+            $newImageCount = isset($newImages['name']) ? count($newImages['name']) : 0;
+
+            $fileCount = min($newImageCount, $availableSlots);
 
             $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
@@ -386,13 +418,11 @@
                     if (in_array($fileExtension, $allowedExtensions)) {
                         $newFileName = uniqid('post_', true) . '.' . $fileExtension;
 
-                        $rootPath = realpath(__DIR__ . '/../../..');
-                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0777, true);
                         }
 
-                        $destPath = $uploadFileDir . $newFileName;
+                        $destPath = $uploadDir . $newFileName;
 
                         if (move_uploaded_file($fileTmpPath, $destPath)) {
                             $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
@@ -408,8 +438,8 @@
             }
         }
 
-        header('Location: profile.php');
-        exit;
+            header('Location: profile.php');
+            exit;
     }
 
     if (isset($_POST['post_id'])) {
@@ -593,8 +623,6 @@
                                 </em>
                             <?php endif; ?>
                         </span>
-
-
                     </p>
 
                 <?php
@@ -606,6 +634,7 @@
                         'outro' => 'Outro'
                     ];
                 ?>
+
                 <p class="post-type">
                     <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                 </p>
@@ -689,7 +718,6 @@
                         >🗑️ Excluir</button>
                     </form>
 
-
                 </div>
                 </div>
 
@@ -721,7 +749,8 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="profile.php" method="POST" enctype="multipart/form-data">
+            
+            <form id="postForm" action="profile.php" method="POST" enctype="multipart/form-data">
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -764,7 +793,7 @@
                     ?>">
                         <div class="column-style">
                             <div class="form-group">
-                                <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem:</label>
+                                <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem de perfil:</label>
                                 <input type="file" name="foto_perfil" id="foto_perfil">
                             </div>
 
@@ -926,7 +955,7 @@
                     <label for="edit_conteudo">Conteúdo</label>
                     <textarea id="edit_conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-
+                    
                 <div class="post-form-group">
                     <label>Imagens atuais:</label>
                     <div id="edit-image-gallery" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
@@ -953,9 +982,10 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

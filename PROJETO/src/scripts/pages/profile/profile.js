@@ -14,55 +14,62 @@ function closePostModal() {
     document.getElementById("postModal").style.display = "none";
 }
 
-
 function openEditPostModal(button) {
-  const postId = button.getAttribute('data-id');
-  const titulo = button.getAttribute('data-titulo');
-  const conteudo = button.getAttribute('data-conteudo');
-  const tipo = button.getAttribute('data-tipo');
+    const postId = button.dataset.id;
+    const titulo = button.dataset.titulo;
+    const conteudo = button.dataset.conteudo;
+    const tipo = button.dataset.tipo;
+    const imagens = JSON.parse(button.dataset.images);
 
-  document.getElementById('edit_post_id').value = postId;
-  document.getElementById('edit_titulo').value = titulo;
-  document.getElementById('edit_conteudo').value = conteudo;
-  document.getElementById('edit_tipo_publicacao').value = tipo;
+    document.getElementById('edit_post_id').value = postId;
+    document.getElementById('edit_titulo').value = titulo;
+    document.getElementById('edit_conteudo').value = conteudo;
+    document.getElementById('edit_tipo_publicacao').value = tipo;
 
-  const imagesData = button.getAttribute('data-images'); 
-  const images = imagesData ? JSON.parse(imagesData) : [];
+    const gallery = document.getElementById('edit-image-gallery');
+    gallery.innerHTML = '';
 
-  const gallery = document.getElementById('edit-image-gallery');
-  gallery.innerHTML = '';
+    imagens.forEach(imageName => {
+        const container = document.createElement('div');
 
-  images.forEach(imageName => {
-    const img = document.createElement('img');
-    img.src = `../images/uploads/posts/${imageName}`;
-    img.alt = "Imagem atual da publicação";
-    img.style.width = "120px";
-    img.style.height = "120px";
-    img.style.objectFit = "cover";
-    img.style.borderRadius = "8px";
-    img.style.marginRight = "10px";
-    gallery.appendChild(img);
-  });
+        const img = document.createElement('img');
+        img.src = `../images/uploads/posts/${imageName}`;
 
-  const labelEdit = document.getElementById('label_foto_post_edit');
-  if (images.length > 0) {
-    labelEdit.textContent = '📁 ' + images.join(', ');
-  } else {
-    labelEdit.textContent = '📁 Escolher imagem:';
-  }
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        checkbox.name = "delete_images[]";
+        checkbox.value = imageName;
+        checkbox.id = `delete_${imageName}`;
 
-  document.getElementById('postEditModal').style.display = 'flex';
+        const label = document.createElement('label');
+        label.htmlFor = `delete_${imageName}`;
+        label.classList.add("delete-icon");
+
+        container.appendChild(img);
+        container.appendChild(checkbox);
+        container.appendChild(label);
+
+        gallery.appendChild(container);
+    });
+
+    const inputEdit = document.getElementById('foto_publicacao_edit');
+    inputEdit.dataset.existing = imagens.length;
+
+    document.getElementById('postEditModal').style.display = 'block';
 }
 
-// aparecer o nome do arquivo quando for alterar a foto de perfil
+function closeEditPostModal() {
+    document.getElementById('postEditModal').style.display = 'none';
+}
+
 const input = document.getElementById('foto_perfil');
 const label = document.getElementById('label_foto');
 
 input.addEventListener('change', function () {
     if (this.files && this.files.length > 0) {
-    label.textContent = '📁 ' + this.files[0].name;
+        label.textContent = '📁 ' + this.files[0].name;
     } else {
-    label.textContent = '📁 Escolher imagem';
+        label.textContent = '📁 Escolher imagem';
     }
 });
 
@@ -71,27 +78,50 @@ const inputPost = document.getElementById('foto_publicacao');
 const labelPost = document.getElementById('label_foto_post');
 
 inputPost.addEventListener('change', function () {
+    const maxImages = 8;
+
+    if (this.files.length > maxImages) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: `Você pode selecionar no máximo ${maxImages} imagens.`
+        });
+        this.value = '';
+        labelPost.textContent = '📁 Escolher imagem:';
+        return;
+    }
+
     if (this.files && this.files.length > 0) {
-        // criar array com todos os nomes
         const fileNames = Array.from(this.files).map(file => file.name);
-        // juntar nomes separados por vírgula
         labelPost.textContent = '📁 ' + fileNames.join(', ');
     } else {
         labelPost.textContent = '📁 Escolher imagem:';
     }
 });
 
-
 const inputEdit = document.getElementById('foto_publicacao_edit');
 const labelEdit = document.getElementById('label_foto_post_edit');
 
 inputEdit.addEventListener('change', () => {
-  if (inputEdit.files && inputEdit.files.length > 0) {
+    const existing = parseInt(inputEdit.dataset.existing || "0");
+    const selected = inputEdit.files.length;
+    const maxImages = 8;
+
+    const total = existing + selected;
+
+    if (total > maxImages) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Limite de imagens ultrapassado',
+            text: `Você já tem ${existing}. Só pode adicionar mais ${maxImages - existing}.`
+        });
+        inputEdit.value = '';
+        labelEdit.textContent = '📁 Escolher imagem:';
+        return;
+    }
+    
     const fileNames = Array.from(inputEdit.files).map(file => file.name);
     labelEdit.textContent = '📁 ' + fileNames.join(', ');
-  } else {
-    labelEdit.textContent = '📁 Escolher imagem:';
-  }
 });
 
 function confirmDelete(event) {
@@ -126,39 +156,36 @@ function confirmDelete(event) {
 }
 
 function confirmDeletePost(button) {
-  Swal.fire({
-    title: 'Excluir publicação?',
-    text: 'Essa ação não pode ser desfeita.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#cc4a2a',
-    cancelButtonColor: '#4CAF50',
-    confirmButtonText: 'Sim, excluir',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: 'Excluindo...',
-        text: 'Aguarde um momento.',
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => {
-          Swal.showLoading();
+    Swal.fire({
+        title: 'Excluir publicação?',
+        text: 'Essa ação não pode ser desfeita.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#cc4a2a',
+        cancelButtonColor: '#4CAF50',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Excluindo...',
+                text: 'Aguarde um momento.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(() => {
+                localStorage.setItem('postDeleted', 'true');
+
+                const form = button.closest('form');
+                form.submit();
+            }, 1500);
         }
-      });
-
-      setTimeout(() => {
-        // Marca que foi excluído
-        localStorage.setItem('postDeleted', 'true');
-
-        // Envia o formulário
-        const form = button.closest('form');
-        form.submit();
-      }, 1500);
-    }
-  });
+    });
 }
-
 
 const modal = document.getElementById("modal-images-posts");
 const modalImage = document.getElementById("modalImage");

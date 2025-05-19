@@ -652,3 +652,59 @@ input.input-adm {
 .edit-post-form-group label {
     font-weight: bold;
 }
+
+#edit-image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+#edit-image-gallery > div {
+  max-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+
+#edit-image-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgb(0 0 0 / 0.1);
+  border: 1px solid #ccc;
+}
+
+#edit-image-gallery input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#edit-image-gallery label.delete-icon {
+  position: relative;
+  margin-top: 6px;
+  width: 30px;
+  height: 35px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 2px solid #e11d48;
+  border-radius: 25%;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23e11d48' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#edit-image-gallery input[type="checkbox"]:checked + label.delete-icon {
+  background-color: #e11d48;
+  border-color: #e11d48;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
+}

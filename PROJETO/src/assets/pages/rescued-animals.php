@@ -34,7 +34,7 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE (
@@ -55,7 +55,7 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.tipo_publicacao = 'resgate'
@@ -122,69 +122,129 @@
             </div>
         </nav>
         <div class="content">
-            <div class="rescued-animal-post">
+            <div class="lost-animal-post">
                 <?php if ($result->num_rows > 0): ?>
                     <h2>Animais Resgatados</h2>
                     <?php while ($post = $result->fetch_assoc()): ?>
 
-                        <?php
-                            $idPost = $post['id_publicacao'];
-                            $img = null;
+                    <?php
+                        $idPost = $post['id_publicacao'];
+                        $images = [];
 
-                            $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
-                            $stmtImg = $obj->prepare($imgQuery);
-                            $stmtImg->bind_param("i", $idPost);
-                            $stmtImg->execute();
-                            $imgResult = $stmtImg->get_result();
-                            $img = $imgResult->fetch_assoc();
+                        $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
+                        $stmtImg = $obj->prepare($imgQuery);
+                        $stmtImg->bind_param("i", $idPost);
+                        $stmtImg->execute();
+                        $imgResult = $stmtImg->get_result();
+
+                        while ($row = $imgResult->fetch_assoc()) {
+                            $images[] = $row['imagem_url'];
+                        }
+                    ?>
+
+                    <div class="post-item">
+                        <p class="post-info">
+                            <span class="author-name"><?php echo $post['nome']; ?></span>
+                            <span class="post-time">
+                                <?php 
+                                    setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                    echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                ?>
+
+                                <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                    <em style="font-size: 0.85em; color: #777;">
+                                        (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                    </em>
+                                <?php endif; ?>
+                            </span>
+                        </p>
+                        <?php
+                            $tiposFormatados = [
+                                'animal' => 'Animal Perdido',
+                                'resgate' => 'Resgate de Animal',
+                                'informacao' => 'Informação',
+                                'cidadao' => 'Cidadão',
+                                'outro' => 'Outro'
+                            ];
+                        ?>
+                        <p class="post-type">
+                            <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                        </p>
+                        <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
+
+                        <p><?php echo $post['conteudo']; ?></p>
+                        
+                        <?php
+                            $images = $images ?? [];
+                            $totalImages = count($images);
+                            $maxVisible = 3;
+
+                            $galleryClass = 'multiple-images';
+                            if ($totalImages == 1) {
+                                $galleryClass = 'single-image';
+                            } elseif ($totalImages == 2) {
+                                $galleryClass = 'two-images';
+                            }
+
+                            $visibleImages = array_slice($images, 0, $maxVisible);
+                            $moreCount = max(0, $totalImages - $maxVisible);
                         ?>
 
-                        <div class="post-item">
-                            <p class="post-info">
-                                <span class="author-name"><?php echo $post['nome']; ?></span> • 
-                                <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
-                            </p>
-                            <?php
-                                $tiposFormatados = [
-                                    'animal' => 'Animal Perdido',
-                                    'resgate' => 'Resgate de Animal',
-                                    'informacao' => 'Informação',
-                                    'cidadao' => 'Cidadão',
-                                    'outro' => 'Outro'
-                                ];
-                            ?>
-                            <p class="post-type">
-                                <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
-                            </p>
-                            <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
-
-                            <p><?php echo $post['conteudo']; ?></p>
-
-                            <?php if (!empty($img['imagem_url'])): ?>
-                                <div class="imagem-publicacao-container">
-                                    <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($img['imagem_url']); ?>" alt="Imagem da publicação">
+                        <div class="image-gallery <?php echo $galleryClass; ?>">
+                            <?php foreach ($visibleImages as $index => $imagem): ?>
+                                <?php 
+                                    $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                                ?>
+                                <div 
+                                    class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        data-images='<?php echo json_encode($images); ?>'
+                                    <?php endif; ?>
+                                >
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                    <?php endif; ?>
+                                    <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
                                 </div>
-                            <?php endif; ?>
-
-
-                            <div class="post-actions">
-                                <button class="like-button">
-                                    <i class="like-icon">⬆️</i> Impulsionar
-                                </button>
-                                <button class="comment-button">
-                                    <i class="comment-icon">💬</i> Comentar
-                                </button>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
+
+                        <div class="post-actions">
+                            <button class="like-button">
+                                <i class="like-icon">⬆️</i> Impulsionar
+                            </button>
+                            <button class="comment-button">
+                                <i class="comment-icon">💬</i> Comentar
+                            </button>
+                        </div>
+                    </div>
                     <?php endwhile; ?>
                 <?php else: ?>
+
                     <div class="no-posts-error">
                         <p class="no-posts-message">Não há publicações disponíveis.</p>
                         <img src="../images/no-posts-image/sem-posts.png" alt="Ícone de Erro" class="no-posts-image">
                     </div>
                 <?php endif; ?>
+            </div> 
+        </div> 
+
+        <div id="modal-images-posts" class="modal-images-posts">
+            <div class="modal-content-images-posts">
+                <span class="close-images-posts">&times;</span>
+                <button id="prevImage" class="modal-nav-button" aria-label="Imagem anterior">&#10094;</button>
+                <div class="modal-gallery-images-posts">
+                <img id="modalImage" src="" alt="Imagem Modal">
+                </div>
+                <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
             </div>
         </div>
+
     </section>
+        
+    <script src="../../scripts/pages/rescued-animals/rescued-animals.js"></script>
+
+
+
 </body>
 </html>

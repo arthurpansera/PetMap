@@ -34,7 +34,7 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.titulo LIKE ? 
@@ -52,7 +52,7 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 ORDER BY p.data_criacao DESC";
@@ -72,47 +72,50 @@
 
         $id_publicacao = $stmt->insert_id;
 
-        if (isset($_FILES['foto_publicacao'])) {
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+        $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+            ? count($_FILES['foto_publicacao']['name']) 
+            : 0;
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $maxImages = 8;
+        if ($fileCount > $maxImages) {
+            $fileCount = $maxImages;
+        }
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-            for ($i = 0; $i < $fileCount; $i++) {
-                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
-                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
-                    $fileName = $_FILES['foto_publicacao']['name'][$i];
-                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                $fileName = $_FILES['foto_publicacao']['name'][$i];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-                    if (getimagesize($fileTmpPath) === false) {
-                        continue;
+                if (getimagesize($fileTmpPath) === false) {
+                    continue;
+                }
+
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                    $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0777, true);
                     }
 
-                    if (in_array($fileExtension, $allowedExtensions)) {
-                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+                    $destPath = $uploadFileDir . $newFileName;
 
-                        $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                        $stmt_foto = $obj->prepare($query_foto);
 
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
-                        }
-
-                        $destPath = $uploadFileDir . $newFileName;
-
-                        if (move_uploaded_file($fileTmpPath, $destPath)) {
-                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                            $stmt_foto = $obj->prepare($query_foto);
-
-                            if ($stmt_foto) {
-                                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                                $stmt_foto->execute();
-                            }
+                        if ($stmt_foto) {
+                            $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                            $stmt_foto->execute();
                         }
                     }
                 }
             }
         }
+    
 
         header('Location: index.php');
         exit;
@@ -308,7 +311,8 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="index.php" method="POST" enctype="multipart/form-data">
+            <form id="postForm" action="index.php" method="POST" enctype="multipart/form-data">
+
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -339,6 +343,7 @@
     </div>
 
     <script src="src/scripts/pages/index/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
 </body>
 </html>
