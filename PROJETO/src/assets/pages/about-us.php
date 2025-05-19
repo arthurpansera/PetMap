@@ -83,18 +83,23 @@
         <div class="content">
             <h2>Sobre Nós</h2>
             <div class="about-us-info">
-                <div class="about-us-info-1">
-                    <p>O PetMap é uma plataforma colaborativa dedicada à causa animal. Nosso objetivo é conectar pessoas e ONGs em um espaço voltado ao cuidado, resgate e proteção dos pets.</p>
-                </div>
+                <p>O <strong>PetMap</strong> é uma plataforma colaborativa dedicada à causa animal. Nosso objetivo é conectar pessoas, ONGs e protetores independentes para atuar na prevenção e resgate de animais em situação de abandono.</p>
+
                 <div class="about-us-image">
-                    <img src="../images/example-images/imagem-cao-sobre-nos.jpg" alt="Foto de um Cachorro">
+                    <img src="../images/example-images/imagem-cao-sobre-nos.jpg" alt="Foto de um Cachorro feliz">
                 </div>
-                <div class="about-us-info-2">
-                    <p>Através do PetMap, é possível registrar animais desaparecidos, relatar avistamentos, compartilhar informações importantes e se comunicar diretamente com organizações que acolhem e cuidam dos animais.</p>
-                </div>
-                <div class="about-us-info-3">
-                    <p>Mais do que uma ferramenta, o PetMap é uma rede de apoio que fortalece a comunidade ao incentivar ações de empatia, responsabilidade e amor pelos animais.</p>
-                </div>
+
+                <p>Segundo dados recentes, mais de <strong>30 milhões de animais</strong> vivem em situação de abandono no Brasil, sendo <strong>75% deles em áreas urbanas</strong>. Diante desse cenário preocupante, o PetMap surge como uma solução tecnológica para unir forças em prol desses animais.</p>
+
+                <p>Através da plataforma, você pode:</p>
+                <ul>
+                    <li>Registrar animais perdidos ou avistados</li>
+                    <li>Conectar-se com ONGs e voluntários da sua região</li>
+                    <li>Mapear áreas críticas de abandono</li>
+                    <li>Contribuir com informações relevantes para salvar vidas</li>
+                </ul>
+
+                <p>Mais do que uma ferramenta, o PetMap é uma <strong>rede de empatia, responsabilidade e ação</strong>. Junte-se a nós e faça parte dessa transformação.</p>
             </div>
         </div>
     </section>

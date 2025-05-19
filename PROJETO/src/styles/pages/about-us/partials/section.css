@@ -33,12 +33,10 @@
     line-height: 1.5em;
 }
 
-.content .about-us-info-1 {
-    padding-bottom: 30px;
-}
-
-.content .about-us-info-2 {
-    padding-bottom: 20px;
+.content .about-us-info {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .about-us-image img {
