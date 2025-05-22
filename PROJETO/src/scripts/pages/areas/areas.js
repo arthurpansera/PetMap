@@ -16,13 +16,11 @@ const abandonosData = [
 function filterData() {
     const estado = document.getElementById('estado').value;
     const cidade = document.getElementById('cidade').value;
-    const especie = document.getElementById('especie').value;
 
     const filteredData = abandonosData.filter(item => {
         return (
             (estado === "" || item.estado === estado) &&
-            (cidade === "" || item.cidade === cidade) &&
-            (especie === "" || item.especie === especie)
+            (cidade === "" || item.cidade === cidade)
         );
     });
 
@@ -43,7 +41,6 @@ function displayData(data) {
             row.innerHTML = `
                 <td>${item.estado}</td>
                 <td>${item.cidade}</td>
-                <td>${item.especie}</td>
                 <td>${item.quantidade}</td>
             `;
             tableBody.appendChild(row);

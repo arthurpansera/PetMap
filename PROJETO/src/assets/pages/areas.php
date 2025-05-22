@@ -67,7 +67,7 @@
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -96,12 +96,6 @@
                         <option value="">Selecione a Cidade</option>
                     </select>
                     
-                    <select class="filter-select" id="especie">
-                        <option value="">Selecione a Espécie</option>
-                        <option value="Cachorro">Cachorro</option>
-                        <option value="Gato">Gato</option>
-                        <option value="Outro">Outro</option>
-                    </select>
                 </div>
 
                 <div class="table-container">
@@ -110,8 +104,7 @@
                             <tr>
                                 <th>Estado</th>
                                 <th>Cidade</th>
-                                <th>Espécie</th>
-                                <th>Quantidade de Abandono</th>
+                                <th>Total de Animais Abandonados Encontrados</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
