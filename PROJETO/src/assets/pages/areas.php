@@ -30,10 +30,14 @@
     }
 
     $query_areas = "SELECT endereco_cidade, endereco_estado, COUNT(*) AS total_publicacoes
-                    FROM publicacao
-                    WHERE tipo_publicacao = ?
-                    GROUP BY endereco_cidade, endereco_estado
-                    ORDER BY total_publicacoes DESC";
+                FROM publicacao
+                WHERE tipo_publicacao = ?
+                  AND endereco_rua IS NOT NULL
+                  AND endereco_bairro IS NOT NULL
+                  AND endereco_cidade IS NOT NULL
+                  AND endereco_estado IS NOT NULL
+                GROUP BY endereco_cidade, endereco_estado
+                ORDER BY total_publicacoes DESC";
     $stmt_areas = $obj->prepare($query_areas);
     $tipo = 'animal';
     $stmt_areas->bind_param("s", $tipo);
@@ -176,7 +180,7 @@
     <script>
         const locations = <?php echo $json_locations; ?>;
     </script>
-    
     <script src="../../scripts/pages/areas/areas.js"></script>
+
 </body>
 </html>

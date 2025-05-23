@@ -212,12 +212,6 @@
         exit;
     }
 
-    if (isset($_POST['logout'])) {
-        session_destroy();
-        header("Location: src/assets/pages/login.php");
-        exit();
-    }
-
     if (isset($_POST['comentar']) && isset($_POST['id_publicacao']) && isset($_POST['conteudo_comentario'])) {
         if (!$isLoggedIn) {
             header("Location: src/assets/pages/login.php");
@@ -247,6 +241,11 @@
         exit;
     }
 
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: src/assets/pages/login.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -521,7 +520,7 @@
                                 </div>
 
                                 <?php if ($isLoggedIn): ?>
-                                    <div class="comment-form-container" id="comment-form-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
+                                    <div class="comment-form-container" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                         <form method="POST" class="comment-form">
                                             <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
                                             <textarea name="conteudo_comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
@@ -530,9 +529,9 @@
                                     </div>
                                 <?php endif; ?>
 
-                                <div class="comments">
-                                    <?php if ($totalComentarios > 0): ?>
-                                        <div class="comments-list" id="comments-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
+                                <?php if ($totalComentarios > 0): ?>
+                                    <div class="comments" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
+                                        <div class="comments-list" id="comments-<?php echo $idPost; ?>">
                                             <?php foreach ($comentariosArray as $comentario): ?>
                                                 <div class="comment" style="margin-bottom: 10px;">
                                                     <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
@@ -543,13 +542,11 @@
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
-                                    <?php endif; ?>
-                                <div>
-
-
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                                
                         </div>
+
                     <?php endwhile; ?>
                 <?php else: ?>
                     <div class="no-posts-error">
@@ -697,18 +694,12 @@
         }
 
         function toggleComments(postId) {
-            const commentsDiv = document.getElementById(`comments-${postId}`);
-            if (commentsDiv.style.display === 'none') {
-                commentsDiv.style.display = 'block';
-            } else {
-                commentsDiv.style.display = 'none';
+            const wrapper = document.getElementById(`comments-wrapper-${postId}`);
+            if (wrapper) {
+                wrapper.style.display = (wrapper.style.display === 'none' || wrapper.style.display === '') ? 'block' : 'none';
             }
         }
     </script>
 
-
-
-
-    
 </body>
 </html>

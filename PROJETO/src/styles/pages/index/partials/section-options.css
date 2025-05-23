@@ -67,11 +67,12 @@
     justify-content: flex-start;
 }
 
-.posts-buttons{
+.posts-buttons {
     display: flex;
     flex-direction: row;
     gap: 20px;
 }
+
 .comments-list {
     margin-top: 10px;
     width: 100%;
@@ -80,15 +81,16 @@
     overflow: auto;
     clear: both;
 }
-.comments{
+
+.comments {
     display: flex;
     width: 100%;
-    margin-top: 50px;
     padding-left: 30px;
     border-radius: 15px;
     background-color:rgb(255, 255, 255);
 }
-.comment{
+
+.comment {
     width: 96%;
     margin-top: 20px;
     padding: 20px;
@@ -109,6 +111,7 @@
     transition: background-color 0.3s, transform 0.2s;
     height: 40px;
 }
+
 .like-button:hover, .comment-button:hover {
     background-color: #ddd;
     transform: scale(1.05);
@@ -117,6 +120,7 @@
 .like-icon, .comment-icon {
     font-size: 18px;
 }
+
 .post-item img {
     width: 100%;
     max-width: 600px;
@@ -159,18 +163,22 @@
     margin-bottom: 20px;
     width: 100%;
 }
-.adm-input{
+
+.adm-input {
     width: 100%;
 }
+
 .form-group label {
     display: block;
     font-weight: bold;
     color: #555;
     margin-bottom: 5px;
 }
+
 .comment-form-container {
     width: 100%;
 }
+
 .comment-form textarea {
     width: 100%;
     height: 130px;
@@ -183,6 +191,7 @@
     box-sizing: border-box;
     font-size: 14px;
 }
+
 .comment-form button {
     background-color: #6d00b6;
     color: white;
@@ -198,7 +207,6 @@
 .comment-form button:hover {
     background-color: #570089;
 }
-
 
 @media (min-width: 1200px) {
     .content {
