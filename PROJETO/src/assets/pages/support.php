@@ -115,7 +115,7 @@
                                 <span><strong>WhatsApp:</strong> (41) 99123-4567</span>
                             </li>
                             <li>
-                                <img src="../images/support/clock (1).png" alt="Ícone de Relógio">
+                                <img src="../images/support/clock.png" alt="Ícone de Relógio">
                                 <span><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</span>
                             </li>
                         </ul>
