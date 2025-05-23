@@ -31,6 +31,21 @@
 
     $pesquisa = isset($_GET['pesquisa']) ? trim($_GET['pesquisa']) : '';
 
+    $ordenarPor = isset($_GET['ordenar_por']) ? $_GET['ordenar_por'] : 'impulsos_desc';
+
+    switch ($ordenarPor) {
+        case 'data_asc':
+            $orderBy = 'p.data_criacao ASC';
+            break;
+        case 'impulsos_desc':
+            $orderBy = 'p.total_impulsos DESC';
+            break;
+        case 'data_desc':
+        default:
+            $orderBy = 'p.data_criacao DESC';
+            break;
+    }
+
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
@@ -45,7 +60,7 @@
                     OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
                     OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
                     OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
 
         $stmt = $obj->prepare($query);
         $stmt->bind_param("ssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
@@ -55,7 +70,7 @@
         $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
         $result = $obj->query($query);
     }
 
@@ -122,6 +137,11 @@
     }
 
     if (isset($_POST['impulsionar']) && isset($_POST['id_publicacao'])) {
+        if (!$isLoggedIn) {
+            header("Location: src/assets/pages/login.php");
+            exit;
+        }
+
         $idPublicacao = intval($_POST['id_publicacao']);
 
         if ($isLoggedIn) {
@@ -165,6 +185,12 @@
         header("Location: $redirectUrl");
         exit;
     }
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: src/assets/pages/login.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -197,6 +223,13 @@
                             <a class="profile-image" href="src/assets/pages/profile.php">
                                 <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
+                            <div class="logout-button">
+                                <form action="index.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="src/assets/images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
                         <a class="btn" href="src/assets/pages/login.php">Entrar</a>
@@ -225,6 +258,14 @@
             </div>
         </nav> 
         <div class="content">
+            <div class="order-dropdown">
+                <button class="order-button" id="orderToggle">⮃ Ordenar</button>
+                <div class="order-menu" id="orderMenu">
+                    <a href="?ordenar_por=data_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">📅 Mais recentes</a>
+                    <a href="?ordenar_por=data_asc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🕰️ Mais antigos</a>
+                    <a href="?ordenar_por=impulsos_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🔝 Mais impulsionados</a>
+                </div>
+            </div>
             <div class="menu-post">
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
@@ -339,6 +380,11 @@
                                     } else {
                                         $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
                                     }
+
+                                    $btnClass = 'like-button';
+                                    if ($isLoggedIn && $jaImpulsionou) {
+                                        $btnClass .= ' impulsionado';
+                                    }
                                 ?>
                                 <form method="POST" action="index.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
                                     <?php if (!empty($pesquisa)): ?>
@@ -348,8 +394,7 @@
                                     <button 
                                         type="submit" 
                                         name="impulsionar" 
-                                        class="like-button"
-                                        style="<?php echo ($isLoggedIn && $jaImpulsionou) ? 'background-color: var(--purple-color); color: white; cursor: pointer;' : 'cursor: pointer;'; ?>"
+                                        class="<?php echo $btnClass; ?>"
                                     >
                                         <?php echo $labelBotao; ?>
                                     </button>
@@ -426,6 +471,7 @@
 
     <script src="src/scripts/pages/index/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="src/scripts/order-posts.js"></script>
     
 </body>
 </html>
