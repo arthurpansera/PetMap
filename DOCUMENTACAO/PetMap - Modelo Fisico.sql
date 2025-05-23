@@ -91,6 +91,15 @@ CREATE TABLE publicacao (
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
+CREATE TABLE impulso_publicacao (
+    id_usuario INT NOT NULL,
+    id_publicacao INT NOT NULL,
+    data_impulso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_usuario, id_publicacao),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
+);
+
 CREATE TABLE moderador_valida_publicacao (
     id_moderador INT NOT NULL,
     id_publicacao INT NOT NULL,

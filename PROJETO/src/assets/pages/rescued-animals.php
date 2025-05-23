@@ -62,6 +62,51 @@
                 ORDER BY p.data_criacao DESC";
         $result = $obj->query($query);
     }
+
+    if (isset($_POST['impulsionar']) && isset($_POST['id_publicacao'])) {
+        $idPublicacao = intval($_POST['id_publicacao']);
+
+        if ($isLoggedIn) {
+            $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+            $stmt = $obj->prepare($checkQuery);
+            $stmt->bind_param("ii", $userId, $idPublicacao);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $deleteQuery = "DELETE FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                $stmtDel = $obj->prepare($deleteQuery);
+                $stmtDel->bind_param("ii", $userId, $idPublicacao);
+                $stmtDel->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = GREATEST(total_impulsos - 1, 0) WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                unset($_SESSION['impulsionado_' . $idPublicacao]);
+            } else {
+                $insertQuery = "INSERT INTO impulso_publicacao (id_usuario, id_publicacao) VALUES (?, ?)";
+                $stmtIns = $obj->prepare($insertQuery);
+                $stmtIns->bind_param("ii", $userId, $idPublicacao);
+                $stmtIns->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = total_impulsos + 1 WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                $_SESSION['impulsionado_' . $idPublicacao] = true;
+            }
+        }
+
+        $redirectUrl = 'rescued-animals.php';
+        if (!empty($_GET['pesquisa'])) {
+            $redirectUrl .= '?pesquisa=' . urlencode($_GET['pesquisa']);
+        }
+        header("Location: $redirectUrl");
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -210,9 +255,46 @@
                         </div>
 
                         <div class="post-actions">
-                            <button class="like-button">
-                                <i class="like-icon">⬆️</i> Impulsionar
-                            </button>
+                            <?php
+                                $jaImpulsionou = false;
+                                $impulsos = 0;
+
+                                if ($isLoggedIn) {
+                                    $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                                    $stmt = $obj->prepare($checkQuery);
+                                    $stmt->bind_param("ii", $userId, $idPost);
+                                    $stmt->execute();
+                                    $stmt->store_result();
+                                    $jaImpulsionou = $stmt->num_rows > 0;
+                                }
+
+                                $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                                $q->bind_param("i", $idPost);
+                                $q->execute();
+                                $r = $q->get_result()->fetch_assoc();
+                                $impulsos = $r ? intval($r['total_impulsos']) : 0;
+
+                                if ($isLoggedIn && $jaImpulsionou) {
+                                    $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                } else {
+                                    $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                }
+                            ?>
+                            <form method="POST" action="rescued-animals.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
+                                <?php if (!empty($pesquisa)): ?>
+                                    <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                                <?php endif; ?>
+                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                <button 
+                                    type="submit" 
+                                    name="impulsionar" 
+                                    class="like-button"
+                                    style="<?php echo ($isLoggedIn && $jaImpulsionou) ? 'background-color: var(--purple-color); color: white; cursor: pointer;' : 'cursor: pointer;'; ?>"
+                                >
+                                    <?php echo $labelBotao; ?>
+                                </button>
+                            </form>
+
                             <button class="comment-button">
                                 <i class="comment-icon">💬</i> Comentar
                             </button>
