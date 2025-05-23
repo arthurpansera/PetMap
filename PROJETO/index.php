@@ -49,7 +49,7 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.titulo LIKE ? 
