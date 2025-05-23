@@ -29,14 +29,14 @@
         }
     }
 
-    $query_areas = "SELECT endereco_cidade, endereco_estado, COUNT(*) AS total_publicacoes
+    $query_areas = "SELECT endereco_estado, endereco_cidade, endereco_bairro, COUNT(*) AS total_publicacoes
                 FROM publicacao
                 WHERE tipo_publicacao = ?
                   AND endereco_rua IS NOT NULL
                   AND endereco_bairro IS NOT NULL
                   AND endereco_cidade IS NOT NULL
                   AND endereco_estado IS NOT NULL
-                GROUP BY endereco_cidade, endereco_estado
+                GROUP BY endereco_estado, endereco_cidade, endereco_bairro
                 ORDER BY total_publicacoes DESC";
     $stmt_areas = $obj->prepare($query_areas);
     $tipo = 'animal';
@@ -53,11 +53,18 @@
     foreach ($rows as $row) {
         $estado = $row['endereco_estado'];
         $cidade = $row['endereco_cidade'];
+        $bairro = $row['endereco_bairro'];
+
         if (!isset($locations[$estado])) {
             $locations[$estado] = [];
         }
-        if (!in_array($cidade, $locations[$estado])) {
-            $locations[$estado][] = $cidade;
+
+        if (!isset($locations[$estado][$cidade])) {
+            $locations[$estado][$cidade] = [];
+        }
+
+        if (!in_array($bairro, $locations[$estado][$cidade])) {
+            $locations[$estado][$cidade][] = $bairro;
         }
     }
 
@@ -141,6 +148,10 @@
                     <select class="filter-select" id="cidade" disabled>
                         <option value="">Selecione a Cidade</option>
                     </select>
+
+                    <select class="filter-select" id="bairro" disabled>
+                        <option value="">Selecione o Bairro</option>
+                    </select>
                 </div>
 
                 <div class="table-container">
@@ -149,7 +160,8 @@
                             <tr>
                                 <th>Estado</th>
                                 <th>Cidade</th>
-                                <th>Total de Animais Abandonados</th>
+                                <th>Bairro</th>
+                                <th>Casos de Animais Perdidos Registrados</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
@@ -159,11 +171,12 @@
                                         echo "<tr>";
                                         echo "<td>" . htmlspecialchars($row['endereco_estado']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['endereco_cidade']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['endereco_bairro']) . "</td>";
                                         echo "<td>" . (int)$row['total_publicacoes'] . "</td>";
                                         echo "</tr>";
                                     }
                                 } else {
-                                    echo '<tr><td colspan="3">Nenhum dado encontrado</td></tr>';
+                                    echo '<tr><td colspan="4">Nenhum dado encontrado</td></tr>';
                                 }
                             ?>
                         </tbody>
