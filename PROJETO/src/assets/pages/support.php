@@ -92,11 +92,20 @@
                 </div>
                 <div class="support-info-2">
                     <p>Entre em contato com a gente:</p>
-                    <ul>
-                        <li><strong>Email:</strong> suportepetmap@gmail.com</li>
-                        <li><strong>WhatsApp:</strong> (41) 99123-4567</li>
-                        <li><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</li>
-                    </ul>
+                        <ul class="contact-list">
+                            <li>
+                                <img src="../images/support/gmail.png" alt="Ícone de Email">
+                                <span><strong>Email:</strong> suportepetmap@gmail.com</span>
+                            </li>
+                            <li>
+                                <img src="../images/support/whatsapp.png" alt="Ícone do WhatsApp">
+                                <span><strong>WhatsApp:</strong> (41) 99123-4567</span>
+                            </li>
+                            <li>
+                                <img src="../images/support/clock (1).png" alt="Ícone de Relógio">
+                                <span><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</span>
+                            </li>
+                        </ul>
                 </div>
                 <div class="support-info-3">
                     <p>Obrigado por fazer parte dessa rede de cuidado e solidariedade com os animais.</p>

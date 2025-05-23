@@ -1,2 +1,10 @@
 @import url(../../global/global.css);
 @import url(partials/section.css);
+
+.contact-list img {
+    width: 28px; 
+    height: 28px;
+    object-fit: contain;
+    margin-right: 10px;
+    vertical-align: middle;
+}
