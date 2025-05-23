@@ -99,3 +99,17 @@ modal.addEventListener("click", e => {
         modal.style.display = "none";
     }
 });
+
+function desabilitarCamposEndereco() {
+  const checkbox = document.getElementById('nao_sei_endereco');
+  const campos = document.querySelectorAll('.campo-endereco');
+
+  campos.forEach(campo => {
+    if (checkbox.checked) {
+      campo.value = '';
+      campo.disabled = true;
+    } else {
+      campo.disabled = false;
+    }
+  });
+}

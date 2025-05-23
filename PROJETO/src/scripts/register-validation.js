@@ -64,6 +64,10 @@ document.querySelectorAll('.required').forEach((input) => {
 function btnRegisterOnClick(event, formElement) {
     console.log("Clique detectado");
 
+    // Tenta encontrar o checkbox que estiver presente no form
+    const naoSeiEndereco = formElement.querySelector("#nao_sei_endereco") || formElement.querySelector("#nao_sei_endereco_edit");
+    const camposEndereco = ["rua", "bairro", "cidade", "estado"];
+
     const inputs = formElement.querySelectorAll('.required');
     let hasError = false;
 
@@ -71,6 +75,13 @@ function btnRegisterOnClick(event, formElement) {
         const type = input.dataset.type;
         const isRequired = input.dataset.required === "true";
         const value = input.value.trim();
+
+        const isEndereco = camposEndereco.includes(type);
+
+        if (isEndereco && naoSeiEndereco && naoSeiEndereco.checked) {
+            removeError(input);
+            continue;
+        }
 
         if (isRequired && value === "") {
             console.log("Campo obrigatório não preenchido:", type);
@@ -85,7 +96,7 @@ function btnRegisterOnClick(event, formElement) {
         event.preventDefault();
     } else {
         formElement.submit();
-        const submitBtn = document.getElementById('submit');
+        const submitBtn = formElement.querySelector('#submit');
         if (submitBtn) {
             submitBtn.disabled = true;
         }
@@ -193,8 +204,8 @@ function isCEP(cep){
 
 // Function to check if is a valid road
 function isRoad(road){
-    const re = /^[A-Za-z0-9\s]+$/
-    return re.test(road)
+    const re = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s]+$/;
+    return re.test(road);
 }
 
 // Function to check if is positive numbers

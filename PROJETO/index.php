@@ -34,7 +34,7 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.titulo LIKE ? 
@@ -52,7 +52,7 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao,p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 ORDER BY p.data_criacao DESC";
@@ -63,11 +63,18 @@
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
+        $rua = $_POST['endereco_rua'];
+        $bairro = $_POST['endereco_bairro'];
+        $cidade = $_POST['endereco_cidade'];
+        $estado = $_POST['state'];
+
+        date_default_timezone_set('America/Sao_Paulo');
         $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+
+        $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $obj->prepare($insertQuery);
-        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+        $stmt->bind_param("sssisssss", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao, $rua, $bairro, $cidade, $estado);
         $stmt->execute();
 
         $id_publicacao = $stmt->insert_id;
@@ -116,6 +123,7 @@
             }
         }
     
+        $_SESSION['success_message'] = "Publicação realizada com sucesso!";
 
         header('Location: index.php');
         exit;
@@ -234,6 +242,38 @@
 
                             <p><?php echo $post['conteudo']; ?></p>
 
+                             <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                                <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                                    📍
+                                    <?php
+                                        $enderecoFormatado = [];
+
+                                        if (!empty($post['endereco_rua'])) {
+                                            $enderecoFormatado[] = $post['endereco_rua'];
+                                        }
+                                        if (!empty($post['endereco_bairro'])) {
+                                            $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                                        }
+                                        if (!empty($post['endereco_cidade']) && !empty($post['endereco_estado'])) {
+                                            $enderecoFormatado[] = $post['endereco_cidade'] . ' - ' . strtoupper($post['endereco_estado']);
+                                        } elseif (!empty($post['endereco_cidade'])) {
+                                            $enderecoFormatado[] = $post['endereco_cidade'];
+                                        } elseif (!empty($post['endereco_estado'])) {
+                                            $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                                        }
+
+                                        echo implode(', ', $enderecoFormatado);
+                                    ?>
+                                </p>
+
+                            <?php else: ?>
+
+                                <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                                    Endereço não informado
+                                </p>
+
+                            <?php endif; ?>
+
                             <?php
                                 $images = $images ?? [];
                                 $totalImages = count($images);
@@ -311,8 +351,8 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
+            
             <form id="postForm" action="index.php" method="POST" enctype="multipart/form-data">
-
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -337,13 +377,81 @@
                         <option value="outro">Outro</option>
                     </select>
                 </div>
-                <button type="submit" name="make_post" class="create-post" onclick="">Publicar</button>
+
+                <br><br>
+                <h3>Endereço</h3>
+
+                <div class="row-style">
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="endereco_rua" name="endereco_rua" class="required campo-endereco" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
+                            <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="endereco_bairro" name="endereco_bairro" class="required campo-endereco" data-type="bairro" data-required="true" placeholder="Insira o bairro">
+                            <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="endereco_cidade" name="endereco_cidade" class="required campo-endereco" data-type="cidade" data-required="true" placeholder="Insira a cidade">
+                            <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state"><b>Estado: *</b></label>
+                            <select name="state" id="state" class="mid-inputUser required campo-endereco" data-type="estado" data-required="true">
+                                <option value="">Selecione um estado</option>
+                                <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                                <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                                <option value="AP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                                <option value="AM" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                                <option value="BA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                                <option value="CE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                                <option value="DF" <?php echo (isset($_POST['state']) && $_POST['state'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                                <option value="ES" <?php echo (isset($_POST['state']) && $_POST['state'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                                <option value="GO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                                <option value="MA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                                <option value="MT" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                                <option value="MS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                                <option value="MG" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                                <option value="PA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                                <option value="PB" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                                <option value="PR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                                <option value="PE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                                <option value="PI" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                                <option value="RJ" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                                <option value="RN" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                                <option value="RS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                                <option value="RO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                                <option value="RR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                                <option value="SC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                                <option value="SP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                                <option value="SE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                                <option value="TO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                            </select>
+                            <span class="span-required">Selecione um estado válido.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="nao_sei_endereco" name="nao_sei_endereco" onclick="desabilitarCamposEndereco()">
+                    <label for="nao_sei_endereco">Não sei informar o endereço</label>
+                </div>
+
+                <button type="submit" name="make_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Publicar</button>
             </form>
         </div>
     </div>
 
     <script src="src/scripts/pages/index/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="src/scripts/register-validation.js"></script>
     
 </body>
 </html>
