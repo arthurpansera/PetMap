@@ -14,10 +14,6 @@
     box-sizing: border-box;
 }
 
-.profile-image {
-    padding-right: 16px;
-}
-
 .profile-content {
     display: flex;
     text-align: center;

@@ -58,6 +58,12 @@
     }
 
     $json_locations = json_encode($locations);
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: login.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -86,6 +92,13 @@
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil" />
                             </a>
+                            <div class="logout-button">
+                                <form action="areas.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="../images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
                         <a class="btn" href="src/assets/pages/login.php">Entrar</a>
