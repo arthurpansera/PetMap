@@ -56,7 +56,7 @@
                         ?>
                         <li class="user-info">
                             <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
-                            <a class="profile-image" href="src/assets/pages/profile.php">
+                            <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
                             <div class="logout-button">

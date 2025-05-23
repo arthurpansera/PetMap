@@ -228,20 +228,17 @@
         $conteudoComentario = trim($_POST['conteudo_comentario']);
 
         if (!empty($conteudoComentario)) {
-            // Inserir o comentário
             $insertComentario = "INSERT INTO comentario (id_usuario, id_publicacao, conteudo) VALUES (?, ?, ?)";
             $stmtComentario = $obj->prepare($insertComentario);
             $stmtComentario->bind_param("iis", $userId, $idPublicacao, $conteudoComentario);
             $stmtComentario->execute();
 
-            // Atualizar o total de comentários da publicação
             $updateTotal = "UPDATE publicacao SET total_comentarios = total_comentarios + 1 WHERE id_publicacao = ?";
             $stmtUpdate = $obj->prepare($updateTotal);
             $stmtUpdate->bind_param("i", $idPublicacao);
             $stmtUpdate->execute();
         }
 
-        // Redirecionar para manter contexto da pesquisa (se houver)
         $redirectUrl = 'index.php';
         if (!empty($_GET['pesquisa'])) {
             $redirectUrl .= '?pesquisa=' . urlencode($_GET['pesquisa']);
@@ -456,101 +453,102 @@
                                     </div>
                                 <?php endforeach; ?>
                             </div>
-                                <?php
-                                    $idPost = $post['id_publicacao'];
 
-                                    $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
-                                        FROM comentario c
-                                        JOIN usuario u ON c.id_usuario = u.id_usuario
-                                        WHERE c.id_publicacao = ?
-                                        ORDER BY c.data_criacao DESC
-                                    ");
-                                    $getComentarios->bind_param("i", $idPost);
-                                    $getComentarios->execute();
-                                    $comentarios = $getComentarios->get_result();
+                            <?php
+                                $idPost = $post['id_publicacao'];
 
-                                    $comentariosArray = [];
-                                    while ($row = $comentarios->fetch_assoc()) {
-                                        $comentariosArray[] = $row;
-                                    }
-                                    $totalComentarios = count($comentariosArray);
+                                $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
+                                    FROM comentario c
+                                    JOIN usuario u ON c.id_usuario = u.id_usuario
+                                    WHERE c.id_publicacao = ?
+                                    ORDER BY c.data_criacao DESC
+                                ");
+                                $getComentarios->bind_param("i", $idPost);
+                                $getComentarios->execute();
+                                $comentarios = $getComentarios->get_result();
 
-                                    $jaImpulsionou = false;
-                                    if ($isLoggedIn) {
-                                        $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
-                                        $stmt = $obj->prepare($checkQuery);
-                                        $stmt->bind_param("ii", $userId, $idPost);
-                                        $stmt->execute();
-                                        $stmt->store_result();
-                                        $jaImpulsionou = $stmt->num_rows > 0;
-                                    }
+                                $comentariosArray = [];
+                                while ($row = $comentarios->fetch_assoc()) {
+                                    $comentariosArray[] = $row;
+                                }
+                                $totalComentarios = count($comentariosArray);
+
+                                $jaImpulsionou = false;
+                                if ($isLoggedIn) {
+                                    $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                                    $stmt = $obj->prepare($checkQuery);
+                                    $stmt->bind_param("ii", $userId, $idPost);
+                                    $stmt->execute();
+                                    $stmt->store_result();
+                                    $jaImpulsionou = $stmt->num_rows > 0;
+                                }
                              
 
-                                    $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
-                                    $q->bind_param("i", $idPost);
-                                    $q->execute();
-                                    $r = $q->get_result()->fetch_assoc();
-                                    $impulsos = $r ? intval($r['total_impulsos']) : 0;
+                                $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                                $q->bind_param("i", $idPost);
+                                $q->execute();
+                                $r = $q->get_result()->fetch_assoc();
+                                $impulsos = $r ? intval($r['total_impulsos']) : 0;
 
-                                    if ($isLoggedIn && $jaImpulsionou) {
-                                        $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
-                                        $btnClass = 'like-button impulsionado';
-                                    } else {
-                                        $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
-                                        $btnClass = 'like-button';
-                                    }
-                                ?>
+                                if ($isLoggedIn && $jaImpulsionou) {
+                                    $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                    $btnClass = 'like-button impulsionado';
+                                } else {
+                                    $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                    $btnClass = 'like-button';
+                                }
+                            ?>
 
-                                <div class="post-actions">
-                                    <div class="posts-buttons">
-                                        <form method="POST" action="index.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
-                                            <?php if (!empty($pesquisa)): ?>
-                                                <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
-                                            <?php endif; ?>
-                                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                                            <button type="submit" name="impulsionar" class="<?php echo $btnClass; ?>">
-                                                <?php echo $labelBotao; ?>
-                                            </button>
-                                        </form>
-
-                                        <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
-
-                                        <?php if ($totalComentarios > 0): ?>
-                                            <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
-                                                💬 Ver comentários (<?php echo $totalComentarios; ?>)
-                                            </button>
+                            <div class="post-actions">
+                                <div class="posts-buttons">
+                                    <form method="POST" action="index.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
+                                        <?php if (!empty($pesquisa)): ?>
+                                            <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
                                         <?php endif; ?>
-                                    </div>
+                                        <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                        <button type="submit" name="impulsionar" class="<?php echo $btnClass; ?>">
+                                            <?php echo $labelBotao; ?>
+                                        </button>
+                                    </form>
 
-                                    <?php if ($isLoggedIn): ?>
-                                        <div class="comment-form-container" id="comment-form-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
-                                            <form method="POST" class="comment-form">
-                                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                                                <textarea name="conteudo_comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
-                                                <button type="submit" name="comentar">Enviar</button>
-                                            </form>
+                                    <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
+
+                                    <?php if ($totalComentarios > 0): ?>
+                                        <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
+                                            💬 Ver comentários (<?php echo $totalComentarios; ?>)
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php if ($isLoggedIn): ?>
+                                    <div class="comment-form-container" id="comment-form-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
+                                        <form method="POST" class="comment-form">
+                                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                            <textarea name="conteudo_comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
+                                            <button type="submit" name="comentar">Enviar</button>
+                                        </form>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="comments">
+                                    <?php if ($totalComentarios > 0): ?>
+                                        <div class="comments-list" id="comments-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
+                                            <?php foreach ($comentariosArray as $comentario): ?>
+                                                <div class="comment" style="margin-bottom: 10px;">
+                                                    <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                                    <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                                                    <p class="comment-date">
+                                                        <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
+                                                    </p>
+                                                </div>
+                                            <?php endforeach; ?>
                                         </div>
                                     <?php endif; ?>
+                                <div>
 
 
-                                    <div class="comments">
-                                        <?php if ($totalComentarios > 0): ?>
-                                            <div class="comments-list" id="comments-<?php echo $idPost; ?>" style="display: none; margin-top: 10px;">
-                                                <?php foreach ($comentariosArray as $comentario): ?>
-                                                    <div class="comment" style="margin-bottom: 10px;">
-                                                        <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
-                                                        <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
-                                                        <p class="comment-date">
-                                                            <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
-                                                        </p>
-                                                    </div>
-                                                <?php endforeach; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    <div>
-                                </div>
-                                
                             </div>
+                                
                         </div>
                     <?php endwhile; ?>
                 <?php else: ?>

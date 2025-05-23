@@ -175,7 +175,7 @@
                             </div>
                         </li>
                     <?php else: ?>
-                        <a class="btn" href="src/assets/pages/login.php">Entrar</a>
+                        <a class="btn" href="login.php">Entrar</a>
                     <?php endif; ?>
                 </ul>
             </nav>
