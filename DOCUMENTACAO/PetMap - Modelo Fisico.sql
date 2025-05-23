@@ -78,15 +78,26 @@ CREATE TABLE publicacao (
     titulo VARCHAR(255) NOT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    data_atualizacao  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_publicacao ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     tipo_publicacao ENUM('animal', 'resgate', 'informacao', 'outro') NOT NULL,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_impulsos INT DEFAULT 0,
+    total_comentarios INT DEFAULT 0,
     endereco_rua VARCHAR(100),
     endereco_bairro VARCHAR(50),
     endereco_cidade VARCHAR(50),
     endereco_estado CHAR(2),
     PRIMARY KEY (id_publicacao),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
+
+CREATE TABLE impulso_publicacao (
+    id_usuario INT NOT NULL,
+    id_publicacao INT NOT NULL,
+    data_impulso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_usuario, id_publicacao),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
 );
 
 CREATE TABLE moderador_valida_publicacao (
@@ -105,6 +116,9 @@ CREATE TABLE comentario (
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_comentario ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
+    data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_impulsos INT DEFAULT 0,
+    total_comentarios INT DEFAULT 0,
     PRIMARY KEY (id_comentario),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
@@ -131,4 +145,4 @@ CREATE TABLE moderador_valida_comentario (
     data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
     FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
-)
+);

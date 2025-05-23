@@ -1,7 +1,25 @@
 <?php
     include('conecta_db.php');
-
+    
     session_start();
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
+
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
     $isModerator = false;
 
@@ -31,10 +49,25 @@
 
     $pesquisa = isset($_GET['pesquisa']) ? trim($_GET['pesquisa']) : '';
 
+    $ordenarPor = isset($_GET['ordenar_por']) ? $_GET['ordenar_por'] : 'impulsos_desc';
+
+    switch ($ordenarPor) {
+        case 'data_asc':
+            $orderBy = 'p.data_criacao ASC';
+            break;
+        case 'impulsos_desc':
+            $orderBy = 'p.total_impulsos DESC';
+            break;
+        case 'data_desc':
+        default:
+            $orderBy = 'p.data_criacao DESC';
+            break;
+    }
+
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.titulo LIKE ? 
@@ -45,17 +78,17 @@
                     OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
                     OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
                     OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
 
         $stmt = $obj->prepare($query);
         $stmt->bind_param("ssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao,p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
         $result = $obj->query($query);
     }
 
@@ -63,59 +96,126 @@
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
+        $rua = $_POST['endereco_rua'];
+        $bairro = $_POST['endereco_bairro'];
+        $cidade = $_POST['endereco_cidade'];
+        $estado = $_POST['state'];
+
+        date_default_timezone_set('America/Sao_Paulo');
         $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+
+        $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $obj->prepare($insertQuery);
-        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao);
+        $stmt->bind_param("sssisssss", $titulo, $conteudo, $tipoPublicacao, $userId, $dataCriacao, $rua, $bairro, $cidade, $estado);
         $stmt->execute();
 
         $id_publicacao = $stmt->insert_id;
 
-        if (isset($_FILES['foto_publicacao'])) {
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+        $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+            ? count($_FILES['foto_publicacao']['name']) 
+            : 0;
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $maxImages = 8;
+        if ($fileCount > $maxImages) {
+            $fileCount = $maxImages;
+        }
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-            for ($i = 0; $i < $fileCount; $i++) {
-                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
-                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
-                    $fileName = $_FILES['foto_publicacao']['name'][$i];
-                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                $fileName = $_FILES['foto_publicacao']['name'][$i];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
-                    if (getimagesize($fileTmpPath) === false) {
-                        continue;
+                if (getimagesize($fileTmpPath) === false) {
+                    continue;
+                }
+
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                    $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0777, true);
                     }
 
-                    if (in_array($fileExtension, $allowedExtensions)) {
-                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+                    $destPath = $uploadFileDir . $newFileName;
 
-                        $uploadFileDir = __DIR__ . '/src/assets/images/uploads/posts/';
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                        $stmt_foto = $obj->prepare($query_foto);
 
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
-                        }
-
-                        $destPath = $uploadFileDir . $newFileName;
-
-                        if (move_uploaded_file($fileTmpPath, $destPath)) {
-                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                            $stmt_foto = $obj->prepare($query_foto);
-
-                            if ($stmt_foto) {
-                                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                                $stmt_foto->execute();
-                            }
+                        if ($stmt_foto) {
+                            $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                            $stmt_foto->execute();
                         }
                     }
                 }
             }
         }
+    
+        $_SESSION['success_message'] = "Publicação realizada com sucesso!";
 
         header('Location: index.php');
         exit;
+    }
+
+    if (isset($_POST['impulsionar']) && isset($_POST['id_publicacao'])) {
+        if (!$isLoggedIn) {
+            header("Location: src/assets/pages/login.php");
+            exit;
+        }
+
+        $idPublicacao = intval($_POST['id_publicacao']);
+
+        if ($isLoggedIn) {
+            $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+            $stmt = $obj->prepare($checkQuery);
+            $stmt->bind_param("ii", $userId, $idPublicacao);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $deleteQuery = "DELETE FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                $stmtDel = $obj->prepare($deleteQuery);
+                $stmtDel->bind_param("ii", $userId, $idPublicacao);
+                $stmtDel->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = GREATEST(total_impulsos - 1, 0) WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                unset($_SESSION['impulsionado_' . $idPublicacao]);
+            } else {
+                $insertQuery = "INSERT INTO impulso_publicacao (id_usuario, id_publicacao) VALUES (?, ?)";
+                $stmtIns = $obj->prepare($insertQuery);
+                $stmtIns->bind_param("ii", $userId, $idPublicacao);
+                $stmtIns->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = total_impulsos + 1 WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                $_SESSION['impulsionado_' . $idPublicacao] = true;
+            }
+        }
+
+        $redirectUrl = 'index.php';
+        if (!empty($_GET['pesquisa'])) {
+            $redirectUrl .= '?pesquisa=' . urlencode($_GET['pesquisa']);
+        }
+        header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: src/assets/pages/login.php");
+        exit();
     }
 ?>
 
@@ -141,14 +241,21 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="src/assets/pages/profile.php">
                                 <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
+                            <div class="logout-button">
+                                <form action="index.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="src/assets/images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
                         <a class="btn" href="src/assets/pages/login.php">Entrar</a>
@@ -163,7 +270,7 @@
                 <li><a href="index.php">Página Principal</a></li>
                 <li><a href="src/assets/pages/rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="src/assets/pages/lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="src/assets/pages/areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -177,6 +284,14 @@
             </div>
         </nav> 
         <div class="content">
+            <div class="order-dropdown">
+                <button class="order-button" id="orderToggle">⮃ Ordenar</button>
+                <div class="order-menu" id="orderMenu">
+                    <a href="?ordenar_por=data_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">📅 Mais recentes</a>
+                    <a href="?ordenar_por=data_asc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🕰️ Mais antigos</a>
+                    <a href="?ordenar_por=impulsos_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🔝 Mais impulsionados</a>
+                </div>
+            </div>
             <div class="menu-post">
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
@@ -231,6 +346,38 @@
 
                             <p><?php echo $post['conteudo']; ?></p>
 
+                             <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                                <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                                    📍
+                                    <?php
+                                        $enderecoFormatado = [];
+
+                                        if (!empty($post['endereco_rua'])) {
+                                            $enderecoFormatado[] = $post['endereco_rua'];
+                                        }
+                                        if (!empty($post['endereco_bairro'])) {
+                                            $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                                        }
+                                        if (!empty($post['endereco_cidade']) && !empty($post['endereco_estado'])) {
+                                            $enderecoFormatado[] = $post['endereco_cidade'] . ' - ' . strtoupper($post['endereco_estado']);
+                                        } elseif (!empty($post['endereco_cidade'])) {
+                                            $enderecoFormatado[] = $post['endereco_cidade'];
+                                        } elseif (!empty($post['endereco_estado'])) {
+                                            $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                                        }
+
+                                        echo implode(', ', $enderecoFormatado);
+                                    ?>
+                                </p>
+
+                            <?php else: ?>
+
+                                <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                                    Endereço não informado
+                                </p>
+
+                            <?php endif; ?>
+
                             <?php
                                 $images = $images ?? [];
                                 $totalImages = count($images);
@@ -267,9 +414,50 @@
                             </div>
 
                             <div class="post-actions">
-                                <button class="like-button">
-                                    <i class="like-icon">⬆️</i> Impulsionar
-                                </button>
+                                <?php
+                                    $jaImpulsionou = false;
+                                    $impulsos = 0;
+
+                                    if ($isLoggedIn) {
+                                        $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                                        $stmt = $obj->prepare($checkQuery);
+                                        $stmt->bind_param("ii", $userId, $idPost);
+                                        $stmt->execute();
+                                        $stmt->store_result();
+                                        $jaImpulsionou = $stmt->num_rows > 0;
+                                    }
+
+                                    $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                                    $q->bind_param("i", $idPost);
+                                    $q->execute();
+                                    $r = $q->get_result()->fetch_assoc();
+                                    $impulsos = $r ? intval($r['total_impulsos']) : 0;
+
+                                    if ($isLoggedIn && $jaImpulsionou) {
+                                        $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                    } else {
+                                        $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                    }
+
+                                    $btnClass = 'like-button';
+                                    if ($isLoggedIn && $jaImpulsionou) {
+                                        $btnClass .= ' impulsionado';
+                                    }
+                                ?>
+                                <form method="POST" action="index.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
+                                    <?php if (!empty($pesquisa)): ?>
+                                        <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                                    <?php endif; ?>
+                                    <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                    <button 
+                                        type="submit" 
+                                        name="impulsionar" 
+                                        class="<?php echo $btnClass; ?>"
+                                    >
+                                        <?php echo $labelBotao; ?>
+                                    </button>
+                                </form>
+
                                 <button class="comment-button">
                                     <i class="comment-icon">💬</i> Comentar
                                 </button>
@@ -308,7 +496,8 @@
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="index.php" method="POST" enctype="multipart/form-data">
+            
+            <form id="postForm" action="index.php" method="POST" enctype="multipart/form-data">
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -333,12 +522,82 @@
                         <option value="outro">Outro</option>
                     </select>
                 </div>
-                <button type="submit" name="make_post" class="create-post" onclick="">Publicar</button>
+
+                <br><br>
+                <h3>Endereço</h3>
+
+                <div class="row-style">
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="endereco_rua" name="endereco_rua" class="required campo-endereco" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
+                            <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="endereco_bairro" name="endereco_bairro" class="required campo-endereco" data-type="bairro" data-required="true" placeholder="Insira o bairro">
+                            <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="endereco_cidade" name="endereco_cidade" class="required campo-endereco" data-type="cidade" data-required="true" placeholder="Insira a cidade">
+                            <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state"><b>Estado: *</b></label>
+                            <select name="state" id="state" class="mid-inputUser required campo-endereco" data-type="estado" data-required="true">
+                                <option value="">Selecione um estado</option>
+                                <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                                <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                                <option value="AP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                                <option value="AM" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                                <option value="BA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                                <option value="CE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                                <option value="DF" <?php echo (isset($_POST['state']) && $_POST['state'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                                <option value="ES" <?php echo (isset($_POST['state']) && $_POST['state'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                                <option value="GO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                                <option value="MA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                                <option value="MT" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                                <option value="MS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                                <option value="MG" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                                <option value="PA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                                <option value="PB" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                                <option value="PR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                                <option value="PE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                                <option value="PI" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                                <option value="RJ" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                                <option value="RN" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                                <option value="RS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                                <option value="RO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                                <option value="RR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                                <option value="SC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                                <option value="SP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                                <option value="SE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                                <option value="TO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                            </select>
+                            <span class="span-required">Selecione um estado válido.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="nao_sei_endereco" name="nao_sei_endereco" onclick="desabilitarCamposEndereco()">
+                    <label for="nao_sei_endereco">Não sei informar o endereço</label>
+                </div>
+
+                <button type="submit" name="make_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Publicar</button>
             </form>
         </div>
     </div>
 
     <script src="src/scripts/pages/index/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="src/scripts/order-posts.js"></script>
+    <script src="src/scripts/register-validation.js"></script>
     
 </body>
 </html>

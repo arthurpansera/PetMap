@@ -25,6 +25,12 @@
             }
         }
     }
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: login.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -45,17 +51,24 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
+                            <div class="logout-button">
+                                <form action="frequent-questions.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="../images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
-                        <a class="btn" href="login.php">Entrar</a>
+                        <a class="btn" href="src/assets/pages/login.php">Entrar</a>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -63,11 +76,11 @@
     </header>
     <section class="options">
         <nav class="left-menu">
-            <ul>
+             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -88,27 +101,35 @@
                     <p>Se você está com alguma dúvida sobre como registrar um animal perdido, relatar um avistamento ou interagir com ONGs, esta seção foi feita para você.</p>
                 </div>
                 <div class="faq-info-2">
-                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
-                    <ul>
-                        <li><strong>Como faço para me cadastrar como ONG, cidadão ou moderador?</strong><br>
-                            Você pode escolher o tipo de conta durante o processo de cadastro. Após isso, é só preencher o formulário com as informações solicitadas.</li>
+                    <button class="accordion">Como faço para me cadastrar como ONG, cidadão ou moderador?</button>
+                    <div class="panel">
+                        <p>Você pode escolher o tipo de conta durante o processo de cadastro. Após isso, é só preencher o formulário com as informações solicitadas.</p>
+                    </div>
 
-                        <li><strong>Posso alterar meu perfil depois de me cadastrar?</strong><br>
-                            Sim. É possível editar informações pessoais e atualizar a foto do perfil acessando a página de perfil.</li>
+                    <button class="accordion">Posso alterar meu perfil depois de me cadastrar?</button>
+                    <div class="panel">
+                        <p>Sim. É possível editar informações pessoais e atualizar a foto do perfil acessando a página de perfil.</p>
+                    </div>
 
-                        <li><strong>Quem pode fazer publicações na plataforma?</strong><br>
-                            Usuários com perfil de cidadão ou ONG podem criar publicações. Elas podem ser sobre animais perdidos, resgates, informações ou outros temas ligados à causa animal.</li>
+                    <button class="accordion">Quem pode fazer publicações na plataforma?</button>
+                    <div class="panel">
+                        <p>Usuários com perfil de cidadão ou ONG podem criar publicações. Elas podem ser sobre animais perdidos, resgates, informações ou outros temas ligados à causa animal.</p>
+                    </div>
 
-                        <li><strong>É possível editar ou remover uma publicação ou um comentário?</strong><br>
-                            Sim, acesse a área do seu perfil e vá até a seção de publicações ou comentários para editar ou excluir quando necessário.</li>
+                    <button class="accordion">É possível editar ou remover uma publicação ou um comentário?</button>
+                    <div class="panel">
+                        <p>Sim, acesse a área do seu perfil e vá até a seção de publicações ou comentários para editar ou excluir quando necessário.</p>
+                    </div>
 
-                        <li><strong>Vi um animal abandonado na rua. O que posso fazer?</strong><br>
-                            Você pode criar uma publicação do tipo "Animal Perdido", incluindo fotos e a localização aproximada. Isso permite que ONGs e outros usuários visualizem e possam oferecer ajuda rapidamente.</li>
+                    <button class="accordion">Vi um animal abandonado na rua. O que posso fazer?</button>
+                    <div class="panel">
+                        <p>Você pode criar uma publicação do tipo "Animal Perdido", incluindo fotos e a localização aproximada. Isso permite que ONGs e outros usuários visualizem e possam oferecer ajuda rapidamente.</p>
+                    </div>
 
-                        <li><strong>Como entrar em contato com uma ONG?</strong><br>
-                            Acesse o perfil da ONG diretamente pela plataforma. Lá, você encontrará o e-mail e o telefone para contato. Além disso, as ONGs podem comentar nas publicações e interagir com você por meio delas.</li>
-                    </ul>
-                    <hr style="border: 1px solid #ddd; margin-bottom: 30px;">
+                    <button class="accordion">Como entrar em contato com uma ONG?</button>
+                    <div class="panel">
+                        <p>Acesse o perfil da ONG diretamente pela plataforma. Lá, você encontrará o e-mail e o telefone para contato. Além disso, as ONGs podem comentar nas publicações e interagir com você por meio delas.</p>
+                    </div>
                 </div>
                 <div class="faq-info-3">
                     <div>
@@ -122,5 +143,8 @@
             </div>
         </div>
     </section>
+
+    <script src="../../scripts/pages/frequent-questions/frequent-questions.js"></script>
+
 </body>
 </html>

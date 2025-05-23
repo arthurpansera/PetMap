@@ -31,10 +31,25 @@
 
     $pesquisa = isset($_GET['pesquisa']) ? trim($_GET['pesquisa']) : '';
 
+    $ordenarPor = isset($_GET['ordenar_por']) ? $_GET['ordenar_por'] : 'impulsos_desc';
+
+    switch ($ordenarPor) {
+        case 'data_asc':
+            $orderBy = 'p.data_criacao ASC';
+            break;
+        case 'impulsos_desc':
+            $orderBy = 'p.total_impulsos DESC';
+            break;
+        case 'data_desc':
+        default:
+            $orderBy = 'p.data_criacao DESC';
+            break;
+    }
+
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE (
@@ -48,19 +63,75 @@
                     OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
                 )
                 AND p.tipo_publicacao = 'animal'
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
 
         $stmt = $obj->prepare($query);
         $stmt->bind_param("ssssssss", $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.tipo_publicacao = 'animal'
-                ORDER BY p.data_criacao DESC";
+                ORDER BY $orderBy";
         $result = $obj->query($query);
+    }
+
+    if (isset($_POST['impulsionar']) && isset($_POST['id_publicacao'])) {
+        if (!$isLoggedIn) {
+            header("Location: login.php");
+            exit;
+        }
+
+        $idPublicacao = intval($_POST['id_publicacao']);
+
+        if ($isLoggedIn) {
+            $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+            $stmt = $obj->prepare($checkQuery);
+            $stmt->bind_param("ii", $userId, $idPublicacao);
+            $stmt->execute();
+            $stmt->store_result();
+
+            if ($stmt->num_rows > 0) {
+                $deleteQuery = "DELETE FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                $stmtDel = $obj->prepare($deleteQuery);
+                $stmtDel->bind_param("ii", $userId, $idPublicacao);
+                $stmtDel->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = GREATEST(total_impulsos - 1, 0) WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                unset($_SESSION['impulsionado_' . $idPublicacao]);
+            } else {
+                $insertQuery = "INSERT INTO impulso_publicacao (id_usuario, id_publicacao) VALUES (?, ?)";
+                $stmtIns = $obj->prepare($insertQuery);
+                $stmtIns->bind_param("ii", $userId, $idPublicacao);
+                $stmtIns->execute();
+
+                $updateQuery = "UPDATE publicacao SET total_impulsos = total_impulsos + 1 WHERE id_publicacao = ?";
+                $stmtUpd = $obj->prepare($updateQuery);
+                $stmtUpd->bind_param("i", $idPublicacao);
+                $stmtUpd->execute();
+
+                $_SESSION['impulsionado_' . $idPublicacao] = true;
+            }
+        }
+
+        $redirectUrl = 'lost-animals.php';
+        if (!empty($_GET['pesquisa'])) {
+            $redirectUrl .= '?pesquisa=' . urlencode($_GET['pesquisa']);
+        }
+        header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: login.php");
+        exit();
     }
 ?>
 
@@ -86,14 +157,21 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
+                            <div class="logout-button">
+                                <form action="lost-animals.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="../images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
                         <a class="btn" href="login.php">Entrar</a>
@@ -108,7 +186,7 @@
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -122,60 +200,151 @@
             </div>
         </nav>
         <div class="content">
+            <div class="order-dropdown">
+                <button class="order-button" id="orderToggle">⮃ Ordenar</button>
+                <div class="order-menu" id="orderMenu">
+                    <a href="?ordenar_por=data_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">📅 Mais recentes</a>
+                    <a href="?ordenar_por=data_asc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🕰️ Mais antigos</a>
+                    <a href="?ordenar_por=impulsos_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🔝 Mais impulsionados</a>
+                </div>
+            </div>
             <div class="lost-animal-post">
                 <?php if ($result->num_rows > 0): ?>
                     <h2>Animais Perdidos</h2>
                     <?php while ($post = $result->fetch_assoc()): ?>
 
-                        <?php
-                            $idPost = $post['id_publicacao'];
-                            $img = null;
+                    <?php
+                        $idPost = $post['id_publicacao'];
+                        $images = [];
 
-                            $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
-                            $stmtImg = $obj->prepare($imgQuery);
-                            $stmtImg->bind_param("i", $idPost);
-                            $stmtImg->execute();
-                            $imgResult = $stmtImg->get_result();
-                            $img = $imgResult->fetch_assoc();
+                        $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
+                        $stmtImg = $obj->prepare($imgQuery);
+                        $stmtImg->bind_param("i", $idPost);
+                        $stmtImg->execute();
+                        $imgResult = $stmtImg->get_result();
+
+                        while ($row = $imgResult->fetch_assoc()) {
+                            $images[] = $row['imagem_url'];
+                        }
+                    ?>
+
+                    <div class="post-item">
+                        <p class="post-info">
+                            <span class="author-name"><?php echo $post['nome']; ?></span>
+                            <span class="post-time">
+                                <?php 
+                                    setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                    echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                ?>
+
+                                <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                    <em style="font-size: 0.85em; color: #777;">
+                                        (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                    </em>
+                                <?php endif; ?>
+                            </span>
+                        </p>
+                        <?php
+                            $tiposFormatados = [
+                                'animal' => 'Animal Perdido',
+                                'resgate' => 'Resgate de Animal',
+                                'informacao' => 'Informação',
+                                'cidadao' => 'Cidadão',
+                                'outro' => 'Outro'
+                            ];
+                        ?>
+                        <p class="post-type">
+                            <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                        </p>
+                        <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
+
+                        <p><?php echo $post['conteudo']; ?></p>
+                        
+                        <?php
+                            $images = $images ?? [];
+                            $totalImages = count($images);
+                            $maxVisible = 3;
+
+                            $galleryClass = 'multiple-images';
+                            if ($totalImages == 1) {
+                                $galleryClass = 'single-image';
+                            } elseif ($totalImages == 2) {
+                                $galleryClass = 'two-images';
+                            }
+
+                            $visibleImages = array_slice($images, 0, $maxVisible);
+                            $moreCount = max(0, $totalImages - $maxVisible);
                         ?>
 
-                        <div class="post-item">
-                            <p class="post-info">
-                                <span class="author-name"><?php echo $post['nome']; ?></span> • 
-                                <span class="post-time"><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao']))); ?></span>
-                            </p>
-                            <?php
-                                $tiposFormatados = [
-                                    'animal' => 'Animal Perdido',
-                                    'resgate' => 'Resgate de Animal',
-                                    'informacao' => 'Informação',
-                                    'cidadao' => 'Cidadão',
-                                    'outro' => 'Outro'
-                                ];
-                            ?>
-                            <p class="post-type">
-                                <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
-                            </p>
-                            <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
-
-                            <p><?php echo $post['conteudo']; ?></p>
-
-                            <?php if (!empty($img['imagem_url'])): ?>
-                                <div class="imagem-publicacao-container">
-                                    <img src="src/assets/images/uploads/posts/<?php echo htmlspecialchars($img['imagem_url']); ?>" alt="Imagem da publicação">
+                        <div class="image-gallery <?php echo $galleryClass; ?>">
+                            <?php foreach ($visibleImages as $index => $imagem): ?>
+                                <?php 
+                                    $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                                ?>
+                                <div 
+                                    class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        data-images='<?php echo json_encode($images); ?>'
+                                    <?php endif; ?>
+                                >
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                    <?php endif; ?>
+                                    <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
                                 </div>
-                            <?php endif; ?>
-
-
-                            <div class="post-actions">
-                                <button class="like-button">
-                                    <i class="like-icon">⬆️</i> Impulsionar
-                                </button>
-                                <button class="comment-button">
-                                    <i class="comment-icon">💬</i> Comentar
-                                </button>
-                            </div>
+                            <?php endforeach; ?>
                         </div>
+
+                        <div class="post-actions">
+                            <?php
+                                $jaImpulsionou = false;
+                                $impulsos = 0;
+
+                                if ($isLoggedIn) {
+                                    $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                                    $stmt = $obj->prepare($checkQuery);
+                                    $stmt->bind_param("ii", $userId, $idPost);
+                                    $stmt->execute();
+                                    $stmt->store_result();
+                                    $jaImpulsionou = $stmt->num_rows > 0;
+                                }
+
+                                $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                                $q->bind_param("i", $idPost);
+                                $q->execute();
+                                $r = $q->get_result()->fetch_assoc();
+                                $impulsos = $r ? intval($r['total_impulsos']) : 0;
+
+                                if ($isLoggedIn && $jaImpulsionou) {
+                                    $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                } else {
+                                    $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                                }
+
+                                $btnClass = 'like-button';
+                                if ($isLoggedIn && $jaImpulsionou) {
+                                    $btnClass .= ' impulsionado';
+                                }
+                            ?>
+                            <form method="POST" action="lost-animals.php<?php echo !empty($pesquisa) ? '?pesquisa=' . urlencode($pesquisa) : ''; ?>" style="display: contents;">
+                                <?php if (!empty($pesquisa)): ?>
+                                    <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                                <?php endif; ?>
+                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                <button 
+                                    type="submit" 
+                                    name="impulsionar" 
+                                    class="<?php echo $btnClass; ?>"
+                                >
+                                    <?php echo $labelBotao; ?>
+                                </button>
+                            </form>
+
+                            <button class="comment-button">
+                                <i class="comment-icon">💬</i> Comentar
+                            </button>
+                        </div>
+                    </div>
                     <?php endwhile; ?>
                 <?php else: ?>
                     <div class="no-posts-error">
@@ -185,6 +354,22 @@
                 <?php endif; ?>
             </div>
         </div>
+
+        <div id="modal-images-posts" class="modal-images-posts">
+            <div class="modal-content-images-posts">
+                <span class="close-images-posts">&times;</span>
+                <button id="prevImage" class="modal-nav-button" aria-label="Imagem anterior">&#10094;</button>
+                <div class="modal-gallery-images-posts">
+                <img id="modalImage" src="" alt="Imagem Modal">
+                </div>
+                <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
+            </div>
+        </div>
+        
     </section>
+
+    <script src="../../scripts/pages/lost-animals/lost-animals.js"></script>
+    <script src="../../scripts/order-posts.js"></script>
+
 </body>
 </html>

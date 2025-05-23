@@ -25,6 +25,12 @@
             }
         }
     }
+
+    if (isset($_POST['logout'])) {
+        session_destroy();
+        header("Location: login.php");
+        exit();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -45,17 +51,24 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
+                            <div class="logout-button">
+                                <form action="about-us.php" method="POST">
+                                    <button type="submit" name="logout">
+                                        <img src="../images/perfil-images/icone-sair-branco.png" alt="Sair da Conta">
+                                    </button>
+                                </form>
+                            </div>
                         </li>
                     <?php else: ?>
-                        <a class="btn" href="login.php">Entrar</a>
+                        <a class="btn" href="src/assets/pages/login.php">Entrar</a>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -67,7 +80,7 @@
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
+                <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
@@ -80,20 +93,39 @@
                 <p>Todos os direitos reservados.</p>
             </div>
         </nav>
+
         <div class="content">
             <h2>Sobre Nós</h2>
-            <div class="about-us-info">
-                <div class="about-us-info-1">
-                    <p>O PetMap é uma plataforma colaborativa dedicada à causa animal. Nosso objetivo é conectar pessoas e ONGs em um espaço voltado ao cuidado, resgate e proteção dos pets.</p>
+            <div class="about-us-info-container">
+                <div class="about-us-info-text-1">
+                    <p>O <strong>PetMap</strong> é uma plataforma colaborativa voltada à causa animal. O nosso objetivo é conectar pessoas e ONGs para prevenir o abandono e resgatar animais em situação de risco.<br><br></p>
+
+                    <p>Hoje, mais de <strong>30 milhões de animais</strong> vivem em situação de abandono no Brasil, sendo <strong>75% deles em áreas urbanas</strong>. <br><br>Diante disso, o PetMap oferece uma solução tecnológica para mobilizar ações e salvar vidas.</p>
+
                 </div>
-                <div class="about-us-image">
-                    <img src="../images/example-images/imagem-cao-sobre-nos.jpg" alt="Foto de um Cachorro">
-                </div>
-                <div class="about-us-info-2">
-                    <p>Através do PetMap, é possível registrar animais desaparecidos, relatar avistamentos, compartilhar informações importantes e se comunicar diretamente com organizações que acolhem e cuidam dos animais.</p>
-                </div>
-                <div class="about-us-info-3">
-                    <p>Mais do que uma ferramenta, o PetMap é uma rede de apoio que fortalece a comunidade ao incentivar ações de empatia, responsabilidade e amor pelos animais.</p>
+
+                <div class="about-us-image-text">
+                    <div class="about-us-info-text-2">
+                        <br><p>Pela plataforma, você pode:</p>
+                        <br>
+                        <ul>
+                            <li>Registrar animais perdidos ou avistados</li>
+                            <li>Conectar-se com ONGs e voluntários da sua região</li>
+                            <li>Mapear áreas críticas de abandono</li>
+                            <li>Contribuir com informações relevantes para salvar vidas</li>
+                        </ul>
+                        <br>
+                        <p>Mais do que uma ferramenta, o PetMap é uma <strong>rede de empatia, responsabilidade e ação</strong>. Junte-se a nós e faça a diferença.</p>
+                    
+                        <div class="btn-container">
+                            <?php if (!$isLoggedIn): ?>
+                                <a class="btn-about-us" href="login.php">Junte-se a nós</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="about-us-image">
+                        <img id="dog-icon" src="../images/about-us-page/dog-icon.png" alt="Foto de um Cachorro feliz">
+                    </div>
                 </div>
             </div>
         </div>

@@ -16,30 +16,33 @@
 }
 
 html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", sans-serif;
+    background-color: var(--light-grey);
+    overflow-x: hidden;
+    height: 100%;
+    min-height: 100vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    background-color: var(--light-grey);
-    font-family: "Inter", sans-serif;
-    height: 100%;
-    overflow-x: hidden;
-    margin: 0;
+    background-image: url('../../assets/images/background-image/background-image.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+
 }
 
 body.swal2-shown {
     overflow: auto !important;
 }
 
-.swal2-container {
-    z-index: 99999;
+body.swal2-height-auto {
+    height: auto !important;
 }
 
-body {
-    background-image: url(../../assets/images/background-image/background-image.png);
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    height: 100vh;
-    width: 100%;
+.swal2-container {
+    z-index: 99999;
 }
 
 /* --- top navigation menu --- */
@@ -67,7 +70,7 @@ body {
 .user-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 5px;
 }
 
 .welcome-message {
@@ -119,6 +122,67 @@ body {
     padding: 14px 22px;   
 }
 
+.nav .profile-image {
+    background-color: var(--dark-purple);
+    border-radius: 50%;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.nav .profile-image:hover {
+    background-color: #54008c;
+    transform: scale(1.1);
+}
+
+.nav .profile-image img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.nav .logout-button {
+    margin: 0;
+    padding: 0;
+}
+
+.nav .logout-button button {
+    background-color: #9e9e9e;
+    border: none;
+    padding: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+}
+
+.nav .logout-button button:hover {
+    background-color: #808080;
+    transform: scale(1.1);
+}
+
+.nav .logout-button button:active {
+    transform: scale(0.95);
+}
+
+.nav .logout-button img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 /* --- FOOTER --- */
 
 .footer {
@@ -167,6 +231,73 @@ body {
     box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
+/* --- ORDER POSTS BUTTON --- */
+
+.order-dropdown {
+    position: relative;
+    align-self: flex-start;
+}
+
+.order-button {
+    background-color:rgb(196, 196, 196);
+    color: black;
+    padding: 10px 18px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.order-button:hover {
+    background-color: rgb(176, 176, 176);
+}
+
+.order-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: rgb(196, 196, 196);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    margin-top: 8px;
+    min-width: 200px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.order-menu.active {
+    display: block;
+}
+
+.order-menu a {
+    display: block;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.order-menu a:hover {
+    background-color: rgb(176, 176, 176);
+}
+
+/* --- LIKE BUTTON --- */
+
+.like-button.impulsionado {
+    background-color: var(--purple-color);
+    color: white;
+}
+
+.like-button.impulsionado:hover {
+    background-color: #8300da;
+}
+
 /* --- NEW POST BUTTON --- */
 
 .floating-button {
@@ -195,7 +326,6 @@ body {
 }
 
 /* --- POST MODAL --- */
-
 .post-modal {
     display: none;
     position: fixed;
@@ -205,7 +335,9 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    overflow: auto;
+    overflow-y: auto;
+    padding: 40px 0;
+    box-sizing: border-box;
 }
 
 .post-modal h2 {
@@ -214,7 +346,7 @@ body {
 
 .post-modal-content {
     background-color: #fff;
-    margin: 3% auto;
+    margin: auto;
     padding: 30px;
     border: 1px solid #ccc;
     width: 90%;
@@ -222,6 +354,10 @@ body {
     border-radius: 12px;
     font-family: Arial, sans-serif;
     position: relative;
+    box-sizing: border-box;
+    height: auto;
+    max-height: none;
+    overflow: visible;
 }
 
 .post-modal-close {
@@ -257,6 +393,41 @@ body {
 
 #foto_publicacao, #foto_publicacao_edit {
     display: none;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    gap: 8px;
+    font-size: 14px;
+    color: #333;
+}
+.checkbox-wrapper label{
+    margin-bottom: 24px ;
+}
+.checkbox-wrapper input[type="checkbox"] {
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border: 2px solid #5a5a5a;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    background-color: white;
+    transition: all 0.2s ease-in-out;
+}
+.checkbox-wrapper input[type="checkbox"]:checked {
+    background-color: #6d00b6;
+    border-color: #6d00b6;
+}
+.checkbox-wrapper input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: white;
+    font-size: 18px;
+    position: absolute;
+    top: 0;
+    left: 4px;
 }
 
 .image-gallery {

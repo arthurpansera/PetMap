@@ -45,12 +45,6 @@
         exit();
     }
 
-        $postDeleted = false;
-    if (!empty($_SESSION['postDeleted'])) {
-        $postDeleted = true;
-        unset($_SESSION['postDeleted']); // apaga para não repetir
-    }
-
     include('../../../conecta_db.php');
 
     $id_usuario = $_SESSION['id_usuario'];
@@ -58,37 +52,6 @@
     $obj = conecta_db();
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
-
-    function excluir_fotos_orfas($conn) {
-        $query = "SELECT foto FROM perfil WHERE foto IS NOT NULL";
-        $result = $conn->query($query);
-    
-        $fotos_vinculadas = [];
-        while ($row = $result->fetch_assoc()) {
-            $fotos_vinculadas[] = $row['foto'];
-        }
-    
-        $uploadFileDir = realpath(__DIR__ . '/../../assets/images/uploads/profile/');
-    
-        if ($uploadFileDir && is_dir($uploadFileDir)) {
-            $files = scandir($uploadFileDir);
-    
-            foreach ($files as $file) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-    
-                if (!in_array($file, $fotos_vinculadas)) {
-                    $filePath = $uploadFileDir . DIRECTORY_SEPARATOR . $file;
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
-                    }
-                }
-            }
-        }
-    }
-
-    excluir_fotos_orfas($obj);
 
     $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
                 o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
@@ -106,7 +69,7 @@
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao, data_atualizacao FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
+    $query_posts = "SELECT id_publicacao, titulo, conteudo, tipo_publicacao, data_criacao, data_atualizacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado FROM publicacao WHERE id_usuario = ? ORDER BY data_criacao DESC";
     $stmt_posts = $obj->prepare($query_posts);
     $stmt_posts->bind_param("i", $id_usuario);
     $stmt_posts->execute();
@@ -177,6 +140,37 @@
         header("Location: profile.php");
         exit();
     }
+
+    function excluir_fotos_orfas($conn) {
+        $query = "SELECT foto FROM perfil WHERE foto IS NOT NULL";
+        $result = $conn->query($query);
+    
+        $fotos_vinculadas = [];
+        while ($row = $result->fetch_assoc()) {
+            $fotos_vinculadas[] = $row['foto'];
+        }
+    
+        $uploadFileDir = realpath(__DIR__ . '/../../assets/images/uploads/profile/');
+    
+        if ($uploadFileDir && is_dir($uploadFileDir)) {
+            $files = scandir($uploadFileDir);
+    
+            foreach ($files as $file) {
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
+    
+                if (!in_array($file, $fotos_vinculadas)) {
+                    $filePath = $uploadFileDir . DIRECTORY_SEPARATOR . $file;
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+            }
+        }
+    }
+
+    excluir_fotos_orfas($obj);
     
     if (isset($_POST['logout'])) {
         session_destroy();
@@ -276,57 +270,70 @@
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
+        $rua = $_POST['endereco_rua'];
+        $bairro = $_POST['endereco_bairro'];
+        $cidade = $_POST['endereco_cidade'];
+        $estado = $_POST['state'];
+
+        date_default_timezone_set('America/Sao_Paulo');
         $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao (titulo, conteudo, tipo_publicacao, id_usuario, data_criacao) VALUES (?, ?, ?, ?, ?)";
+
+        $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $obj->prepare($insertQuery);
-        $stmt->bind_param("sssis", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao);
+        $stmt->bind_param("sssisssss", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao, $rua, $bairro, $cidade, $estado);
         $stmt->execute();
 
         $id_publicacao = $stmt->insert_id;
 
-        if (isset($_FILES['foto_publicacao'])) {
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+        $fileCount = is_array($_FILES['foto_publicacao']['name']) 
+            ? count($_FILES['foto_publicacao']['name']) 
+            : 0;
 
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $maxImages = 8;
+        if ($fileCount > $maxImages) {
+            $fileCount = $maxImages;
+        }
 
-            for ($i = 0; $i < $fileCount; $i++) {
-                if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
-                    $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
-                    $fileName = $_FILES['foto_publicacao']['name'][$i];
-                    $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
-                    if (getimagesize($fileTmpPath) === false) {
-                        continue;
+        for ($i = 0; $i < $fileCount; $i++) {
+            if ($_FILES['foto_publicacao']['error'][$i] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['foto_publicacao']['tmp_name'][$i];
+                $fileName = $_FILES['foto_publicacao']['name'][$i];
+                $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                if (getimagesize($fileTmpPath) === false) {
+                    continue;
+                }
+
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+
+                    $rootPath = realpath(__DIR__ . '/../../..');
+                    $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
+                    if (!is_dir($uploadFileDir)) {
+                        mkdir($uploadFileDir, 0777, true);
                     }
 
-                    if (in_array($fileExtension, $allowedExtensions)) {
-                        $newFileName = uniqid('post_', true) . '.' . $fileExtension;
+                    $destPath = $uploadFileDir . $newFileName;
 
-                        $rootPath = realpath(__DIR__ . '/../../..');
-                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
-                        }
+                    if (move_uploaded_file($fileTmpPath, $destPath)) {
+                        $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
+                        $stmt_foto = $obj->prepare($query_foto);
 
-                        $destPath = $uploadFileDir . $newFileName;
-
-                        if (move_uploaded_file($fileTmpPath, $destPath)) {
-                            $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
-                            $stmt_foto = $obj->prepare($query_foto);
-
-                            if ($stmt_foto) {
-                                $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
-                                $stmt_foto->execute();
-                            }
+                        if ($stmt_foto) {
+                            $stmt_foto->bind_param("is", $id_publicacao, $newFileName);
+                            $stmt_foto->execute();
                         }
                     }
                 }
             }
         }
 
+        $_SESSION['success_message'] = "Publicação realizada com sucesso!";
+
+        
         header('Location: profile.php');
         exit;
     }
@@ -336,30 +343,53 @@
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
         $tipoPublicacao = $_POST['tipo_publicacao'];
+        $rua = $_POST['endereco_rua'];
+        $bairro = $_POST['endereco_bairro'];
+        $cidade = $_POST['endereco_cidade'];
+        $estado = $_POST['endereco_estado'];
+
         date_default_timezone_set('America/Sao_Paulo');
         $dataAtualizacao = date('Y-m-d H:i:s'); 
 
-        $updateQuery = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ?, data_atualizacao = ? WHERE id_publicacao = ?";
+        $updateQuery = "UPDATE publicacao SET titulo = ?, conteudo = ?, tipo_publicacao = ?, data_atualizacao = ?, endereco_rua = ?, endereco_bairro = ?, endereco_cidade = ?, endereco_estado = ? WHERE id_publicacao = ?";
         $stmt = $obj->prepare($updateQuery);
-        $stmt->bind_param("ssssi", $titulo, $conteudo, $tipoPublicacao, $dataAtualizacao, $postId);
+        $stmt->bind_param("ssssssssi", $titulo, $conteudo, $tipoPublicacao, $dataAtualizacao, $rua, $bairro, $cidade, $estado, $postId);
         $stmt->execute();
 
 
+        if (isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
+            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+            
+            foreach ($_POST['delete_images'] as $imageName) {
+                $safeImageName = basename($imageName);
+                $filePath = $uploadDir . '/' . $safeImageName;
+
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+
+                $deleteImage = $obj->prepare("DELETE FROM imagem WHERE id_publicacao = ? AND imagem_url = ?");
+                $deleteImage->bind_param("is", $postId, $safeImageName);
+                $deleteImage->execute();
+            }
+        }
+
         $hasNewImages = isset($_FILES['foto_publicacao']) 
-                        && !empty($_FILES['foto_publicacao']['name'][0]);
+            && isset($_FILES['foto_publicacao']['error'][0])
+            && $_FILES['foto_publicacao']['error'][0] !== 4;
 
         if ($hasNewImages) {
+            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
+
             $selectImgs = $obj->prepare("SELECT imagem_url FROM imagem WHERE id_publicacao = ?");
             $selectImgs->bind_param("i", $postId);
             $selectImgs->execute();
             $resultImgs = $selectImgs->get_result();
 
-            $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
-
             while ($row = $resultImgs->fetch_assoc()) {
                 $filePath = $uploadDir . '/' . $row['imagem_url'];
                 if (file_exists($filePath)) {
-                    unlink($filePath);
+                    unlink($filePath); 
                 }
             }
 
@@ -367,9 +397,22 @@
             $deleteImgs->bind_param("i", $postId);
             $deleteImgs->execute();
 
-            $fileCount = is_array($_FILES['foto_publicacao']['name']) 
-                        ? count($_FILES['foto_publicacao']['name']) 
-                        : 0;
+            $countQuery = $obj->prepare("SELECT COUNT(*) AS total FROM imagem WHERE id_publicacao = ?");
+            $countQuery->bind_param("i", $postId);
+            $countQuery->execute();
+            $countResult = $countQuery->get_result();
+            $countRow = $countResult->fetch_assoc();
+            $currentImageCount = $countRow['total'] ?? 0;
+
+            $deleteCount = isset($_POST['delete_images']) ? count($_POST['delete_images']) : 0;
+
+            $maxAllowed = 8;
+            $availableSlots = $maxAllowed - ($currentImageCount - $deleteCount);
+
+            $newImages = $_FILES['foto_publicacao'];
+            $newImageCount = isset($newImages['name']) ? count($newImages['name']) : 0;
+
+            $fileCount = min($newImageCount, $availableSlots);
 
             $allowedExtensions = ['jpg', 'jpeg', 'png'];
 
@@ -386,13 +429,11 @@
                     if (in_array($fileExtension, $allowedExtensions)) {
                         $newFileName = uniqid('post_', true) . '.' . $fileExtension;
 
-                        $rootPath = realpath(__DIR__ . '/../../..');
-                        $uploadFileDir = $rootPath . '/src/assets/images/uploads/posts/';
-                        if (!is_dir($uploadFileDir)) {
-                            mkdir($uploadFileDir, 0777, true);
+                        if (!is_dir($uploadDir)) {
+                            mkdir($uploadDir, 0777, true);
                         }
 
-                        $destPath = $uploadFileDir . $newFileName;
+                        $destPath = $uploadDir . $newFileName;
 
                         if (move_uploaded_file($fileTmpPath, $destPath)) {
                             $query_foto = "INSERT INTO imagem (id_publicacao, imagem_url) VALUES (?, ?)";
@@ -407,6 +448,8 @@
                 }
             }
         }
+
+        $_SESSION['success_message'] = "Publicação editada com sucesso";
 
         header('Location: profile.php');
         exit;
@@ -470,8 +513,8 @@
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
-                <li><a href="../../../index.php">Áreas de Maior Abandono</a></li>
-                <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
+                <li><a href="areas.php">Áreas de Maior Abandono</a></li>
+                 <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
                     <li><a href="../../../index.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="about-us.php">Sobre Nós</a></li>
@@ -593,8 +636,6 @@
                                 </em>
                             <?php endif; ?>
                         </span>
-
-
                     </p>
 
                 <?php
@@ -606,12 +647,46 @@
                         'outro' => 'Outro'
                     ];
                 ?>
+
                 <p class="post-type">
                     <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                 </p>
 
                 <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
                 <p><?php echo $post['conteudo']; ?></p>
+
+                <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                
+                    <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                        📍
+                        <?php
+                            $enderecoFormatado = [];
+
+                            if (!empty($post['endereco_rua'])) {
+                                $enderecoFormatado[] = $post['endereco_rua'];
+                            }
+                            if (!empty($post['endereco_bairro'])) {
+                                $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                            }
+                            if (!empty($post['endereco_cidade']) && !empty($post['endereco_estado'])) {
+                                $enderecoFormatado[] = $post['endereco_cidade'] . ' - ' . strtoupper($post['endereco_estado']);
+                            } elseif (!empty($post['endereco_cidade'])) {
+                                $enderecoFormatado[] = $post['endereco_cidade'];
+                            } elseif (!empty($post['endereco_estado'])) {
+                                $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                            }
+
+                            echo implode(', ', $enderecoFormatado);
+                        ?>
+                    </p>
+
+                <?php else: ?>
+
+                    <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                        Endereço não informado
+                    </p>
+
+                <?php endif; ?>
 
                 <?php
                     $images = $images ?? [];
@@ -668,16 +743,33 @@
                             $moreCount = max(0, $totalImages - $maxVisible);
                         ?>
 
-                       <button 
-                        type="button" 
-                        class="edit-button" 
-                        onclick="openEditPostModal(this);"
-                        data-id="<?= $post['id_publicacao']; ?>"
-                        data-titulo="<?= htmlspecialchars($post['titulo']); ?>"
-                        data-conteudo="<?= htmlspecialchars($post['conteudo']); ?>"
-                        data-tipo="<?= $post['tipo_publicacao']; ?>"
-                        data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8'); ?>'
-                    >✏️ Editar</button>
+                        <?php
+                            $naoSeiEndereco = (
+                                empty($post['endereco_rua']) &&
+                                empty($post['endereco_bairro']) &&
+                                empty($post['endereco_cidade']) &&
+                                empty($post['endereco_estado'])
+                            ) ? '1' : '0';
+                        ?>
+
+                        <button 
+                            type="button" 
+                            class="edit-button" 
+                            onclick="openEditPostModal(this);"
+                            data-id="<?= $post['id_publicacao']; ?>"
+                            data-titulo="<?= htmlspecialchars($post['titulo']); ?>"
+                            data-conteudo="<?= htmlspecialchars($post['conteudo']); ?>"
+                            data-tipo="<?= $post['tipo_publicacao']; ?>"
+                            data-endereco_rua="<?= htmlspecialchars($post['endereco_rua']); ?>"
+                            data-endereco_bairro="<?= htmlspecialchars($post['endereco_bairro']); ?>"
+                            data-endereco_cidade="<?= htmlspecialchars($post['endereco_cidade']); ?>"
+                            data-endereco_estado="<?= htmlspecialchars($post['endereco_estado']); ?>"
+                            data-nao_sei_endereco="<?= $naoSeiEndereco ?>"
+                            data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8'); ?>'
+                        >
+                            ✏️ Editar
+                        </button>
+
                     </form>
 
                     <form method="POST" action="profile.php">
@@ -689,10 +781,9 @@
                         >🗑️ Excluir</button>
                     </form>
 
-
                 </div>
-                </div>
-
+               
+            </div>
             <?php endwhile; ?>
             <?php endif; ?>
         </div>
@@ -716,12 +807,14 @@
             +
         </button>
     <?php endif; ?>
+    
 
     <div id="postModal" class="post-modal">
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
             <h2>Criar Nova Publicação</h2>
-            <form action="profile.php" method="POST" enctype="multipart/form-data">
+            
+            <form id="postForm" action="profile.php" method="POST" enctype="multipart/form-data">
                 <div class="post-form-group">
                     <label for="titulo">Título</label>
                     <input type="text" id="titulo" name="titulo" required>
@@ -746,7 +839,74 @@
                         <option value="outro">Outro</option>
                     </select>
                 </div>
-                <button type="submit" name="make_post" class="create-post" onclick="">Publicar</button>
+
+                <br><br>
+                <h3>Endereço</h3>
+
+                <div class="row-style">
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="endereco_rua" name="endereco_rua" class="required campo-endereco" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
+                            <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="endereco_bairro" name="endereco_bairro" class="required campo-endereco" data-type="bairro" data-required="true" placeholder="Insira o bairro">
+                            <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="endereco_cidade" name="endereco_cidade" class="required campo-endereco" data-type="cidade" data-required="true" placeholder="Insira a cidade">
+                            <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="state"><b>Estado: *</b></label>
+                            <select name="state" id="state" class="mid-inputUser required campo-endereco" data-type="estado" data-required="true">
+                                <option value="">Selecione um estado</option>
+                                <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
+                                <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
+                                <option value="AP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AP') ? 'selected' : ''; ?>>Amapá</option>
+                                <option value="AM" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AM') ? 'selected' : ''; ?>>Amazonas</option>
+                                <option value="BA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'BA') ? 'selected' : ''; ?>>Bahia</option>
+                                <option value="CE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'CE') ? 'selected' : ''; ?>>Ceará</option>
+                                <option value="DF" <?php echo (isset($_POST['state']) && $_POST['state'] === 'DF') ? 'selected' : ''; ?>>Distrito Federal</option>
+                                <option value="ES" <?php echo (isset($_POST['state']) && $_POST['state'] === 'ES') ? 'selected' : ''; ?>>Espírito Santo</option>
+                                <option value="GO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'GO') ? 'selected' : ''; ?>>Goiás</option>
+                                <option value="MA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MA') ? 'selected' : ''; ?>>Maranhão</option>
+                                <option value="MT" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MT') ? 'selected' : ''; ?>>Mato Grosso</option>
+                                <option value="MS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MS') ? 'selected' : ''; ?>>Mato Grosso do Sul</option>
+                                <option value="MG" <?php echo (isset($_POST['state']) && $_POST['state'] === 'MG') ? 'selected' : ''; ?>>Minas Gerais</option>
+                                <option value="PA" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PA') ? 'selected' : ''; ?>>Pará</option>
+                                <option value="PB" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PB') ? 'selected' : ''; ?>>Paraíba</option>
+                                <option value="PR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PR') ? 'selected' : ''; ?>>Paraná</option>
+                                <option value="PE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PE') ? 'selected' : ''; ?>>Pernambuco</option>
+                                <option value="PI" <?php echo (isset($_POST['state']) && $_POST['state'] === 'PI') ? 'selected' : ''; ?>>Piauí</option>
+                                <option value="RJ" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RJ') ? 'selected' : ''; ?>>Rio de Janeiro</option>
+                                <option value="RN" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RN') ? 'selected' : ''; ?>>Rio Grande do Norte</option>
+                                <option value="RS" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RS') ? 'selected' : ''; ?>>Rio Grande do Sul</option>
+                                <option value="RO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RO') ? 'selected' : ''; ?>>Rondônia</option>
+                                <option value="RR" <?php echo (isset($_POST['state']) && $_POST['state'] === 'RR') ? 'selected' : ''; ?>>Roraima</option>
+                                <option value="SC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SC') ? 'selected' : ''; ?>>Santa Catarina</option>
+                                <option value="SP" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SP') ? 'selected' : ''; ?>>São Paulo</option>
+                                <option value="SE" <?php echo (isset($_POST['state']) && $_POST['state'] === 'SE') ? 'selected' : ''; ?>>Sergipe</option>
+                                <option value="TO" <?php echo (isset($_POST['state']) && $_POST['state'] === 'TO') ? 'selected' : ''; ?>>Tocantins</option>
+                            </select>
+                            <span class="span-required">Selecione um estado válido.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="nao_sei_endereco" name="nao_sei_endereco" onclick="desabilitarCamposEndereco()">
+                    <label for="nao_sei_endereco">Não sei informar o endereço</label>
+                </div>
+
+                <button type="submit" name="make_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Publicar</button>
             </form>
         </div>
     </div>
@@ -764,7 +924,7 @@
                     ?>">
                         <div class="column-style">
                             <div class="form-group">
-                                <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem:</label>
+                                <label for="foto_perfil" class="custom-file-label" id="label_foto">📁 Escolher imagem de perfil:</label>
                                 <input type="file" name="foto_perfil" id="foto_perfil">
                             </div>
 
@@ -926,7 +1086,7 @@
                     <label for="edit_conteudo">Conteúdo</label>
                     <textarea id="edit_conteudo" name="conteudo" rows="4" required></textarea>
                 </div>
-
+                    
                 <div class="post-form-group">
                     <label>Imagens atuais:</label>
                     <div id="edit-image-gallery" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
@@ -947,15 +1107,79 @@
                     </select>
                 </div>
 
-                <button type="submit" name="update_post" class="create-post">Salvar Alterações</button>
+                <div class="row-style">
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_rua">Rua:</label>
+                            <input type="text" id="edit_endereco_rua" name="endereco_rua" class="required campo-endereco-edit" data-type="rua" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
+                            <span class="span-required"> Rua não pode conter caracteres especias.</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="endereco_bairro">Bairro:</label>
+                            <input type="text" id="edit_endereco_bairro" name="endereco_bairro" class="required campo-endereco-edit" data-type="bairro" data-required="true" placeholder="Insira o bairro">
+                            <span class="span-required">Bairro não pode conter números ou caracteres especiais.</span>
+                        </div>
+                    </div>
+
+                    <div class="row-style-content">
+                        <div class="form-group">
+                            <label for="endereco_cidade">Cidade:</label>
+                            <input type="text" id="edit_endereco_cidade" name="endereco_cidade" class="required campo-endereco-edit" data-type="cidade" data-required="true" placeholder="Insira a cidade">
+                            <span class="span-required">Cidade não pode conter números ou caracteres especiais.</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="endereco_estado"><b>Estado: *</b></label>
+                            <select name="endereco_estado" id="edit_endereco_estado" class="required campo-endereco-edit" data-type="estado" data-required="true">
+                                <option value="">Selecione um estado</option>
+                                <option value="AC">Acre</option>
+                                <option value="AL">Alagoas</option>
+                                <option value="AP">Amapá</option>
+                                <option value="AM">Amazonas</option>
+                                <option value="BA">Bahia</option>
+                                <option value="CE">Ceará</option>
+                                <option value="DF">Distrito Federal</option>
+                                <option value="ES">Espírito Santo</option>
+                                <option value="GO">Goiás</option>
+                                <option value="MA">Maranhão</option>
+                                <option value="MT">Mato Grosso</option>
+                                <option value="MS">Mato Grosso do Sul</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="PA">Pará</option>
+                                <option value="PB">Paraíba</option>
+                                <option value="PR">Paraná</option>
+                                <option value="PE">Pernambuco</option>
+                                <option value="PI">Piauí</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="RN">Rio Grande do Norte</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="RO">Rondônia</option>
+                                <option value="RR">Roraima</option>
+                                <option value="SC">Santa Catarina</option>
+                                <option value="SP">São Paulo</option>
+                                <option value="SE">Sergipe</option>
+                                <option value="TO">Tocantins</option>
+                            </select>
+                            <span class="span-required">Selecione um estado válido.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="nao_sei_endereco_edit" name="nao_sei_endereco">
+                    <label for="nao_sei_endereco_edit">Não sei informar o endereço</label>
+                </div>
+
+                <button type="submit" name="update_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
             </form>
 
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -976,4 +1200,4 @@
     </script>
 
 </body>
-</html>
+</html> 

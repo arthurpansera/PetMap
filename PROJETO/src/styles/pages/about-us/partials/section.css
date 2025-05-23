@@ -21,7 +21,7 @@
     font-size: 35px;
 }
 
-.content .about-us-info {
+.about-us-info-container {
     text-align: justify;
     font-size: 16px;
     background-color: #fff;
@@ -33,21 +33,59 @@
     line-height: 1.5em;
 }
 
-.content .about-us-info-1 {
-    padding-bottom: 30px;
+.about-us-image-text {
+    display: flex;
+    flex-direction: row;
 }
 
-.content .about-us-info-2 {
-    padding-bottom: 20px;
+.about-us-info-text-2 ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.about-us-info-text-2 ul li {
+    margin-bottom: 10px;
+}
+
+.about-us-info-text-2 ul li::before {
+    content: "✔️";
+}
+
+.about-us-image {
+    width: 40%;
 }
 
 .about-us-image img {
-    width: 600px;
-    height: 400px;
     display: block;
-    margin: 0 auto 30px auto;
-    border-radius: 10px;
     object-fit: cover;
+    max-width: 300px;
+}
+
+#dog-icon {
+    margin-left: 148px;
+}
+
+.btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+.btn-about-us {
+    display: inline-block;
+    padding: 8px 15px;
+    color: white;
+    background-color: var(--purple-color);
+    text-decoration: none;
+    border-radius: 10px;
+    transition-duration: 0.2s;
+}
+
+.btn-about-us:hover {
+    background-color: var(--dark-purple);
+    color: rgb(228, 228, 228);
 }
 
 @media (min-width: 1200px) {
