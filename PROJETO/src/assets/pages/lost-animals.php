@@ -131,11 +131,11 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>

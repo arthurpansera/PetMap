@@ -45,17 +45,17 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="profile.php">
                                 <img src="../images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>
                         </li>
                     <?php else: ?>
-                        <a class="btn" href="login.php">Entrar</a>
+                        <a class="btn" href="src/assets/pages/login.php">Entrar</a>
                     <?php endif; ?>
                 </ul>
             </nav>
@@ -63,7 +63,7 @@
     </header>
     <section class="options">
         <nav class="left-menu">
-            <ul>
+             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>

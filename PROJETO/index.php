@@ -1,7 +1,25 @@
 <?php
     include('conecta_db.php');
-
+    
     session_start();
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
+
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
     $isModerator = false;
 
@@ -197,11 +215,11 @@
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
-                            $nomes = explode(' ', trim($userName));
-                            $doisPrimeirosNomes = implode(' ', array_slice($nomes, 0, 2));
+                            $nome = explode(' ', trim($userName));
+                            $prmeiroNome = implode(' ', array_slice($nome, 0, 1));
                         ?>
                         <li class="user-info">
-                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($doisPrimeirosNomes); ?>!</p>
+                            <p class="welcome-message">Bem-vindo, <?php echo htmlspecialchars($prmeiroNome); ?>!</p>
                             <a class="profile-image" href="src/assets/pages/profile.php">
                                 <img src="src/assets/images/perfil-images/profile-icon.png" alt="Ícone de Perfil">
                             </a>

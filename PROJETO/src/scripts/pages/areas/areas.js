@@ -1,79 +1,74 @@
-const abandonosData = [
-    { estado: "SP", cidade: "São Paulo", especie: "Cachorro", quantidade: 120 },
-    { estado: "SP", cidade: "Campinas", especie: "Gato", quantidade: 85 },
-    { estado: "SP", cidade: "Sorocaba", especie: "Outro", quantidade: 45 },
-    { estado: "RJ", cidade: "Rio de Janeiro", especie: "Outro", quantidade: 150 },
-    { estado: "RJ", cidade: "Niterói", especie: "Cachorro", quantidade: 95 },
-    { estado: "RJ", cidade: "Cabo Frio", especie: "Gato", quantidade: 60 },
-    { estado: "MG", cidade: "Belo Horizonte", especie: "Outro", quantidade: 75 },
-    { estado: "MG", cidade: "Uberlândia", especie: "Cachorro", quantidade: 100 },
-    { estado: "MG", cidade: "Juiz de Fora", especie: "Outro", quantidade: 30 },
-    { estado: "PR", cidade: "Curitiba", especie: "Outro", quantidade: 120 },
-    { estado: "PR", cidade: "Londrina", especie: "Gato", quantidade: 80 },
-    { estado: "PR", cidade: "Maringá", especie: "Cachorro", quantidade: 110 }
-];
+const estadoSelect = document.getElementById('estado');
+const cidadeSelect = document.getElementById('cidade');
 
-function filterData() {
-    const estado = document.getElementById('estado').value;
-    const cidade = document.getElementById('cidade').value;
-
-    const filteredData = abandonosData.filter(item => {
-        return (
-            (estado === "" || item.estado === estado) &&
-            (cidade === "" || item.cidade === cidade)
-        );
-    });
-
-    displayData(filteredData);
-}
-
-function displayData(data) {
-    const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = "";
-    const noDataMessage = document.getElementById('no-data-message');
-
-    if (data.length === 0) {
-        noDataMessage.style.display = "block";
-    } else {
-        noDataMessage.style.display = "none";
-        data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.estado}</td>
-                <td>${item.cidade}</td>
-                <td>${item.quantidade}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+function populateEstados() {
+    while (estadoSelect.options.length > 1) {
+        estadoSelect.remove(1);
     }
+    Object.keys(locations).forEach(estado => {
+        const option = document.createElement('option');
+        option.value = estado;
+        option.textContent = estado;
+        estadoSelect.appendChild(option);
+    });
 }
 
-document.getElementById('estado').addEventListener('change', (event) => {
-    const estado = event.target.value;
-    const cidadeSelect = document.getElementById('cidade');
+function populateCidades(estado) {
     cidadeSelect.innerHTML = '<option value="">Selecione a Cidade</option>';
+    cidadeSelect.disabled = true;
 
-    const cidades = {
-        "SP": ["São Paulo", "Campinas", "Sorocaba"],
-        "RJ": ["Rio de Janeiro", "Niterói", "Cabo Frio"],
-        "MG": ["Belo Horizonte", "Uberlândia", "Juiz de Fora"],
-        "PR": ["Curitiba", "Londrina", "Maringá"]
-    };
-
-    if (estado) {
-        cidades[estado].forEach(cidade => {
+    if (estado && locations[estado]) {
+        locations[estado].forEach(cidade => {
             const option = document.createElement('option');
             option.value = cidade;
             option.textContent = cidade;
             cidadeSelect.appendChild(option);
         });
+        cidadeSelect.disabled = false;
+    }
+}
+
+estadoSelect.addEventListener('change', () => {
+    populateCidades(estadoSelect.value);
+});
+
+populateEstados();
+populateCidades();
+
+function filterTable() {
+    const estadoSelecionado = estadoSelect.value;
+    const cidadeSelecionada = cidadeSelect.value;
+    const tbody = document.getElementById('table-body');
+    const linhas = tbody.getElementsByTagName('tr');
+
+    let temLinhaVisivel = false;
+
+    for (let i = 0; i < linhas.length; i++) {
+        const tdEstado = linhas[i].cells[0].textContent.trim();
+        const tdCidade = linhas[i].cells[1].textContent.trim();
+
+        const estadoOk = !estadoSelecionado || tdEstado === estadoSelecionado;
+        const cidadeOk = !cidadeSelecionada || tdCidade === cidadeSelecionada;
+
+        if (estadoOk && cidadeOk) {
+            linhas[i].style.display = "";
+            temLinhaVisivel = true;
+        } else {
+            linhas[i].style.display = "none";
+        }
     }
 
-    filterData();
+    const noDataMessage = document.getElementById('no-data-message');
+    noDataMessage.style.display = temLinhaVisivel ? 'none' : 'block';
+}
+
+estadoSelect.addEventListener('change', () => {
+    cidadeSelect.value = "";
+    populateCidades(estadoSelect.value);
+    filterTable();
 });
 
-document.querySelectorAll('.filter-select').forEach(select => {
-    select.addEventListener('change', filterData);
-});
+cidadeSelect.addEventListener('change', filterTable);
 
-displayData(abandonosData);
+filterTable();
+
