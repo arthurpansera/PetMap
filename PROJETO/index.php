@@ -324,7 +324,6 @@
             <div class="menu-post">
                 <?php if ($result->num_rows > 0): ?>
                     <?php while ($post = $result->fetch_assoc()): ?>
-
                         <?php
                             $idPost = $post['id_publicacao'];
                             $images = [];
@@ -348,7 +347,6 @@
                             $getComentarios->bind_param("i", $idPost);
                             $getComentarios->execute();
                             $comentarios = $getComentarios->get_result();
-
                         ?>
 
                         <div class="post-item">
@@ -388,10 +386,8 @@
 
                              <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
                                 <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
-                                    📍
                                     <?php
                                         $enderecoFormatado = [];
-
                                         if (!empty($post['endereco_rua'])) {
                                             $enderecoFormatado[] = $post['endereco_rua'];
                                         }
@@ -405,17 +401,14 @@
                                         } elseif (!empty($post['endereco_estado'])) {
                                             $enderecoFormatado[] = strtoupper($post['endereco_estado']);
                                         }
-
                                         echo implode(', ', $enderecoFormatado);
                                     ?>
                                 </p>
 
                             <?php else: ?>
-
                                 <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
                                     Endereço não informado
                                 </p>
-
                             <?php endif; ?>
 
                             <?php
@@ -481,7 +474,6 @@
                                     $stmt->store_result();
                                     $jaImpulsionou = $stmt->num_rows > 0;
                                 }
-                             
 
                                 $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
                                 $q->bind_param("i", $idPost);
@@ -510,7 +502,13 @@
                                         </button>
                                     </form>
 
-                                    <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
+                                    <?php if ($isLoggedIn): ?>
+                                        <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
+                                    <?php else: ?>
+                                        <form method="GET" action="src/assets/pages/login.php" style="display: contents;">
+                                            <button type="submit" class="comment-button">💬 Comentar</button>
+                                        </form>
+                                    <?php endif; ?>
 
                                     <?php if ($totalComentarios > 0): ?>
                                         <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
@@ -546,7 +544,6 @@
                                 <?php endif; ?>
                             </div>
                         </div>
-
                     <?php endwhile; ?>
                 <?php else: ?>
                     <div class="no-posts-error">
