@@ -67,7 +67,7 @@ CREATE TABLE moderador_valida_perfil (
     id_moderador INT NOT NULL,
     id_perfil INT NOT NULL,
     descricao_validacao TEXT NOT NULL,
-    data_gerencia DATETIME DEFAULT CURRENT_TIMESTAMP,
+    data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
     FOREIGN KEY (id_perfil) REFERENCES perfil(id_perfil) ON DELETE CASCADE
 );
@@ -112,7 +112,8 @@ CREATE TABLE moderador_valida_publicacao (
 CREATE TABLE comentario (
     id_comentario INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
-    id_publicacao INT NOT NULL,
+    id_publicacao INT DEFAULT NULL,
+    id_comentario_pai INT DEFAULT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_comentario ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
@@ -121,7 +122,30 @@ CREATE TABLE comentario (
     total_comentarios INT DEFAULT 0,
     PRIMARY KEY (id_comentario),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE,
+    FOREIGN KEY (id_comentario_pai) REFERENCES comentario(id_comentario) ON DELETE CASCADE,
+    CHECK (
+        (id_publicacao IS NOT NULL AND id_comentario_pai IS NULL) OR
+        (id_publicacao IS NULL AND id_comentario_pai IS NOT NULL)
+    )
+);
+
+CREATE TABLE impulso_comentario (
+    id_usuario INT NOT NULL,
+    id_comentario INT NOT NULL,
+    data_impulso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_usuario, id_comentario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
+);
+
+CREATE TABLE moderador_valida_comentario (
+    id_moderador INT NOT NULL,
+    id_comentario INT NOT NULL,
+    descricao_validacao TEXT NOT NULL,
+    data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
+    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
 );
 
 CREATE TABLE imagem (
@@ -133,16 +157,7 @@ CREATE TABLE imagem (
     FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE,
     FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE,
     CHECK (
-        (id_publicacao IS NOT NULL AND id_comentario IS NULL) OR 
+        (id_publicacao IS NOT NULL AND id_comentario IS NULL) OR
         (id_publicacao IS NULL AND id_comentario IS NOT NULL)
     )
-);
-
-CREATE TABLE moderador_valida_comentario (
-    id_moderador INT NOT NULL,
-    id_comentario INT NOT NULL,
-    descricao_validacao TEXT NOT NULL,
-    data_validacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_moderador) REFERENCES moderador(id_moderador) ON DELETE CASCADE,
-    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
 );
