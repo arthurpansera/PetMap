@@ -3,6 +3,23 @@
     
     session_start();
 
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+
     if (isset($_SESSION['success_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -241,6 +258,87 @@
         exit;
     }
 
+    if (isset($_POST['update_comment'])) {
+        $idComentario = intval($_POST['id_comentario']);
+        $conteudo = trim($_POST['conteudo_comentario']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+
+        if ($conteudo === '') {
+            $_SESSION['error_message'] = "O comentário não pode ficar vazio.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para editar esse comentário.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $updateQuery = $obj->prepare("UPDATE comentario SET conteudo = ?, data_atualizacao = NOW() WHERE id_comentario = ?");
+        $updateQuery->bind_param('si', $conteudo, $idComentario);
+        $updateQuery->execute();
+
+        if ($updateQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário atualizado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Nenhuma alteração feita ou erro na atualização.";
+        }
+
+        header('Location: index.php');
+        exit;
+    }
+
+    if (isset($_POST['delete_comment'])) {
+        $idComentario = intval($_POST['id_comentario_excluir']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para excluir esse comentário.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $deleteQuery = $obj->prepare("DELETE FROM comentario WHERE id_comentario = ?");
+        $deleteQuery->bind_param('i', $idComentario);
+        $deleteQuery->execute();
+
+        if ($deleteQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário excluído com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao excluir comentário.";
+        }
+
+        header('Location: index.php');
+        exit;
+    }
+
+
+
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: src/assets/pages/login.php");
@@ -449,7 +547,7 @@
                             <?php
                                 $idPost = $post['id_publicacao'];
 
-                                $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
+                                $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
                                     FROM comentario c
                                     JOIN usuario u ON c.id_usuario = u.id_usuario
                                     WHERE c.id_publicacao = ?
@@ -518,13 +616,19 @@
                                 </div>
 
                                 <?php if ($isLoggedIn): ?>
-                                    <div class="comment-form-container" id="comment-form-<?php echo $idPost; ?>" style="display: none">
-                                        <form method="POST" class="comment-form">
-                                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                                            <textarea name="conteudo_comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
-                                            <button type="submit" name="comentar">Enviar</button>
-                                        </form>
+                                    <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                        <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
+                                            <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
+                                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                                <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
+                                                <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
+
+                                                <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
+                                                <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
+                                            </form>
+                                        </div>
                                     </div>
+
                                 <?php endif; ?>
 
                                 <?php if ($totalComentarios > 0): ?>
@@ -537,6 +641,28 @@
                                                     <p class="comment-date">
                                                         <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
                                                     </p>
+
+                                                    <?php if ($isLoggedIn && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
+
+                                                        <div class="comment-actions">
+                                                            <button class="edit-comment-btn"
+                                                                onclick="editarComentario(
+                                                                    <?php echo $idPost; ?>,
+                                                                    <?php echo $comentario['id_comentario']; ?>,
+                                                                    '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
+                                                                )">✏️ Editar
+                                                            </button>
+
+                                                            <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
+                                                                <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
+                                                                <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
+                                                                    🗑️ Excluir
+                                                                </button>
+                                                            </form>
+
+                                                        </div>
+                                                    <?php endif; ?>
+
                                                 </div>
                                             <?php endforeach; ?>
                                         </div>
