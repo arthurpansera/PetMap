@@ -28,35 +28,14 @@
     line-height: 1.5em;
 }
 
-.filters {
-    display: flex;
-    gap: 30px;
-    justify-content: flex-start;
-    margin-bottom: 30px;
-}
-
-.filter-select {
-    padding: 12px 15px;
-    font-size: 16px;
-    border: 1px solid #dadada;
-    border-radius: 8px;
-    background-color: white;
-    transition: border-color 0.3s ease;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: var(--purple-color);
-}
-
 .table-container {
-    margin-top: 20px;
+    margin-top: 0;
     overflow-x: auto;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     border-radius: 8px;
 }
 
-table {
+.registered-users-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
@@ -65,7 +44,7 @@ table {
     text-align: center;
 }
 
-table th {
+.registered-users-table th {
     background-color: var(--purple-color);
     color: #fff;
     padding: 14px;
@@ -73,31 +52,46 @@ table th {
     font-size: 16px;
 }
 
-table td {
+.registered-users-table td {
     background-color: #f9f9f9;
     padding: 12px 14px;
     border-bottom: 1px solid #ddd;
     font-size: 15px;
 }
 
-table tr:last-child td {
+.registered-users-table tr:last-child td {
     border-bottom: none;
 }
 
-table tr:hover td {
+.registered-users-table tr:hover td {
     background-color: #ececec;
     transition: background-color 0.2s ease;
 }
 
+.btn-ver-perfil {
+    display: inline-block;
+    background-color: #cfcfcf;
+    color: black;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-ver-perfil:hover {
+    background-color: #bdbdbd;
+}
+
 .no-data-message {
+    margin-top: 15px;
     text-align: center;
     color: var(--purple-color);
     font-size: 18px;
-    padding: 20px;
-    background-color: var(--light-grey);
-    border: 1px solid var(--light-grey);
+    padding: 15px;
+    background-color: #f0f0f0;
     border-radius: 8px;
-    display: none;
+    border: 1px solid #ddd;
 }
 
 @media (min-width: 1200px) {

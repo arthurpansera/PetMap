@@ -509,7 +509,7 @@
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                  <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
-                    <li><a href="../../../index.php">Usuários Cadastrados</a></li>
+                    <li><a href="registered-users.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="about-us.php">Sobre Nós</a></li>
                 <li><a href="frequent-questions.php">Perguntas Frequentes</a></li>

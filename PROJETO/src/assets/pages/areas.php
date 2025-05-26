@@ -126,7 +126,7 @@
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="areas.php">Áreas de Maior Abandono</a></li>
                 <?php if ($isModerator): ?>
-                    <li><a href="../../../index.php">Usuários Cadastrados</a></li>
+                    <li><a href="registered-users.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="about-us.php">Sobre Nós</a></li>
                 <li><a href="frequent-questions.php">Perguntas Frequentes</a></li>
@@ -138,7 +138,7 @@
             </div>
         </nav>
         <div class="content">
-            <h2>Áreas de Maior Quantidade de Abandono</h2>
+            <h2>Áreas de Maior Abandono</h2>
             <div class="box">
                 <div class="filters">
                     <select class="filter-select" id="estado">
