@@ -563,7 +563,6 @@
                     <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
                 </div>
             </div>
-
         </div>
     </section>
     
