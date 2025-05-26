@@ -128,10 +128,10 @@
                     </div>
 
                     <div class="full-inputBox">
-                        <label for="telephone"><b>Telefone: *</b></label>
-                        <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX">
-                        <span class="span-required">Insira um telefone válido</span>
-                     </div>
+                            <label for="telephone"><b>Telefone: *</b></label>
+                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX" maxlength="15" onkeypress="return MascaraTelefone(this, event)">
+                            <span class="span-required">Por favor, insira um telefone válido.</span>
+                    </div>
             
                     <div class="full-inputBox">
                         <label for="password"><b>Senha: *</b></label>

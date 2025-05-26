@@ -169,22 +169,24 @@
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="cpf"><b>CPF: *</b></label>
-                            <input type="text" name="cpf" id="cpf" class="mid-inputUser required" data-type="CPF" data-required="true" placeholder="XXX.XXX.XXX-XX">
-                            <span class="span-required">Por faovr, insira um CPF válido</span>
+                            <input type="text" name="cpf" id="cpf" class="mid-inputUser required" data-type="CPF" data-required="true"
+                                placeholder="XXX.XXX.XXX-XX" maxlength="14" onkeypress="return MascaraCPF(this, event)">
+                            <span class="span-required">Por favor, insira um CPF válido.</span>
                         </div>
 
                         <div class="mid-inputBox">
                             <label for="birthYear"><b>Data de Nascimento: *</b></label>
-                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" data-type="data de nascimento" data-required="true" placeholder="DD/MM/AAAA">
+                            <input type="text" name="birthYear" id="birthYear" class="mid-inputUser required" data-type="data de nascimento" data-required="true"
+                                placeholder="DD/MM/AAAA" maxlength="10" onkeypress="return MascaraData(this, event)">
                             <span class="span-required">Insira uma data de nascimento válida.</span>
                         </div>
                     </div>
 
                     <div class="container-row">
-                        <div class="mid-inputBox">
+                         <div class="mid-inputBox">
                             <label for="telephone"><b>Telefone: *</b></label>
-                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX">
-                            <span class="span-required">Insira um telefone válido</span>
+                            <input type="text" name="telephone" id="telephone" class="mid-inputUser required" data-type="telefone" data-required="true" placeholder="(XX) XXXXX-XXXX" maxlength="15" onkeypress="return MascaraTelefone(this, event)">
+                            <span class="span-required">Por favor, insira um telefone válido.</span>
                         </div>
 
                         <div class="mid-inputBox">
@@ -211,10 +213,10 @@
                     <div class="container-row">
                         <div class="mid-inputBox">
                             <label for="CEP"><b>CEP: *</b></label>
-                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" data-type="CEP" data-required="true" placeholder="XXXXX-XXX">
-                            <span class="span-required">Por favor, insira um CEP válido</span>
+                            <input type="text" name="CEP" id="CEP" class="mid-inputUser required" data-type="CEP" data-required="true" placeholder="XXXXX-XXX" maxlength="10" onkeypress="return MascaraCep(this, event)"  >
+                            <span class="span-required">Por favor, insira um CEP válido.</span>
                         </div>
-                        
+
                         <div class="mid-inputBox">
                             <label for="road"><b>Rua: *</b></label>
                             <input type="text" name="road" id="road" class="mid-inputUser required" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
