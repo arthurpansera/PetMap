@@ -105,7 +105,6 @@
             </section>
     
             <section class="register-content hidden" id="register-content">
-               
                 <section class="register-box">
                     <div class="back-btn">
                         <a href="../../../index.php">Voltar</a>

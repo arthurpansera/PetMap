@@ -82,7 +82,6 @@
             echo "<span class='alert alert-danger'><h5>Erro ao cadastrar o usuário!</h5></span>";
         }
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -135,9 +134,9 @@
                      </div>
             
                     <div class="full-inputBox">
-                            <label for="password"><b>Senha: *</b></label>
-                            <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
-                            <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
+                        <label for="password"><b>Senha: *</b></label>
+                        <input type="password" name="password" id="password" class="full-inputUser required" data-type="senha" data-required="true" placeholder="Crie uma senha">
+                        <span class="span-required">Sua senha deve conter no mínimo 8 caracteres, combinando letras maiúsculas, minúsculas, números e símbolos especiais.</span>
                     </div>
 
                     <div class="full-inputBox">

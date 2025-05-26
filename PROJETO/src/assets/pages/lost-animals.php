@@ -256,6 +256,7 @@
                         <p class="post-type">
                             <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                         </p>
+                        
                         <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
 
                         <p><?php echo $post['conteudo']; ?></p>
@@ -365,7 +366,6 @@
                 <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
             </div>
         </div>
-        
     </section>
 
     <script src="../../scripts/pages/lost-animals/lost-animals.js"></script>

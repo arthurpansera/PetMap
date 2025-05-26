@@ -157,7 +157,7 @@ function isCNPJ(cnpj) {
 }
 
 // Function to check if is a valid CPF
-function isCPF(cpf){
+function isCPF(cpf) {
     const re = /^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$/
     return re.test(cpf) 
 }
@@ -197,13 +197,13 @@ function validPassword(password) {
 }
 
 // Function to check if is a valid CEP
-function isCEP(cep){
+function isCEP(cep) {
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
 
 // Function to check if is a valid road
-function isRoad(road){
+function isRoad(road) {
     const re = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s]+$/;
     return re.test(road);
 }

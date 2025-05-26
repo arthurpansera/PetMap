@@ -679,24 +679,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="src/scripts/order-posts.js"></script>
     <script src="src/scripts/register-validation.js"></script>
-
-    <script>
-        function toggleCommentForm(idPost) {
-            const form = document.getElementById(`comment-form-${idPost}`);
-            if (form.style.display === "none" || form.style.display === "") {
-                form.style.display = "block";
-            } else {
-                form.style.display = "none";
-            }
-        }
-
-        function toggleComments(postId) {
-            const wrapper = document.getElementById(`comments-wrapper-${postId}`);
-            if (wrapper) {
-                wrapper.style.display = (wrapper.style.display === 'none' || wrapper.style.display === '') ? 'block' : 'none';
-            }
-        }
-    </script>
+    <script src="src/scripts/view-comments.js"></script>
 
 </body>
 </html>

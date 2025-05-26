@@ -155,7 +155,6 @@
                     <button type="submit">🔍</button>
                 </form>
                 <ul class="ul">
-
                     <?php if ($isLoggedIn): ?>
                         <?php
                             $nome = explode(' ', trim($userName));
@@ -348,7 +347,6 @@
                     </div>
                     <?php endwhile; ?>
                 <?php else: ?>
-
                     <div class="no-posts-error">
                         <p class="no-posts-message">Não há publicações disponíveis.</p>
                         <img src="../images/no-posts-image/sem-posts.png" alt="Ícone de Erro" class="no-posts-image">
@@ -367,7 +365,6 @@
                 <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
             </div>
         </div>
-
     </section>
         
     <script src="../../scripts/pages/rescued-animals/rescued-animals.js"></script>

@@ -17,10 +17,10 @@ function btnRegisterOnClick(event) {
     } else if (!isEmail(inputs[1].value)) {
         emailValidate();
         hasError = true;
-    } else if (inputs[2].value === ""){
+    } else if (inputs[2].value === "") {
         errorAlert('Preenchimento obrigatório: CNPJ');
         hasError = true;
-    } else if (!isCNPJ(inputs[2].value)){
+    } else if (!isCNPJ(inputs[2].value)) {
         cnpjValidate();
         hasError = true;
     } else if (inputs[3].value === "") {
@@ -249,13 +249,13 @@ function isCNPJ(cnpj) {
 }
 
 // Function to check if is a valid CEP
-function isCEP(cep){
+function isCEP(cep) {
     const re = /^\d{2}\.?\d{3}-?\d{3}$/
     return re.test(cep)
 }
 
 // Function to check if is a valid road
-function isRoad(road){
+function isRoad(road) {
     const re = /^[A-Za-z0-9\s]+$/
     return re.test(road)
 }

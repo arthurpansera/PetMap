@@ -106,7 +106,6 @@
                 } else {
                     $_SESSION['error_message'] = "Erro ao mover a imagem.";
                 }
-                
             } else {
                 $_SESSION['error_message'] = "Tipo de arquivo inválido. Apenas imagens são permitidas.";
             }
@@ -134,7 +133,6 @@
             $result = $stmt_user->get_result();
             $_SESSION['user'] = $result->fetch_assoc();
             $_SESSION['success_message'] = "Foto de perfil removida com sucesso.";
-
         }
 
         header("Location: profile.php");
@@ -278,7 +276,6 @@
         date_default_timezone_set('America/Sao_Paulo');
         $dataCriacao = date('Y-m-d H:i:s');
 
-
         $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $obj->prepare($insertQuery);
         $stmt->bind_param("sssisssss", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao, $rua, $bairro, $cidade, $estado);
@@ -333,7 +330,6 @@
 
         $_SESSION['success_message'] = "Publicação realizada com sucesso!";
 
-        
         header('Location: profile.php');
         exit;
     }
@@ -355,7 +351,6 @@
         $stmt = $obj->prepare($updateQuery);
         $stmt->bind_param("ssssssssi", $titulo, $conteudo, $tipoPublicacao, $dataAtualizacao, $rua, $bairro, $cidade, $estado, $postId);
         $stmt->execute();
-
 
         if (isset($_POST['delete_images']) && is_array($_POST['delete_images'])) {
             $uploadDir = realpath(__DIR__ . '/../../..') . '/src/assets/images/uploads/posts/';
@@ -482,7 +477,6 @@
         header('Location: profile.php');
         exit;
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -595,7 +589,6 @@
                             </form>
                         </div>
                     </div>
-
                 </div>
             </div>
     </section>
@@ -723,7 +716,6 @@
                     <?php endforeach; ?>
                 </div>
 
-
                 <div class="post-actions">
                     <form method="POST" action="profile.php">
 
@@ -798,9 +790,7 @@
                 <button id="nextImage" class="modal-nav-button" aria-label="Próxima Imagem">&#10095;</button>
             </div>
         </div>
-
     </section>
-
 
     <?php if ($user['tipo_conta'] == 'Perfil de ONG' || $user['tipo_conta'] == 'Perfil de cidadão'): ?>
         <button class="floating-button" title="Nova Publicação" onclick="openPostModal()">
@@ -808,7 +798,6 @@
         </button>
     <?php endif; ?>
     
-
     <div id="postModal" class="post-modal">
         <div class="post-modal-content">
             <span class="post-modal-close" onclick="closePostModal()">&times;</span>
@@ -1173,31 +1162,12 @@
 
                 <button type="submit" name="update_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Salvar Alterações</button>
             </form>
-
         </div>
     </div>
     
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            if (localStorage.getItem('postDeleted') === 'true') {
-            Swal.fire({
-                icon: 'success',
-                title: 'Publicação excluída com sucesso!',
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#7A00CC',
-                allowOutsideClick: true,
-                timer: 5000,
-                timerProgressBar: true,
-                
-            });
-            localStorage.removeItem('postDeleted');
-            }
-        });
-    </script>
 
 </body>
 </html> 

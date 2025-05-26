@@ -14,53 +14,68 @@ function closePostModal() {
     document.getElementById("postModal").style.display = "none";
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    if (localStorage.getItem('postDeleted') === 'true') {
+    Swal.fire({
+        icon: 'success',
+        title: 'Publicação excluída com sucesso!',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: '#7A00CC',
+        allowOutsideClick: true,
+        timer: 5000,
+        timerProgressBar: true,
+    });
+    localStorage.removeItem('postDeleted');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-  const checkboxEditar = document.getElementById('nao_sei_endereco_edit');
-  if (checkboxEditar) {
+    const checkboxEditar = document.getElementById('nao_sei_endereco_edit');
+    if (checkboxEditar) {
     checkboxEditar.addEventListener('change', desabilitarCamposEnderecoEditar);
-  }
+    }
 });
 
 function desabilitarCamposEnderecoEditar() {
-  const checkbox = document.getElementById('nao_sei_endereco_edit');
-  const campos = document.querySelectorAll('.campo-endereco-edit');
+    const checkbox = document.getElementById('nao_sei_endereco_edit');
+    const campos = document.querySelectorAll('.campo-endereco-edit');
 
-  campos.forEach(campo => {
+    campos.forEach(campo => {
     campo.disabled = checkbox.checked;
     if (checkbox.checked) campo.value = '';
-  });
+    });
 }
 
 function openEditPostModal(button) {
-  const postId = button.dataset.id;
-  const titulo = button.dataset.titulo;
-  const conteudo = button.dataset.conteudo;
-  const tipo = button.dataset.tipo;
-  const rua = button.dataset.endereco_rua;
-  const bairro = button.dataset.endereco_bairro;
-  const cidade = button.dataset.endereco_cidade;
-  const estado = button.dataset.endereco_estado;
-  const naoSeiEndereco = button.dataset.naoSeiEndereco === '1';
-  const imagens = JSON.parse(button.dataset.images);
+    const postId = button.dataset.id;
+    const titulo = button.dataset.titulo;
+    const conteudo = button.dataset.conteudo;
+    const tipo = button.dataset.tipo;
+    const rua = button.dataset.endereco_rua;
+    const bairro = button.dataset.endereco_bairro;
+    const cidade = button.dataset.endereco_cidade;
+    const estado = button.dataset.endereco_estado;
+    const naoSeiEndereco = button.dataset.naoSeiEndereco === '1';
+    const imagens = JSON.parse(button.dataset.images);
 
-  document.getElementById('edit_post_id').value = postId;
-  document.getElementById('edit_titulo').value = titulo;
-  document.getElementById('edit_conteudo').value = conteudo;
-  document.getElementById('edit_tipo_publicacao').value = tipo;
-  document.getElementById('edit_endereco_rua').value = rua;
-  document.getElementById('edit_endereco_bairro').value = bairro;
-  document.getElementById('edit_endereco_cidade').value = cidade;
-  document.getElementById('edit_endereco_estado').value = estado;
+    document.getElementById('edit_post_id').value = postId;
+    document.getElementById('edit_titulo').value = titulo;
+    document.getElementById('edit_conteudo').value = conteudo;
+    document.getElementById('edit_tipo_publicacao').value = tipo;
+    document.getElementById('edit_endereco_rua').value = rua;
+    document.getElementById('edit_endereco_bairro').value = bairro;
+    document.getElementById('edit_endereco_cidade').value = cidade;
+    document.getElementById('edit_endereco_estado').value = estado;
 
-  const checkboxEndereco = document.getElementById('nao_sei_endereco_edit');
-  checkboxEndereco.checked = naoSeiEndereco;
+    const checkboxEndereco = document.getElementById('nao_sei_endereco_edit');
+    checkboxEndereco.checked = naoSeiEndereco;
 
-  desabilitarCamposEnderecoEditar();
+    desabilitarCamposEnderecoEditar();
 
-  const gallery = document.getElementById('edit-image-gallery');
-  gallery.innerHTML = '';
+    const gallery = document.getElementById('edit-image-gallery');
+    gallery.innerHTML = '';
 
-  imagens.forEach(imageName => {
+    imagens.forEach(imageName => {
     const container = document.createElement('div');
 
     const img = document.createElement('img');
@@ -82,15 +97,13 @@ function openEditPostModal(button) {
     container.appendChild(label);
 
     gallery.appendChild(container);
-  });
+    });
 
-  const inputEdit = document.getElementById('foto_publicacao_edit');
-  inputEdit.dataset.existing = imagens.length;
+    const inputEdit = document.getElementById('foto_publicacao_edit');
+    inputEdit.dataset.existing = imagens.length;
 
-  document.getElementById('postEditModal').style.display = 'block';
+    document.getElementById('postEditModal').style.display = 'block';
 }
-
-
 
 function closeEditPostModal() {
     document.getElementById('postEditModal').style.display = 'none';

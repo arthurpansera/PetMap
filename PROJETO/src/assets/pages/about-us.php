@@ -99,9 +99,7 @@
             <div class="about-us-info-container">
                 <div class="about-us-info-text-1">
                     <p>O <strong>PetMap</strong> é uma plataforma colaborativa voltada à causa animal. O nosso objetivo é conectar pessoas e ONGs para prevenir o abandono e resgatar animais em situação de risco.<br><br></p>
-
                     <p>Hoje, mais de <strong>30 milhões de animais</strong> vivem em situação de abandono no Brasil, sendo <strong>75% deles em áreas urbanas</strong>. <br><br>Diante disso, o PetMap oferece uma solução tecnológica para mobilizar ações e salvar vidas.</p>
-
                 </div>
 
                 <div class="about-us-image-text">
@@ -116,7 +114,7 @@
                         </ul>
                         <br>
                         <p>Mais do que uma ferramenta, o PetMap é uma <strong>rede de empatia, responsabilidade e ação</strong>. Junte-se a nós e faça a diferença.</p>
-                    
+                        
                         <div class="btn-container">
                             <?php if (!$isLoggedIn): ?>
                                 <a class="btn-about-us" href="login.php">Junte-se a nós</a>
