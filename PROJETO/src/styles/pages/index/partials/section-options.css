@@ -200,12 +200,37 @@
     margin-top: 15px;
     border: none;
     padding: 6px 12px;
-    border-radius: 4px;
+    border-radius: 10px;
+
     cursor: pointer;
 }
 
 .comment-form button:hover {
     background-color: #570089;
+}
+
+.comment-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.comment-actions button {
+    color: black;
+    background-color: #ddd;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    gap: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.comment-actions button:hover {
+    background-color: #cfcfcf;
+    transform: scale(1.05);
 }
 
 @media (min-width: 1200px) {
