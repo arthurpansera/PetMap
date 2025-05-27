@@ -109,6 +109,37 @@
         $result = $obj->query($query);
     }
 
+    if (isset($_GET['ajax_search']) && $_GET['ajax_search'] == 1) {
+        header('Content-Type: application/json; charset=utf-8');
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+
+        if (strlen($term) < 1) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $obj->set_charset("utf8mb4");
+        $likeTerm = "%$term%";
+        $stmt = $obj->prepare("SELECT id_usuario, nome FROM usuario WHERE nome LIKE ? LIMIT 10");
+
+        if ($stmt === false) {
+            echo json_encode(['error' => 'Erro no prepare']);
+            exit;
+        }
+
+        $stmt->bind_param('s', $likeTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $users = [];
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+
+        echo json_encode($users);
+        exit;
+    }
+
     if (isset($_POST['make_post'])) {
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
@@ -365,6 +396,7 @@
                     <input type="text" name="pesquisa" placeholder="Pesquisar..." value="<?php echo isset($_GET['pesquisa']) ? htmlspecialchars($_GET['pesquisa']) : ''; ?>">
                     <button type="submit">🔍</button>
                 </form>
+                <div id="user-suggestions" class="user-suggestions"></div>
                 <ul class="ul">
                     <?php if ($isLoggedIn): ?>
                         <?php
@@ -805,6 +837,7 @@
     <script src="src/scripts/order-posts.js"></script>
     <script src="src/scripts/register-validation.js"></script>
     <script src="src/scripts/view-comments.js"></script>
+    <script src="src/scripts/user-suggestions.js"></script>
 
 </body>
 </html>

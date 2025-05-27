@@ -142,7 +142,7 @@
                                         echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['email']) . "</td>";
                                         echo "<td>" . htmlspecialchars($row['tipo_conta']) . "</td>";
-                                        echo "<td><a href='ver-perfil.php?id=" . $row['id_usuario'] . "' class='btn-ver-perfil'>Ver Perfil</a></td>";
+                                        echo "<td><a href='view-profile.php?id=" . $row['id_usuario'] . "' class='btn-ver-perfil'>Ver Perfil</a></td>";
                                         echo "</tr>";
                                     }
                                 } else {
