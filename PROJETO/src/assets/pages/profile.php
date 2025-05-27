@@ -276,7 +276,7 @@
         date_default_timezone_set('America/Sao_Paulo');
         $dataCriacao = date('Y-m-d H:i:s');
 
-        $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $insertQuery = "INSERT INTO publicacao ( titulo, conteudo, tipo_publicacao, id_usuario, data_criacao, endereco_rua, endereco_bairro, endereco_cidade, endereco_estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $obj->prepare($insertQuery);
         $stmt->bind_param("sssisssss", $titulo, $conteudo, $tipoPublicacao, $id_usuario, $dataCriacao, $rua, $bairro, $cidade, $estado);
         $stmt->execute();
@@ -661,14 +661,15 @@
                             if (!empty($post['endereco_bairro'])) {
                                 $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
                             }
-                            if (!empty($post['endereco_cidade']) && !empty($post['endereco_estado'])) {
-                                $enderecoFormatado[] = $post['endereco_cidade'] . ' - ' . strtoupper($post['endereco_estado']);
-                            } elseif (!empty($post['endereco_cidade'])) {
-                                $enderecoFormatado[] = $post['endereco_cidade'];
+                            if (!empty($post['endereco_cidade'])) {
+                                $cidadeEstado = $post['endereco_cidade'];
+                                if (!empty($post['endereco_estado'])) {
+                                    $cidadeEstado .= ' - ' . strtoupper($post['endereco_estado']);
+                                }
+                                $enderecoFormatado[] = $cidadeEstado;
                             } elseif (!empty($post['endereco_estado'])) {
                                 $enderecoFormatado[] = strtoupper($post['endereco_estado']);
                             }
-
                             echo implode(', ', $enderecoFormatado);
                         ?>
                     </p>
@@ -833,12 +834,13 @@
                 <h3>Endereço</h3>
 
                 <div class="row-style">
-                    <div class="row-style-content">
+                    <div class="row-style-content"> 
                         <div class="form-group">
                             <label for="endereco_rua">Rua:</label>
                             <input type="text" id="endereco_rua" name="endereco_rua" class="required campo-endereco" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
                             <span class="span-required"> Rua não pode conter caracteres especias.</span>
                         </div>
+
                         <div class="form-group">
                             <label for="endereco_bairro">Bairro:</label>
                             <input type="text" id="endereco_bairro" name="endereco_bairro" class="required campo-endereco" data-type="bairro" data-required="true" placeholder="Insira o bairro">
@@ -855,7 +857,7 @@
 
                         <div class="form-group">
                             <label for="state"><b>Estado: *</b></label>
-                            <select name="state" id="state" class="mid-inputUser required campo-endereco" data-type="estado" data-required="true">
+                            <select name="state" id="state" class="required campo-endereco" data-type="estado" data-required="true">
                                 <option value="">Selecione um estado</option>
                                 <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
                                 <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
@@ -890,11 +892,11 @@
                     </div>
                 </div>
 
-                <div class="checkbox-wrapper">
+                 <div class="checkbox-wrapper">
                     <input type="checkbox" id="nao_sei_endereco" name="nao_sei_endereco" onclick="desabilitarCamposEndereco()">
                     <label for="nao_sei_endereco">Não sei informar o endereço</label>
                 </div>
-
+                
                 <button type="submit" name="make_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Publicar</button>
             </form>
         </div>
