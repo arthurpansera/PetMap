@@ -477,6 +477,85 @@
         header('Location: profile.php');
         exit;
     }
+
+    if (isset($_POST['update_comment'])) {
+        $idComentario = intval($_POST['id_comentario']);
+        $conteudo = trim($_POST['conteudo_comentario']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+
+        if ($conteudo === '') {
+            $_SESSION['error_message'] = "O comentário não pode ficar vazio.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para editar esse comentário.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $updateQuery = $obj->prepare("UPDATE comentario SET conteudo = ?, data_atualizacao = NOW() WHERE id_comentario = ?");
+        $updateQuery->bind_param('si', $conteudo, $idComentario);
+        $updateQuery->execute();
+
+        if ($updateQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário atualizado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Nenhuma alteração feita ou erro na atualização.";
+        }
+
+        header('Location: index.php');
+        exit;
+    }
+
+    if (isset($_POST['delete_comment'])) {
+        $idComentario = intval($_POST['id_comentario_excluir']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para excluir esse comentário.";
+            header('Location: index.php');
+            exit;
+        }
+
+        $deleteQuery = $obj->prepare("DELETE FROM comentario WHERE id_comentario = ?");
+        $deleteQuery->bind_param('i', $idComentario);
+        $deleteQuery->execute();
+
+        if ($deleteQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário excluído com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao excluir comentário.";
+        }
+
+        header('Location: index.php');
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -589,11 +668,18 @@
                             </form>
                         </div>
                     </div>
+
+                    <div class="tabs">
+                        <button onclick="showSection('publicacoes-section')">📄 Publicações</button>
+                        <button onclick="showSection('comentarios-section')">💬 Comentários</button>
+                    </div>
+
+
                 </div>
             </div>
     </section>
 
-    <section class="content">
+    <section id="publicacoes-section" style="display: block;" class="content">
         <div class="user-posts">
             <?php if ($result_posts->num_rows > 0): ?>
             <h2>Minhas Publicações</h2>
@@ -612,6 +698,16 @@
                     while ($row = $imgResult->fetch_assoc()) {
                         $images[] = $row['imagem_url'];
                     }
+                 
+                    $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
+                        FROM comentario c
+                        JOIN usuario u ON c.id_usuario = u.id_usuario
+                        WHERE c.id_publicacao = ?
+                        ORDER BY c.data_criacao DESC
+                    ");
+                    $getComentarios->bind_param("i", $idPost);
+                    $getComentarios->execute();
+                    $comentarios = $getComentarios->get_result();
                 ?>
 
                 <div class="post-item">
@@ -798,6 +894,63 @@
             +
         </button>
     <?php endif; ?>
+
+    <section id="comentarios-section" style="display: none;" class="content">
+
+        <?php
+            $idUsuarioLogado = $_SESSION['id_usuario'];
+            $getComentarios = $obj->prepare(" SELECT 
+                    c.id_comentario, 
+                    c.conteudo, 
+                    c.data_criacao, 
+                    c.id_usuario, 
+                    u.nome,
+                    p.id_publicacao,
+                    p.titulo AS titulo_publicacao
+                FROM comentario c
+                JOIN usuario u ON c.id_usuario = u.id_usuario
+                JOIN publicacao p ON c.id_publicacao = p.id_publicacao
+                WHERE c.id_usuario = ?
+                ORDER BY c.data_criacao DESC
+            ");
+            $getComentarios->bind_param("i", $idUsuario);
+            $getComentarios->execute();
+            $comentarios = $getComentarios->get_result();
+
+            $comentariosDoUsuario = [];
+            while ($row = $comentarios->fetch_assoc()) {
+                $comentariosDoUsuario[] = $row;
+            }
+        ?>
+
+            <div class="comentarios-perfil" id="comentarios-perfil">
+            <h3>Comentários</h3>
+
+            <?php if (count($comentariosUsuario) > 0): ?>
+                <?php foreach ($comentariosUsuario as $comentario): ?>
+                    <div class="comment" style="margin-bottom: 10px;">
+                        <p><strong>Comentado em:</strong> <?= htmlspecialchars($comentario['titulo_publicacao']) ?></p>
+                        <p class="comment-content"><?= nl2br(htmlspecialchars($comentario['conteudo'])) ?></p>
+                        <p class="comment-date">
+                            <small><?= date('d/m/Y H:i', strtotime($comentario['data_criacao'])) ?></small>
+                        </p>
+
+                        <div class="comment-actions">
+                            <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
+                                <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
+                                <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
+                                    🗑️ Excluir
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Você ainda não comentou nada.</p>
+            <?php endif; ?>
+        </div>
+
+    </section>
     
     <div id="postModal" class="post-modal">
         <div class="post-modal-content">
@@ -1166,6 +1319,18 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll("section.content");
+            sections.forEach(section => {
+                section.style.display = "none";
+            });
+
+            const target = document.getElementById(sectionId);
+            if (target) target.style.display = "block";
+        }
+    </script>
     
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/register-validation.js"></script>
