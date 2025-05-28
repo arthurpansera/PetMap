@@ -759,18 +759,20 @@ input.input-adm {
     flex-direction: column;
     width: 100%;
     border-radius: 15px;
-    background-color:rgb(255, 255, 255);
-    margin-bottom: 50px;
 }
 
 .comment {
-    width: 93%;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    padding: 20px;
-    margin-left: 30px;
-    border-radius: 15px;
-    background-color: #f1f1f1;
+    width: 900px;
+    margin: 0 auto 30px auto;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.comment:hover {
+    transform: translateY(-5px);
 }
 
 .comment p {
@@ -778,7 +780,6 @@ input.input-adm {
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.5;
-
 }
 
 .comment-form textarea {

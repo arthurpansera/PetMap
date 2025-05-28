@@ -558,7 +558,6 @@
         header('Location: profile.php');
         exit;
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -669,7 +668,6 @@
                                 <button type="submit" id="deleteBtn" class="profile-delete">Excluir Conta</button>
                                 <input type="hidden" name="delete_account" value="1">
                             </form>
-
                         </div>
                     </div>
                 </div>
@@ -685,8 +683,8 @@
 
     <section id="publicacoes-section" style="display: block;" class="content">
         <div class="user-posts">
-            <?php if ($result_posts->num_rows > 0): ?>
             <h2>Minhas Publicações</h2>
+            <?php if ($result_posts->num_rows > 0): ?>
                 <?php while ($post = $result_posts->fetch_assoc()): ?>
 
                     <?php
@@ -894,7 +892,7 @@
                         </div>
 
                         <?php if ($id_usuario): ?>
-                            <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                            <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                 <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
                                     <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
                                         <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">

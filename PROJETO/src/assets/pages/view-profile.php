@@ -232,181 +232,193 @@
                 </div>
             </div>
     </section>
-    <section class="content">
+    
+    <div class="content-area">
+        <div class="tabs">
+            <button onclick="showSection('publicacoes-section')">📄 Publicações</button>
+            <button onclick="showSection('comentarios-section')">💬 Comentários</button>
+        </div>
+    </div>
+
+    <section id="publicacoes-section" style="display: block;" class="content">
         <div class="user-posts">
-            <?php if ($result_posts->num_rows > 0): ?>
             <h2>Publicações</h2>
-            <?php while ($post = $result_posts->fetch_assoc()): ?>
+            <?php if ($result_posts->num_rows > 0): ?>
+                <?php while ($post = $result_posts->fetch_assoc()): ?>
 
-                <?php
-                    $idPost = $post['id_publicacao'];
-                    $images = [];
-
-                    $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
-                    $stmtImg = $obj->prepare($imgQuery);
-                    $stmtImg->bind_param("i", $idPost);
-                    $stmtImg->execute();
-                    $imgResult = $stmtImg->get_result();
-
-                    while ($row = $imgResult->fetch_assoc()) {
-                        $images[] = $row['imagem_url'];
-                    }
-                ?>
-
-                <div class="post-item">
-                    <p class="post-info">
-                        <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
-                        <span class="post-time">
-                            <?php 
-                                setlocale(LC_TIME, 'pt_BR.UTF-8');
-                                echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
-                            ?>
-
-                            <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
-                                <em style="font-size: 0.85em; color: #777;">
-                                    (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
-                                </em>
-                            <?php endif; ?>
-                        </span>
-                    </p>
-
-                <?php
-                    $tiposFormatados = [
-                        'animal' => 'Animal Perdido',
-                        'resgate' => 'Resgate de Animal',
-                        'informacao' => 'Informação',
-                        'cidadao' => 'Cidadão',
-                        'outro' => 'Outro'
-                    ];
-                ?>
-
-                <p class="post-type">
-                    <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
-                </p>
-
-                <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
-                <p><?php echo $post['conteudo']; ?></p>
-
-                <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
-                
-                    <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
-                        📍
-                        <?php
-                            $enderecoFormatado = [];
-
-                            if (!empty($post['endereco_rua'])) {
-                                $enderecoFormatado[] = $post['endereco_rua'];
-                            }
-                            if (!empty($post['endereco_bairro'])) {
-                                $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
-                            }
-                            if (!empty($post['endereco_cidade'])) {
-                                $cidadeEstado = $post['endereco_cidade'];
-                                if (!empty($post['endereco_estado'])) {
-                                    $cidadeEstado .= ' - ' . strtoupper($post['endereco_estado']);
-                                }
-                                $enderecoFormatado[] = $cidadeEstado;
-                            } elseif (!empty($post['endereco_estado'])) {
-                                $enderecoFormatado[] = strtoupper($post['endereco_estado']);
-                            }
-                            echo implode(', ', $enderecoFormatado);
-                        ?>
-                    </p>
-
-                <?php else: ?>
-
-                    <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
-                        Endereço não informado
-                    </p>
-
-                <?php endif; ?>
-
-                <?php
-                    $images = $images ?? [];
-                    $totalImages = count($images);
-                    $maxVisible = 3;
-
-                    $galleryClass = 'multiple-images';
-                    if ($totalImages == 1) {
-                        $galleryClass = 'single-image';
-                    } elseif ($totalImages == 2) {
-                        $galleryClass = 'two-images';
-                    }
-
-                    $visibleImages = array_slice($images, 0, $maxVisible);
-                    $moreCount = max(0, $totalImages - $maxVisible);
-                ?>
-
-                <div class="image-gallery <?php echo $galleryClass; ?>">
-                    <?php foreach ($visibleImages as $index => $imagem): ?>
-                        <?php 
-                            $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
-                        ?>
-                        <div 
-                            class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
-                            <?php if ($isLastVisibleWithMore): ?>
-                                data-images='<?php echo json_encode($images); ?>'
-                            <?php endif; ?>
-                        >
-                            <?php if ($isLastVisibleWithMore): ?>
-                                <div class="image-overlay">+<?php echo $moreCount; ?></div>
-                            <?php endif; ?>
-                            <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-
-                <div class="post-actions">
                     <?php
-                        $jaImpulsionou = false;
-                        $impulsos = 0;
+                        $idPost = $post['id_publicacao'];
+                        $images = [];
 
-                        if ($isLoggedIn) {
-                            $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
-                            $stmt = $obj->prepare($checkQuery);
-                            $stmt->bind_param("ii", $userId, $idPost);
-                            $stmt->execute();
-                            $stmt->store_result();
-                            $jaImpulsionou = $stmt->num_rows > 0;
-                        }
+                        $imgQuery = "SELECT imagem_url FROM imagem WHERE id_publicacao = ?";
+                        $stmtImg = $obj->prepare($imgQuery);
+                        $stmtImg->bind_param("i", $idPost);
+                        $stmtImg->execute();
+                        $imgResult = $stmtImg->get_result();
 
-                        $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
-                        $q->bind_param("i", $idPost);
-                        $q->execute();
-                        $r = $q->get_result()->fetch_assoc();
-                        $impulsos = $r ? intval($r['total_impulsos']) : 0;
-
-                        if ($isLoggedIn && $jaImpulsionou) {
-                            $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
-                        } else {
-                            $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
-                        }
-
-                        $btnClass = 'like-button';
-                        if ($isLoggedIn && $jaImpulsionou) {
-                            $btnClass .= ' impulsionado';
+                        while ($row = $imgResult->fetch_assoc()) {
+                            $images[] = $row['imagem_url'];
                         }
                     ?>
-                    <form method="POST" action="view-profile.php?id=<?php echo $idUsuario; ?>" style="display: contents;">
-                        <?php if (!empty($pesquisa)): ?>
-                            <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
-                        <?php endif; ?>
-                        <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                        <button 
-                            type="submit" 
-                            name="impulsionar" 
-                            class="<?php echo $btnClass; ?>"
-                        >
-                            <?php echo $labelBotao; ?>
-                        </button>
-                    </form>
 
-                    <button class="comment-button">
-                        <i class="comment-icon">💬</i> Comentar
-                    </button>
+                    <div class="post-item">
+                        <p class="post-info">
+                            <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
+                            <span class="post-time">
+                                <?php 
+                                    setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                    echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                ?>
+
+                                <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                    <em style="font-size: 0.85em; color: #777;">
+                                        (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                    </em>
+                                <?php endif; ?>
+                            </span>
+                        </p>
+
+                    <?php
+                        $tiposFormatados = [
+                            'animal' => 'Animal Perdido',
+                            'resgate' => 'Resgate de Animal',
+                            'informacao' => 'Informação',
+                            'cidadao' => 'Cidadão',
+                            'outro' => 'Outro'
+                        ];
+                    ?>
+
+                    <p class="post-type">
+                        <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
+                    </p>
+
+                    <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
+                    <p><?php echo $post['conteudo']; ?></p>
+
+                    <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                    
+                        <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                            📍
+                            <?php
+                                $enderecoFormatado = [];
+
+                                if (!empty($post['endereco_rua'])) {
+                                    $enderecoFormatado[] = $post['endereco_rua'];
+                                }
+                                if (!empty($post['endereco_bairro'])) {
+                                    $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                                }
+                                if (!empty($post['endereco_cidade'])) {
+                                    $cidadeEstado = $post['endereco_cidade'];
+                                    if (!empty($post['endereco_estado'])) {
+                                        $cidadeEstado .= ' - ' . strtoupper($post['endereco_estado']);
+                                    }
+                                    $enderecoFormatado[] = $cidadeEstado;
+                                } elseif (!empty($post['endereco_estado'])) {
+                                    $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                                }
+                                echo implode(', ', $enderecoFormatado);
+                            ?>
+                        </p>
+
+                    <?php else: ?>
+
+                        <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                            Endereço não informado
+                        </p>
+
+                    <?php endif; ?>
+
+                    <?php
+                        $images = $images ?? [];
+                        $totalImages = count($images);
+                        $maxVisible = 3;
+
+                        $galleryClass = 'multiple-images';
+                        if ($totalImages == 1) {
+                            $galleryClass = 'single-image';
+                        } elseif ($totalImages == 2) {
+                            $galleryClass = 'two-images';
+                        }
+
+                        $visibleImages = array_slice($images, 0, $maxVisible);
+                        $moreCount = max(0, $totalImages - $maxVisible);
+                    ?>
+
+                    <div class="image-gallery <?php echo $galleryClass; ?>">
+                        <?php foreach ($visibleImages as $index => $imagem): ?>
+                            <?php 
+                                $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
+                            ?>
+                            <div 
+                                class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                <?php if ($isLastVisibleWithMore): ?>
+                                    data-images='<?php echo json_encode($images); ?>'
+                                <?php endif; ?>
+                            >
+                                <?php if ($isLastVisibleWithMore): ?>
+                                    <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                <?php endif; ?>
+                                <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <div class="post-actions">
+                        <?php
+                            $jaImpulsionou = false;
+                            $impulsos = 0;
+
+                            if ($isLoggedIn) {
+                                $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                                $stmt = $obj->prepare($checkQuery);
+                                $stmt->bind_param("ii", $userId, $idPost);
+                                $stmt->execute();
+                                $stmt->store_result();
+                                $jaImpulsionou = $stmt->num_rows > 0;
+                            }
+
+                            $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                            $q->bind_param("i", $idPost);
+                            $q->execute();
+                            $r = $q->get_result()->fetch_assoc();
+                            $impulsos = $r ? intval($r['total_impulsos']) : 0;
+
+                            if ($isLoggedIn && $jaImpulsionou) {
+                                $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                            } else {
+                                $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                            }
+
+                            $btnClass = 'like-button';
+                            if ($isLoggedIn && $jaImpulsionou) {
+                                $btnClass .= ' impulsionado';
+                            }
+                        ?>
+                        <form method="POST" action="view-profile.php?id=<?php echo $idUsuario; ?>" style="display: contents;">
+                            <?php if (!empty($pesquisa)): ?>
+                                <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                            <?php endif; ?>
+                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                            <button 
+                                type="submit" 
+                                name="impulsionar" 
+                                class="<?php echo $btnClass; ?>"
+                            >
+                                <?php echo $labelBotao; ?>
+                            </button>
+                        </form>
+
+                        <button class="comment-button">
+                            <i class="comment-icon">💬</i> Comentar
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <?php endwhile; ?>
+                <?php endwhile; ?>
+            <?php elseif ($user['tipo_conta'] === 'Perfil de moderador'): ?>
+                <p style="font-size: 1.2rem; ">Este é um perfil de moderador. Moderadores não podem realizar publicações, mas podem comentar em publicações de outros usuários.</p><br><br>
+            <?php else: ?>
+                <p style="font-size: 1.2rem; ">Este usuário ainda não realizou nenhuma publicação.</p><br><br>
             <?php endif; ?>
         </div>
 
@@ -421,5 +433,68 @@
             </div>
         </div>
     </section>
+
+    <section id="comentarios-section" style="display: none;" class="content">
+        <?php
+            $id_usuario = $idUsuario;
+
+            $getComentarios = $obj->prepare(" SELECT 
+                    c.id_comentario, 
+                    c.conteudo, 
+                    c.data_criacao, 
+                    c.id_usuario,
+                    u.nome,
+                    p.id_publicacao,
+                    p.titulo AS titulo_publicacao
+                FROM comentario c
+                JOIN usuario u ON c.id_usuario = u.id_usuario
+                JOIN publicacao p ON c.id_publicacao = p.id_publicacao
+                WHERE c.id_usuario = ?
+                ORDER BY c.data_criacao DESC
+                ");
+
+            $getComentarios->bind_param("i", $id_usuario);
+            $getComentarios->execute();
+            $comentarios = $getComentarios->get_result();
+
+            $comentariosDoUsuario = [];
+            while ($row = $comentarios->fetch_assoc()) {
+                $comentariosDoUsuario[] = $row;
+            }
+        ?>
+
+        <div class="comentarios-perfil" id="comentarios-perfil">
+            <h2>Comentários</h2>
+            <?php if (count($comentariosDoUsuario) > 0): ?>
+                
+                <div class="comments-list">
+                    <?php foreach ($comentariosDoUsuario as $comentario): ?>
+                        <div class="comment">
+                            <p class="comment-on-post">
+                                Você comentou em: <strong ><?php echo htmlspecialchars($comentario['titulo_publicacao']); ?></strong>
+                                às <strong><?php echo strftime('%Hh%M, %d de %B de %Y', strtotime($comentario['data_criacao'])); ?></strong>
+                            </p>
+
+                             <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <div id="floating-edit-form" class="comment-form" style="display: none;">
+                        <form method="POST" id="comment-form-perfil">
+                            <input type="hidden" name="id_comentario" id="id_comentario_perfil" value="">
+                            <textarea name="conteudo_comentario" id="textarea_comentario_perfil" rows="3" placeholder="Edite seu comentário..." required></textarea>
+
+                            <button type="submit" id="submit-button-perfil" name="update_comment">Enviar</button>
+                            <button type="button" onclick="closeCommentFormPerfil()">Cancelar</button>
+                        </form>
+                    </div>
+                </div>
+            <?php else: ?>
+                <p style="font-size: 1.2rem; ">Este usuário ainda não comentou em nenhuma publicação.</p><br><br>
+            <?php endif; ?>
+    </section>
+
+    <script src="../../scripts/pages/view-profile/view-profile.js"></script>
+
 </body>
 </html>

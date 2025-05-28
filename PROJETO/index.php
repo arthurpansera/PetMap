@@ -378,8 +378,6 @@
         exit;
     }
 
-
-
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: src/assets/pages/login.php");

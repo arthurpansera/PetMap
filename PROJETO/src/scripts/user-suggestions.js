@@ -5,10 +5,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const path = window.location.pathname;
     let profilePath = '';
+
     if (path.includes('index.php')) {
-        profilePath = 'src/assets/pages/';
+        profilePath = '/PetMap/PROJETO/src/assets/pages/';
     } else if (path.includes('lost-animals.php') || path.includes('rescued-animals.php')) {
-        profilePath = '';
+        profilePath = '/PetMap/PROJETO/src/assets/pages/';
+    } else {
+        profilePath = '/PetMap/PROJETO/src/assets/pages/';
     }
 
     input.addEventListener('input', () => {
