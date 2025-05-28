@@ -171,8 +171,8 @@ inputEdit.addEventListener('change', () => {
     labelEdit.textContent = '📁 ' + fileNames.join(', ');
 });
 
-function confirmDelete(event) {
-    event.preventDefault();
+document.getElementById('deleteBtn').addEventListener('click', function(event) {
+event.preventDefault();
 
     Swal.fire({
         title: 'Excluir conta?',
@@ -196,11 +196,11 @@ function confirmDelete(event) {
             });
 
             setTimeout(() => {
-                event.target.form.submit();
+                document.getElementById('deleteForm').submit();
             }, 1500);
         }
     });
-}
+});
 
 function confirmDeletePost(button) {
     Swal.fire({

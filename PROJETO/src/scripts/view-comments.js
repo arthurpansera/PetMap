@@ -55,25 +55,25 @@ function editarComentario(idPost, idComentario, texto) {
     formWrapper.scrollIntoView({ behavior: 'smooth' });
 }
 
-function confirmDelete(event) {
-    event.preventDefault();
+function editarComentarioPerfil(idPost, idComentario, conteudo) {
+    document.getElementById('id_comentario_perfil').value = idComentario;
+    document.getElementById('textarea_comentario_perfil').value = conteudo;
 
-    const form = event.target.form;
+    const form = document.getElementById('floating-edit-form');
+    form.style.display = 'block';
 
-    Swal.fire({
-        title: 'Excluir comentário?',
-        text: 'Essa ação não pode ser desfeita.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#cc4a2a',
-        cancelButtonColor: '#4CAF50',
-        confirmButtonText: 'Sim, excluir',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
-    });
+    if (form.parentNode) {
+        form.parentNode.removeChild(form);
+    }
+
+    const comentarioDiv = document.querySelector(`#form-excluir-${idComentario}`).closest('.comment');
+
+    comentarioDiv.insertAdjacentElement('afterend', form);
+}
+
+function closeCommentFormPerfil() {
+    const form = document.getElementById('floating-edit-form');
+    form.style.display = 'none';
 }
 
 function confirmDelete(button) {
