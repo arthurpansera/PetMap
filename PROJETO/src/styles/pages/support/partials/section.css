@@ -50,6 +50,14 @@
     object-fit: cover;
 }
 
+.contact-list img {
+    width: 28px; 
+    height: 28px;
+    object-fit: contain;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
 @media (min-width: 1200px) {
     .content {
         margin-left: 410px;

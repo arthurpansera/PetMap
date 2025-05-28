@@ -118,16 +118,26 @@
             exit;
         }
 
+        $currentUserId = isset($_SESSION['id_usuario']) ? (int) $_SESSION['id_usuario'] : null;
         $obj->set_charset("utf8mb4");
         $likeTerm = "%$term%";
-        $stmt = $obj->prepare("SELECT id_usuario, nome FROM usuario WHERE nome LIKE ? LIMIT 10");
 
-        if ($stmt === false) {
-            echo json_encode(['error' => 'Erro no prepare']);
-            exit;
+        if ($currentUserId !== null) {
+            $stmt = $obj->prepare("SELECT id_usuario, nome FROM usuario WHERE nome LIKE ? AND id_usuario != ? LIMIT 10");
+            if ($stmt === false) {
+                echo json_encode(['error' => 'Erro no prepare']);
+                exit;
+            }
+            $stmt->bind_param('si', $likeTerm, $currentUserId);
+        } else {
+            $stmt = $obj->prepare("SELECT id_usuario, nome FROM usuario WHERE nome LIKE ? LIMIT 10");
+            if ($stmt === false) {
+                echo json_encode(['error' => 'Erro no prepare']);
+                exit;
+            }
+            $stmt->bind_param('s', $likeTerm);
         }
 
-        $stmt->bind_param('s', $likeTerm);
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -393,7 +403,7 @@
                     <img src="src/assets/images/logo-petmap/white-logo.png" alt="Logo PetMap">
                 </a>
                 <form class="search-bar" method="GET" action="index.php">
-                    <input type="text" name="pesquisa" placeholder="Pesquisar..." value="<?php echo isset($_GET['pesquisa']) ? htmlspecialchars($_GET['pesquisa']) : ''; ?>">
+                    <input type="text" name="pesquisa" autocomplete="off" placeholder="Pesquisar..." value="<?php echo isset($_GET['pesquisa']) ? htmlspecialchars($_GET['pesquisa']) : ''; ?>">
                     <button type="submit">🔍</button>
                 </form>
                 <div id="user-suggestions" class="user-suggestions"></div>
@@ -516,6 +526,7 @@
 
                              <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
                                 <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                                    📍
                                     <?php
                                         $enderecoFormatado = [];
                                         if (!empty($post['endereco_rua'])) {
