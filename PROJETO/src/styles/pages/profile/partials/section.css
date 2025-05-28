@@ -248,6 +248,10 @@
     .content {
         margin-left: 420px;
     }
+
+    .content-area {
+        margin-left: 420px;
+    }
 }
 
 @media (min-width: 1800px) {
@@ -256,6 +260,10 @@
     }
 
     .content {
+        margin-left: 600px;
+    }
+
+    .content-area {
         margin-left: 600px;
     }
 }
@@ -710,39 +718,40 @@ input.input-adm {
   border-color: #e11d48;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
 }
+
 .content-area {
-    margin-left: 300px;
-    max-width: calc(100% - 300px);
+    width: calc(100% - 300px);
+    max-width: 1000px;
     padding: 20px;
 }
 
 .tabs {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     max-width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
 
-
 .tabs button {
     flex: 1;
     padding: 12px 20px;
     font-size: 16px;
-    background-color: #ffffff;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border: 2px solid transparent;
     border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
     color: #252525;
     font-weight: 600;
     user-select: none;
 }
 
 .tabs button:hover {
-    background-color: #d6b8ff;
-    color: #4b007e;
+    background-color: var(--purple-color);
+    color: white;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .comments-list {

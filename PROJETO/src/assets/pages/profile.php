@@ -672,11 +672,6 @@
 
                         </div>
                     </div>
-
-                    <div class="tabs">
-                        <button onclick="showSection('publicacoes-section')">📄 Publicações</button>
-                        <button onclick="showSection('comentarios-section')">💬 Comentários</button>
-                    </div>
                 </div>
             </div>
     </section>
@@ -954,6 +949,9 @@
                     </div>
                 </div>
                 <?php endwhile; ?>
+            <?php elseif ($user['tipo_conta'] === 'Perfil de moderador'): ?>
+                <p style="font-size: 1.2rem; ">O seu perfil é de moderador. Portanto, você não pode realizar publicações.</p>
+                <p style="font-size: 1.2rem; ">No entanto, você pode comentar nas publicações de outros usuários.</p><br><br>
             <?php else: ?>
                 <p style="font-size: 1.2rem; ">Ainda não há publicações suas por aqui. Que tal compartilhar algo?</p><br><br>
             <?php endif; ?>
