@@ -1,25 +1,11 @@
 <?php
     include('../../../conecta_db.php');
 
+
     session_start();
 
-    if (isset($_SESSION['error_message'])) {
-        $error_message = $_SESSION['error_message'];
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Erro!',
-                    text: '$error_message',
-                    icon: 'error',
-                    confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#7A00CC',
-                    allowOutsideClick: true,
-                    heightAuto: false
-                });
-            });
-        </script>";
-        unset($_SESSION['error_message']);
-    }
+    $error_message = $_SESSION['error_message'] ?? '';
+    unset($_SESSION['error_message']);
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = $_POST['email'];
@@ -134,6 +120,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/login/login.js"></script>
+
+    <?php if ($error_message): ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            title: 'Sessão expirada',
+            text: '<?= addslashes($error_message) ?>',
+            icon: 'warning',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#7A00CC',
+            heightAuto: false
+        });
+    });
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

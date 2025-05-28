@@ -3,6 +3,42 @@
 
     session_start();
 
+    $tempoInatividade = 300;
+
+    if (!isset($_SESSION['id_usuario'])) {
+        $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
+        header("Location: login.php?erro=expirado");
+        exit();
+    }
+
+    if (isset($_SESSION['ultimo_acesso']) && (time() - $_SESSION['ultimo_acesso']) > $tempoInatividade) {
+        session_unset();
+        session_destroy();
+        session_start();
+        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
+        header("Location: login.php");
+        exit();
+    }
+
+    $_SESSION['ultimo_acesso'] = time();
+
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+
     $obj = conecta_db();
     $obj->query("SET lc_time_names = 'pt_BR'");
     date_default_timezone_set('America/Sao_Paulo');
@@ -32,8 +68,7 @@
 
     $idUsuario = (int) $_GET['id'];
 
-    $queryUser = "
-        SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto,
+    $queryUser = "SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto,
             c.email, c.telefone,
             o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero,
             o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro,
@@ -494,6 +529,7 @@
             <?php endif; ?>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/view-profile/view-profile.js"></script>
 
 </body>

@@ -3,6 +3,25 @@
     
     session_start();
 
+    $tempoInatividade = 300;
+
+    if (!isset($_SESSION['id_usuario'])) {
+        $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
+        header("Location: src/assets/pages/login.php?erro=expirado");
+        exit();
+    }
+
+    if (isset($_SESSION['ultimo_acesso']) && (time() - $_SESSION['ultimo_acesso']) > $tempoInatividade) {
+        session_unset();
+        session_destroy();
+        session_start();
+        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
+        header("Location: src/assets/pages/login.php");
+        exit();
+    }
+
+    $_SESSION['ultimo_acesso'] = time();
+
     if (isset($_SESSION['error_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -669,7 +688,6 @@
                                             </form>
                                         </div>
                                     </div>
-
                                 <?php endif; ?>
 
                                 <?php if ($totalComentarios > 0): ?>
