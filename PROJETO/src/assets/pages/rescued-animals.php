@@ -3,7 +3,7 @@
 
     session_start();
     
-    $tempoInatividade = 300;
+    $tempoInatividade = 900;
 
     if (!isset($_SESSION['id_usuario'])) {
         $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
@@ -419,7 +419,7 @@
                     <a href="?ordenar_por=impulsos_desc<?php echo $pesquisa ? '&pesquisa=' . urlencode($pesquisa) : ''; ?>">🔝 Mais impulsionados</a>
                 </div>
             </div>
-            <div class="lost-animal-post">
+            <div class="rescued-animal-post">
                 <?php if ($result->num_rows > 0): ?>
                     <h2>Animais Resgatados</h2>
                     <?php while ($post = $result->fetch_assoc()): ?>

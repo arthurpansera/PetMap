@@ -3,7 +3,7 @@
     
     session_start();
 
-    $tempoInatividade = 300;
+    $tempoInatividade = 900;
 
     if (!isset($_SESSION['id_usuario'])) {
         $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';

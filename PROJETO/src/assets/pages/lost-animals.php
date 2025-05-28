@@ -3,7 +3,7 @@
 
     session_start();
 
-    $tempoInatividade = 300;
+    $tempoInatividade = 900;
 
     if (!isset($_SESSION['id_usuario'])) {
         $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
@@ -595,60 +595,59 @@
                                         <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
                                             💬 Ver comentários (<?php echo $totalComentarios; ?>)
                                         </button>
-                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+
+                            <?php if ($isLoggedIn): ?>
+                                <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                    <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
+                                        <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
+                                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                            <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
+                                            <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
+
+                                            <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
+                                            <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
+                                        </form>
+                                    </div>
                                 </div>
+                            <?php endif; ?>
 
-                                <?php if ($isLoggedIn): ?>
-                                    <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
-                                        <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
-                                            <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
-                                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                                                <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
-                                                <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
+                            <?php if ($totalComentarios > 0): ?>
+                                <div class="comments" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
+                                    <div class="comments-list" id="comments-<?php echo $idPost; ?>">
+                                        <?php foreach ($comentariosArray as $comentario): ?>
+                                            <div class="comment" style="margin-bottom: 10px;">
+                                                <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                                <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                                                <p class="comment-date">
+                                                    <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
+                                                </p>
 
-                                                <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
-                                                <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
+                                                <?php if ($isLoggedIn && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
 
-                                <?php if ($totalComentarios > 0): ?>
-                                    <div class="comments" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
-                                        <div class="comments-list" id="comments-<?php echo $idPost; ?>">
-                                            <?php foreach ($comentariosArray as $comentario): ?>
-                                                <div class="comment" style="margin-bottom: 10px;">
-                                                    <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
-                                                    <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
-                                                    <p class="comment-date">
-                                                        <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
-                                                    </p>
+                                                    <div class="comment-actions">
+                                                        <button class="edit-comment-btn"
+                                                            onclick="editarComentario(
+                                                                <?php echo $idPost; ?>,
+                                                                <?php echo $comentario['id_comentario']; ?>,
+                                                                '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
+                                                            )">✏️ Editar
+                                                        </button>
 
-                                                    <?php if ($isLoggedIn && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
-
-                                                        <div class="comment-actions">
-                                                            <button class="edit-comment-btn"
-                                                                onclick="editarComentario(
-                                                                    <?php echo $idPost; ?>,
-                                                                    <?php echo $comentario['id_comentario']; ?>,
-                                                                    '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
-                                                                )">✏️ Editar
+                                                        <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
+                                                            <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
+                                                            <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
+                                                                🗑️ Excluir
                                                             </button>
-
-                                                            <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
-                                                                <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
-                                                                <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
-                                                                    🗑️ Excluir
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            <?php endforeach; ?>
-                                        </div>
+                                                        </form>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
-                                <?php endif; ?>
-                            </div>  
+                                </div>
+                            <?php endif; ?>  
                         </div>
                     </div>
                     <?php endwhile; ?>

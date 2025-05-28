@@ -1,7 +1,6 @@
 <?php
     include('../../../conecta_db.php');
 
-
     session_start();
 
     $error_message = $_SESSION['error_message'] ?? '';
