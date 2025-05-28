@@ -206,7 +206,7 @@
 
     if (isset($_POST['comentar']) && isset($_POST['id_publicacao']) && isset($_POST['conteudo_comentario'])) {
         if (!$isLoggedIn) {
-            header("Location: src/assets/pages/login.php");
+            header("Location: login.php");
             exit;
         }
 
@@ -567,7 +567,7 @@
                                 <?php if ($isLoggedIn): ?>
                                         <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
                                     <?php else: ?>
-                                        <form method="GET" action="src/assets/pages/login.php" style="display: contents;">
+                                        <form method="GET" action="login.php" style="display: contents;">
                                             <button type="submit" class="comment-button">💬 Comentar</button>
                                         </form>
                                     <?php endif; ?>
@@ -580,7 +580,7 @@
                             </div>
 
                             <?php if ($isLoggedIn): ?>
-                                <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                     <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
                                         <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
                                             <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
