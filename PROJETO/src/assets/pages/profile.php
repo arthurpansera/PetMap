@@ -677,10 +677,8 @@
                         <button onclick="showSection('publicacoes-section')">📄 Publicações</button>
                         <button onclick="showSection('comentarios-section')">💬 Comentários</button>
                     </div>
-
                 </div>
             </div>
-
     </section>
 
     <div class="content-area">
