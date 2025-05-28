@@ -3,8 +3,9 @@
 
     session_start();
 
-    $error_message = $_SESSION['error_message'] ?? '';
-    unset($_SESSION['error_message']);
+    if (isset($_GET['expired']) && $_GET['expired'] == 1) {
+        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
+    }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = $_POST['email'];
@@ -120,20 +121,25 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/login/login.js"></script>
 
-    <?php if ($error_message): ?>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        Swal.fire({
-            title: 'Sessão expirada',
-            text: '<?= addslashes($error_message) ?>',
-            icon: 'warning',
-            confirmButtonText: 'Ok',
-            confirmButtonColor: '#7A00CC',
-            heightAuto: false
-        });
-    });
-    </script>
-    <?php endif; ?>
+    <?php
+    if (isset($_SESSION['error_message'])) {
+        $mensagem = addslashes($_SESSION['error_message']);
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$mensagem}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+    ?>
 
 </body>
 </html>

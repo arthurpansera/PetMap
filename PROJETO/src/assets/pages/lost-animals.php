@@ -3,25 +3,6 @@
 
     session_start();
 
-    $tempoInatividade = 900;
-
-    if (!isset($_SESSION['id_usuario'])) {
-        $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
-        header("Location: login.php?erro=expirado");
-        exit();
-    }
-
-    if (isset($_SESSION['ultimo_acesso']) && (time() - $_SESSION['ultimo_acesso']) > $tempoInatividade) {
-        session_unset();
-        session_destroy();
-        session_start();
-        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
-        header("Location: login.php");
-        exit();
-    }
-
-    $_SESSION['ultimo_acesso'] = time();
-
     if (isset($_SESSION['error_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -225,7 +206,7 @@
 
     if (isset($_POST['comentar']) && isset($_POST['id_publicacao']) && isset($_POST['conteudo_comentario'])) {
         if (!$isLoggedIn) {
-            header("Location: src/assets/pages/login.php");
+            header("Location: login.php");
             exit;
         }
 
@@ -586,7 +567,7 @@
                                 <?php if ($isLoggedIn): ?>
                                         <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
                                     <?php else: ?>
-                                        <form method="GET" action="src/assets/pages/login.php" style="display: contents;">
+                                        <form method="GET" action="login.php" style="display: contents;">
                                             <button type="submit" class="comment-button">💬 Comentar</button>
                                         </form>
                                     <?php endif; ?>
@@ -599,7 +580,7 @@
                             </div>
 
                             <?php if ($isLoggedIn): ?>
-                                <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                     <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
                                         <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
                                             <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
@@ -677,6 +658,26 @@
     <script src="../../scripts/view-comments.js"></script>
     <script src="../../scripts/order-posts.js"></script>
     <script src="../../scripts/user-suggestions.js"></script>
+
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

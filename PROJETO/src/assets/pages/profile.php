@@ -1,24 +1,7 @@
 <?php
     session_start();
 
-    $tempoInatividade = 900;
-
-    if (!isset($_SESSION['id_usuario'])) {
-        $_SESSION['error_message'] = 'Sua sessão expirou. Faça login novamente.';
-        header("Location: login.php?erro=expirado");
-        exit();
-    }
-
-    if (isset($_SESSION['ultimo_acesso']) && (time() - $_SESSION['ultimo_acesso']) > $tempoInatividade) {
-        session_unset();
-        session_destroy();
-        session_start();
-        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
-        header("Location: login.php");
-        exit();
-    }
-
-    $_SESSION['ultimo_acesso'] = time();
+    $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 
     if (isset($_SESSION['error_message'])) {
         echo "<script>
@@ -1447,6 +1430,26 @@
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/view-comments.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html> 
