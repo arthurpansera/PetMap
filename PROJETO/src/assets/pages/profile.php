@@ -930,7 +930,7 @@
                                 <div class="comments-profile" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
                                     <div class="comments-list-profile" id="comments-<?php echo $idPost; ?>">
                                         <?php foreach ($comentariosArray as $comentario): ?>
-                                            <div class="comment" style="margin-bottom: 10px;">
+                                            <div class="comment-profile" style="margin-bottom: 10px;">
                                                 <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
                                                 <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
                                                 <p class="comment-date">

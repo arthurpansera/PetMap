@@ -624,6 +624,8 @@
                                 $totalComentarios = count($comentariosArray);
 
                                 $jaImpulsionou = false;
+                                $impulsos = 0;
+
                                 if ($isLoggedIn) {
                                     $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
                                     $stmt = $obj->prepare($checkQuery);

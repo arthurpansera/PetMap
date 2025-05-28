@@ -183,13 +183,6 @@
     text-align: left;
 }
 
-.post-actions {
-    margin-top: 30px;
-    display: flex;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
 .post-item img {
     width: 100%;
     max-width: 600px;
@@ -202,11 +195,18 @@
     transition: transform 0.3s ease; 
 }
 
+
 .post-actions {
     margin-top: 30px;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     justify-content: flex-start;
+}
+
+.posts-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
 .like-button, .comment-button {
@@ -267,11 +267,22 @@
 }
 
 .comments-list {
-    display: flex;
-    flex-direction: column;
+    margin-top: 10px;
     width: 100%;
-    border-radius: 15px;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
 }
+
+.comments {
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
 
 .comment {
     width: 900px;
@@ -292,6 +303,31 @@
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.5;
+}
+
+.comments-profile{
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
+.comments-list-profile{
+    margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
+}
+
+.comment-profile{
+    width: 96%;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
 }
 
 .comment-form textarea {

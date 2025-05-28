@@ -771,6 +771,7 @@ input.input-adm {
     background-color:rgb(255, 255, 255);
 }
 
+
 .comment {
     width: 900px;
     margin: 0 auto 30px auto;
@@ -790,6 +791,31 @@ input.input-adm {
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.5;
+}
+
+.comments-profile{
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
+.comments-list-profile{
+    margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
+}
+
+.comment-profile{
+    width: 96%;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
 }
 
 .comment-form textarea {
