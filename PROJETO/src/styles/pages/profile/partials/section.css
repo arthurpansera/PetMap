@@ -510,11 +510,17 @@ input.input-adm {
 .post-actions {
     margin-top: 30px;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     justify-content: flex-start;
 }
 
-.edit-button, .delete-button {
+.posts-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.edit-button, .delete-button, .comment-button {
     color: black;
     background-color:#e4e4e4;
     border: none;
@@ -528,7 +534,7 @@ input.input-adm {
     transition: background-color 0.3s, transform 0.2s;
 }
 
-.edit-button:hover, .delete-button:hover {
+.edit-button:hover, .delete-button:hover, .comment-button:hover{
     background-color: #ddd;
     transform: scale(1.05);
 }
@@ -650,57 +656,179 @@ input.input-adm {
 }
 
 #edit-image-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 #edit-image-gallery > div {
-  max-width: 120px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  position: relative;
+    max-width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    position: relative;
 }
 
 #edit-image-gallery img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 0 6px rgb(0 0 0 / 0.1);
-  border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgb(0 0 0 / 0.1);
+    border: 1px solid #ccc;
 }
 
 #edit-image-gallery input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
 #edit-image-gallery label.delete-icon {
-  position: relative;
-  margin-top: 6px;
-  width: 30px;
-  height: 35px;
-  background-color: rgba(255, 255, 255, 0.85);
-  border: 2px solid #e11d48;
-  border-radius: 25%;
-  cursor: pointer;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23e11d48' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 14px;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: relative;
+    margin-top: 6px;
+    width: 30px;
+    height: 35px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 2px solid #e11d48;
+    border-radius: 25%;
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23e11d48' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 14px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #edit-image-gallery input[type="checkbox"]:checked + label.delete-icon {
   background-color: #e11d48;
   border-color: #e11d48;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='white' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 7h12M9 7V4h6v3m-1 3v8m-4-8v8m8-8v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9h14Z'/%3E%3C/svg%3E");
+}
+.content-area {
+    margin-left: 300px;
+    max-width: calc(100% - 300px);
+    padding: 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.tabs button {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    color: #252525;
+    font-weight: 600;
+    user-select: none;
+}
+
+.tabs button:hover {
+    background-color: #d6b8ff;
+    color: #4b007e;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+    margin-bottom: 50px;
+}
+
+.comment {
+    width: 93%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 20px;
+    margin-left: 30px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
+}
+
+.comment p {
+    text-align: left;
+    margin-bottom: 12px;
+    font-size: 18px;
+    line-height: 1.5;
+
+}
+
+.comment-form textarea {
+    width: 92%;
+    height: 130px;
+    margin-top: 30px;
+    resize: none;
+    font-family: inherit;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.comment-form button {
+    background-color: #6d00b6;
+    color: white;
+    width: 25%;
+    height: 35px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.comment-form button:hover {
+    background-color: #570089;
+}
+
+.comment-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.comment-actions button {
+    color: black;
+    background-color: #ddd;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    gap: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.comment-actions button:hover {
+    background-color: #cfcfcf;
+    transform: scale(1.05);
+}
+
+.comment-on-post {
+    color: #000000;
+    font-style: italic;
+    margin-bottom: 5px;
+    margin-top: 10px;
 }
