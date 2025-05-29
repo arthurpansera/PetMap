@@ -1,6 +1,5 @@
 <?php
     include('../../../conecta_db.php');
-
     session_start();
 
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
@@ -8,21 +7,19 @@
     $obj = conecta_db();
 
     $userId = $_SESSION['id_usuario'];
-    
+
     $query = "SELECT nome, descricao FROM usuario u 
-                JOIN perfil p ON u.id_usuario = p.id_usuario 
-                WHERE u.id_usuario = ?";
+              JOIN perfil p ON u.id_usuario = p.id_usuario 
+              WHERE u.id_usuario = ?";
     $stmt = $obj->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $userProfile = $stmt->get_result()->fetch_assoc();
 
-    if ($userProfile) {
-        $userName = $userProfile['nome'];
-    }
+    $userName = $userProfile ? $userProfile['nome'] : 'Usuário';
 
     $query = "
-        SELECT u.id_usuario, u.nome, c.email,
+        SELECT u.id_usuario, u.nome, c.email, p.status_perfil,
             CASE
                 WHEN m.id_moderador IS NOT NULL THEN 'Moderador'
                 WHEN o.cnpj IS NOT NULL THEN 'ONG'
@@ -31,6 +28,7 @@
             END AS tipo_conta
         FROM usuario u
         LEFT JOIN contato c ON u.id_usuario = c.id_usuario
+        LEFT JOIN perfil p ON u.id_usuario = p.id_usuario
         LEFT JOIN moderador m ON u.id_usuario = m.id_usuario
         LEFT JOIN ong o ON u.id_usuario = o.id_usuario
         LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
@@ -39,8 +37,7 @@
     $stmt = $obj->prepare($query);
     $stmt->execute();
     $result = $stmt->get_result();
-
-    $hasUsers = $result->num_rows > 0;
+    $usuarios = $result->fetch_all(MYSQLI_ASSOC);
 
     if (isset($_POST['logout'])) {
         session_destroy();
@@ -118,44 +115,38 @@
                         </thead>
                         <tbody>
                             <?php
-                                $query = "
-                                    SELECT u.id_usuario, u.nome, c.email,
-                                        CASE
-                                            WHEN m.id_moderador IS NOT NULL THEN 'Moderador'
-                                            WHEN o.cnpj IS NOT NULL THEN 'ONG'
-                                            WHEN ci.cpf IS NOT NULL THEN 'Cidadão'
-                                            ELSE 'Desconhecido'
-                                        END AS tipo_conta
-                                    FROM usuario u
-                                    LEFT JOIN contato c ON u.id_usuario = c.id_usuario
-                                    LEFT JOIN moderador m ON u.id_usuario = m.id_usuario
-                                    LEFT JOIN ong o ON u.id_usuario = o.id_usuario
-                                    LEFT JOIN cidadao ci ON u.id_usuario = ci.id_usuario
-                                ";
+                            if (count($usuarios) > 0) {
+                                foreach ($usuarios as $row) {
+                                    $status = $row['status_perfil'];
+                                    $tipo = $row['tipo_conta'];
 
-                                $stmt = $obj->prepare($query);
-                                $stmt->execute();
-                                $result = $stmt->get_result();
-
-                                if ($result->num_rows > 0) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<tr>";
-                                        echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
-                                        echo "<td>" . htmlspecialchars($row['email']) . "</td>";
-                                        echo "<td>" . htmlspecialchars($row['tipo_conta']) . "</td>";
-                                        echo "<td><a href='view-profile.php?id=" . $row['id_usuario'] . "' class='btn-ver-perfil'>Ver Perfil</a></td>";
-                                        echo "</tr>";
+                                    $statusIcon = '';
+                                    if ($tipo === 'Moderador') {
+                                        $statusIcon = '<img src="../images/perfil-images/moderador.png" alt="Moderador" class="status-icon" title="Moderador">';
+                                    } elseif ($status === 'verificado') {
+                                        $statusIcon = '<img src="../images/perfil-images/verificado.png" alt="Verificado" class="status-icon" title="Verificado">';
+                                    } elseif ($status === 'nao_verificado') {
+                                        $statusIcon = '<img src="../images/perfil-images/nao-verificado.png" alt="Não Verificado" class="status-icon" title="Não Verificado">';
+                                    } elseif ($status === 'banido') {
+                                        $statusIcon = '<img src="../images/perfil-images/banido.png" alt="Banido" class="status-icon" title="Banido">';
                                     }
-                                } else {
-                                    echo "<tr><td colspan='4'>Nenhum dado encontrado</td></tr>";
+
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['nome']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['email']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($tipo) . "</td>";
+                                    echo "<td>
+                                            <a href='view-profile.php?id=" . $row['id_usuario'] . "' class='btn-ver-perfil'>Ver Perfil</a>
+                                            $statusIcon
+                                        </td>";
+                                    echo "</tr>";
                                 }
+                            } else {
+                                echo "<tr><td colspan='4'>Nenhum dado encontrado</td></tr>";
+                            }
                             ?>
                         </tbody>
                     </table>
-
-                    <div class="no-data-message" id="no-data-message" style="display: none;">
-                        Nenhum dado encontrado
-                    </div>
                 </div>
             </div>
         </div>

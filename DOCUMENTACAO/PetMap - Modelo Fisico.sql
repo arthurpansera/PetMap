@@ -116,7 +116,7 @@ CREATE TABLE comentario (
     id_comentario_pai INT DEFAULT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_comentario ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
+    status_comentario ENUM('verificado', 'nao_verificado', 'banido') DEFAULT 'nao_verificado' NOT NULL,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_impulsos INT DEFAULT 0,
     total_comentarios INT DEFAULT 0,

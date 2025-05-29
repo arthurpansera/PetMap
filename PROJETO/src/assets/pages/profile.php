@@ -55,7 +55,7 @@
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
-    $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
+    $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, p.status_perfil,
                 o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
                 o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
                 ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
@@ -337,7 +337,7 @@
         exit;
     }
 
-   if (isset($_POST['update_post'])) {
+    if (isset($_POST['update_post'])) {
         $postId = intval($_POST['post_id']);
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
@@ -617,7 +617,7 @@
 
         <div class="profile-content">
             <div class="profile-header">
-                <div>
+                <div class="profile-left">
                     <?php if (!empty($user['foto'])): ?>
                         <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
                         <form method="post">
@@ -631,7 +631,24 @@
                 </div>
 
                 <div class="profile-info">
-                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
+                    <h2>
+                        <?php echo htmlspecialchars($user['nome']); ?>
+
+                        <?php
+                            $status = $user['status_perfil'];
+                            $tipoConta = $user['tipo_conta'];
+
+                            if ($tipoConta === 'Perfil de moderador') {
+                                echo '<img src="../images/perfil-images/moderador.png" alt="Moderador" class="status-icon" title="Moderador">';
+                            } elseif ($status === 'verificado') {
+                                echo '<img src="../images/perfil-images/verificado.png" alt="Verificado" class="status-icon" title="Conta verificada">';
+                            } elseif ($status === 'nao_verificado') {
+                                echo '<img src="../images/perfil-images/nao-verificado.png" alt="Não verificado" class="status-icon" title="Conta não verificada">';
+                            } elseif ($status === 'banido') {
+                                echo '<img src="../images/perfil-images/banido.png" alt="Banido" class="status-icon" title="Conta banida">';
+                            }
+                        ?>
+                    </h2>
 
                     <div class="profile-details">
                         <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>

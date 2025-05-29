@@ -66,7 +66,7 @@
 
     $idUsuario = (int) $_GET['id'];
 
-    $queryUser = "SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto,
+    $queryUser = "SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto, p.status_perfil, p.id_perfil,
             c.email, c.telefone,
             o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero,
             o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro,
@@ -90,6 +90,8 @@
     $resultUser = $stmtUser->get_result();
 
     $user = $resultUser->fetch_assoc();
+    $statusPerfil = $user['status_perfil'] ?? 'nao_verificado';
+    $isVerificado = ($statusPerfil === 'verificado');
 
     $queryPosts = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao,
             p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado
@@ -265,6 +267,99 @@
         exit;
     }
 
+    if (isset($_POST['validar_perfil']) && isset($_POST['id_verificar']) && isset($_POST['id_perfil']) && isset($_POST['descricao_validacao'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem validar perfis.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idVerificar = intval($_POST['id_verificar']);
+        $idPerfil = intval($_POST['id_perfil']);
+        $descricaoValidacao = trim($_POST['descricao_validacao']);
+
+        $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+        $stmtMod->bind_param("i", $userId);
+        $stmtMod->execute();
+        $resultMod = $stmtMod->get_result();
+        $moderador = $resultMod->fetch_assoc();
+
+        if (!$moderador) {
+            $_SESSION['error_message'] = "Erro ao identificar moderador.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idModerador = $moderador['id_moderador'];
+
+        $stmtUpdate = $obj->prepare("UPDATE perfil SET status_perfil = 'verificado' WHERE id_perfil = ?");
+        $stmtUpdate->bind_param("i", $idPerfil);
+        $stmtUpdate->execute();
+
+        $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_perfil (id_moderador, id_perfil, descricao_validacao) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iis", $idModerador, $idPerfil, $descricaoValidacao);
+        $stmtInsert->execute();
+
+        if ($stmtUpdate->affected_rows > 0) {
+            $_SESSION['success_message'] = "Perfil validado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao validar o perfil.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
+    if (isset($_POST['id_usuario_banir']) && isset($_POST['acao_banir'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem banir/desbanir usuários.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idUsuarioBanir = intval($_POST['id_usuario_banir']);
+        $acaoBanir = $_POST['acao_banir'];
+
+        $novoStatus = ($acaoBanir === 'banir') ? 'banido' : 'nao_verificado';
+        $descricao = ($acaoBanir === 'banir') ? 'Usuário banido' : 'Usuário desbanido';
+
+        $stmtBanir = $obj->prepare("UPDATE perfil SET status_perfil = ? WHERE id_usuario = ?");
+        $stmtBanir->bind_param("si", $novoStatus, $idUsuarioBanir);
+        $stmtBanir->execute();
+
+        if ($stmtBanir->affected_rows > 0) {
+            $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+            $stmtMod->bind_param("i", $userId);
+            $stmtMod->execute();
+            $resultMod = $stmtMod->get_result();
+            $moderador = $resultMod->fetch_assoc();
+
+            if ($moderador) {
+                $idModerador = $moderador['id_moderador'];
+
+                $stmtPerfil = $obj->prepare("SELECT id_perfil FROM perfil WHERE id_usuario = ?");
+                $stmtPerfil->bind_param("i", $idUsuarioBanir);
+                $stmtPerfil->execute();
+                $resultPerfil = $stmtPerfil->get_result();
+                $perfil = $resultPerfil->fetch_assoc();
+
+                if ($perfil) {
+                    $idPerfil = $perfil['id_perfil'];
+
+                    $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_perfil (id_moderador, id_perfil, descricao_validacao) VALUES (?, ?, ?)");
+                    $stmtInsert->bind_param("iis", $idModerador, $idPerfil, $descricao);
+                    $stmtInsert->execute();
+                }
+            }
+            $_SESSION['success_message'] = ($acaoBanir === 'banir') ? "Usuário banido com sucesso." : "Usuário desbanido com sucesso.";
+        } else {
+            $_SESSION['error_message'] = ($acaoBanir === 'banir') ? "Erro ao banir usuário." : "Erro ao desbanir usuário.";
+        }
+
+        header("Location: view-profile.php?id=" . $idUsuarioBanir);
+        exit;
+    }
+
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: login.php");
@@ -336,16 +431,61 @@
     <section class="profile">
         <div class="profile-content">
             <div class="profile-header">
-                <div>
+                <div class="profile-left">
                     <?php if (!empty($user['foto'])): ?>
                         <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
                     <?php else: ?>
                         <img src="../images/perfil-images/default-profile-photo.png" alt="Foto padrão" class="profile-picture">
                     <?php endif; ?>
+                    <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
+                        <div class="verify-profile">
+                            <?php if ($user['status_perfil'] !== 'banido'): ?>
+                                <?php if ($isVerificado): ?>
+                                    <button class="verified-button" disabled>Verificado</button>
+                                <?php else: ?>
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="id_verificar" value="<?php echo intval($idUsuario); ?>">
+                                        <input type="hidden" name="id_perfil" value="<?php echo htmlspecialchars($user['id_perfil']); ?>">
+                                        <button type="submit" name="validar_perfil" class="verify-button">Validar Perfil</button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <form method="POST" action="" id="banirForm">
+                                    <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
+                                    <input type="hidden" name="acao_banir" value="banir">
+                                    <button type="submit" id="btnBanirUsuario" class="ban-button">Banir Usuário</button>
+                                </form>
+
+                            <?php else: ?>
+                                <form method="POST" action="" id="desbanirForm">
+                                    <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
+                                    <input type="hidden" name="acao_banir" value="desbanir">
+                                    <button type="submit" id="btnDesbanirUsuario" class="unban-button">Desbanir Usuário</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="profile-info">
-                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
+                    <h2>
+                        <?php echo htmlspecialchars($user['nome']); ?>
+
+                        <?php
+                            $status = $user['status_perfil'];
+                            $tipoConta = $user['tipo_conta'];
+
+                            if ($tipoConta === 'Perfil de moderador') {
+                                echo '<img src="../images/perfil-images/moderador.png" alt="Moderador" class="status-icon" title="Moderador">';
+                            } elseif ($status === 'verificado') {
+                                echo '<img src="../images/perfil-images/verificado.png" alt="Verificado" class="status-icon" title="Conta verificada">';
+                            } elseif ($status === 'nao_verificado') {
+                                echo '<img src="../images/perfil-images/nao-verificado.png" alt="Não verificado" class="status-icon" title="Conta não verificada">';
+                            } elseif ($status === 'banido') {
+                                echo '<img src="../images/perfil-images/banido.png" alt="Banido" class="status-icon" title="Conta banida">';
+                            }
+                        ?>
+                    </h2>
 
                     <div class="profile-details">
                         <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>

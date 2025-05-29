@@ -17,9 +17,10 @@
             die("Erro ao conectar ao banco de dados.");
         }
 
-        $query = "SELECT u.id_usuario, u.senha 
+        $query = "SELECT u.id_usuario, u.senha, p.status_perfil
                 FROM usuario u
                 JOIN contato c ON u.id_usuario = c.id_usuario 
+                JOIN perfil p ON u.id_usuario = p.id_usuario
                 WHERE c.email = ?";
         $stmt = $obj->prepare($query);
         $stmt->bind_param('s', $email);
@@ -30,6 +31,12 @@
             $user = $result->fetch_assoc();
 
             if (password_verify($password, $user['senha'])) {
+                if ($user['status_perfil'] === 'banido') {
+                    $_SESSION['error_message'] = "Sua conta foi banida. Por favor, entre em contato com o suporte.";
+                    header("Location: login.php");
+                    exit();
+                }
+
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['id_usuario'] = $user['id_usuario'];
                 header("Location: ../../../index.php");
