@@ -58,7 +58,7 @@ CREATE TABLE perfil (
     id_usuario INT NOT NULL,
     descricao TEXT,
     foto VARCHAR(255),
-    status_perfil ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
+    status_perfil ENUM('verificado', 'nao_verificado', 'banido') DEFAULT 'nao_verificado' NOT NULL,
     PRIMARY KEY (id_perfil),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -116,7 +116,7 @@ CREATE TABLE comentario (
     id_comentario_pai INT DEFAULT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_comentario ENUM('verificado', 'nao_verificado', 'banido') DEFAULT 'nao_verificado' NOT NULL,
+    status_comentario ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_impulsos INT DEFAULT 0,
     total_comentarios INT DEFAULT 0,
