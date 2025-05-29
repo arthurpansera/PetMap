@@ -446,7 +446,7 @@
                                     <form method="POST" action="">
                                         <input type="hidden" name="id_verificar" value="<?php echo intval($idUsuario); ?>">
                                         <input type="hidden" name="id_perfil" value="<?php echo htmlspecialchars($user['id_perfil']); ?>">
-                                        <input type="hidden" name="descricao_validacao" value="Validação manual pelo moderador.">
+                                        <input type="hidden" name="descricao_validacao" value="Usuário OK">
                                         <button type="submit" name="validar_perfil" class="verify-button">Validar Perfil</button>
                                     </form>
                                 <?php endif; ?>

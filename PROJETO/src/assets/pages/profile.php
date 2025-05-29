@@ -1034,7 +1034,7 @@
                                 às <strong><?php echo strftime('%Hh%M, %d de %B de %Y', strtotime($comentario['data_criacao'])); ?></strong>
                             </p>
 
-                             <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                            <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
 
                             <?php if ($id_usuario && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
                                 <div class="comment-actions">
@@ -1046,7 +1046,6 @@
                                         )">✏️ Editar
                                     </button>
 
-
                                     <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
                                         <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
                                         <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
@@ -1056,23 +1055,24 @@
                                 </div>
                             <?php endif; ?>
 
+                            <div id="edit-form-<?= $comentario['id_comentario']; ?>" class="comment-form" style="display: none;">
+                                <form method="POST" id="comment-form-perfil">
+                                    <input type="hidden" name="id_comentario" id="id_comentario_perfil_<?= $comentario['id_comentario']; ?>" value="">
+                                    <textarea name="conteudo_comentario" id="textarea_comentario_perfil_<?= $comentario['id_comentario']; ?>" rows="3" placeholder="Edite seu comentário..." required></textarea>
+
+                                    <button type="submit" id="submit-button-perfil_<?= $comentario['id_comentario']; ?>" name="update_comment">Enviar</button>
+                                    <button type="button" onclick="closeCommentFormPerfil(<?= $comentario['id_comentario']; ?>)">Cancelar</button>
+                                </form>
+                            </div>
+
                         </div>
                     <?php endforeach; ?>
-
-                    <div id="floating-edit-form" class="comment-form" style="display: none;">
-                        <form method="POST" id="comment-form-perfil">
-                            <input type="hidden" name="id_comentario" id="id_comentario_perfil" value="">
-                            <textarea name="conteudo_comentario" id="textarea_comentario_perfil" rows="3" placeholder="Edite seu comentário..." required></textarea>
-
-                            <button type="submit" id="submit-button-perfil" name="update_comment">Enviar</button>
-                            <button type="button" onclick="closeCommentFormPerfil()">Cancelar</button>
-                        </form>
-                    </div>
             
                 </div>
             <?php else: ?>
                 <p style="font-size: 1.2rem; ">Você ainda não deixou nenhum comentário.</p><br><br>
             <?php endif; ?>
+        </div>
     </section>
     
     <div id="postModal" class="post-modal">

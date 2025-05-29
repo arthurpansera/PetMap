@@ -84,20 +84,23 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, 
+                        p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
+                JOIN perfil pf ON u.id_usuario = pf.id_usuario
                 WHERE (
-                    p.titulo LIKE ? 
-                    OR p.conteudo LIKE ? 
-                    OR u.nome LIKE ? 
-                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y') LIKE ? 
-                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y %H:%i') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
+                        p.titulo LIKE ? 
+                        OR p.conteudo LIKE ? 
+                        OR u.nome LIKE ? 
+                        OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y') LIKE ? 
+                        OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y %H:%i') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
                 )
                 AND p.tipo_publicacao = 'animal'
+                AND pf.status_perfil != 'banido'
                 ORDER BY $orderBy";
 
         $stmt = $obj->prepare($query);
@@ -105,11 +108,15 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, 
+                        p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
+                JOIN perfil pf ON u.id_usuario = pf.id_usuario
                 WHERE p.tipo_publicacao = 'animal'
+                AND pf.status_perfil != 'banido'
                 ORDER BY $orderBy";
+
         $result = $obj->query($query);
     }
 
@@ -534,7 +541,9 @@
                             $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
                                 FROM comentario c
                                 JOIN usuario u ON c.id_usuario = u.id_usuario
+                                JOIN perfil pf ON u.id_usuario = pf.id_usuario
                                 WHERE c.id_publicacao = ?
+                                AND pf.status_perfil != 'banido'
                                 ORDER BY c.data_criacao DESC
                             ");
                             $getComentarios->bind_param("i", $idPost);

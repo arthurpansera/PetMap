@@ -778,7 +778,6 @@ input.input-adm {
     background-color:rgb(255, 255, 255);
 }
 
-
 .comment {
     width: 900px;
     margin: 0 auto 30px auto;
@@ -800,7 +799,7 @@ input.input-adm {
     line-height: 1.5;
 }
 
-.comments-profile{
+.comments-profile {
     display: flex;
     width: 100%;
     padding-left: 30px;
@@ -808,7 +807,7 @@ input.input-adm {
     background-color:rgb(255, 255, 255);
 }
 
-.comments-list-profile{
+.comments-list-profile {
     margin-top: 10px;
     width: 100%;
     margin-top: 10px;
@@ -817,7 +816,7 @@ input.input-adm {
     clear: both;
 }
 
-.comment-profile{
+.comment-profile {
     width: 96%;
     margin-top: 20px;
     padding: 20px;
