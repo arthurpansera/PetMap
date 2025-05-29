@@ -522,7 +522,7 @@
 
                             <p><?php echo $post['conteudo']; ?></p>
 
-                             <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                            <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
                                 <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
                                     📍
                                     <?php
@@ -605,6 +605,8 @@
                                 $totalComentarios = count($comentariosArray);
 
                                 $jaImpulsionou = false;
+                                $impulsos = 0;
+
                                 if ($isLoggedIn) {
                                     $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
                                     $stmt = $obj->prepare($checkQuery);
@@ -669,7 +671,6 @@
                                             </form>
                                         </div>
                                     </div>
-
                                 <?php endif; ?>
 
                                 <?php if ($totalComentarios > 0): ?>
@@ -847,6 +848,26 @@
     <script src="src/scripts/register-validation.js"></script>
     <script src="src/scripts/view-comments.js"></script>
     <script src="src/scripts/user-suggestions.js"></script>
+
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "src/assets/pages/logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

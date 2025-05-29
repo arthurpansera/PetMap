@@ -3,6 +3,40 @@
 
     session_start();
 
+    if (isset($_SESSION['error_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$_SESSION['error_message']}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
+
     $obj = conecta_db();
     $obj->query("SET lc_time_names = 'pt_BR'");
     date_default_timezone_set('America/Sao_Paulo');
@@ -32,8 +66,7 @@
 
     $idUsuario = (int) $_GET['id'];
 
-    $queryUser = "
-        SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto,
+    $queryUser = "SELECT u.id_usuario, u.nome, p.descricao AS tipo_conta, p.foto, p.status_perfil, p.id_perfil,
             c.email, c.telefone,
             o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero,
             o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro,
@@ -57,9 +90,10 @@
     $resultUser = $stmtUser->get_result();
 
     $user = $resultUser->fetch_assoc();
+    $statusPerfil = $user['status_perfil'] ?? 'nao_verificado';
+    $isVerificado = ($statusPerfil === 'verificado');
 
-    $queryPosts = "
-        SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao,
+    $queryPosts = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao,
             p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado
         FROM publicacao p
         WHERE p.id_usuario = ?
@@ -115,6 +149,214 @@
 
         $redirectUrl = 'view-profile.php?id=' . intval($_GET['id']);
         header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['comentar']) && isset($_POST['id_publicacao']) && isset($_POST['conteudo_comentario'])) {
+        if (!$isLoggedIn) {
+            header("Location: src/assets/pages/login.php");
+            exit;
+        }
+
+        $idPublicacao = intval($_POST['id_publicacao']);
+        $conteudoComentario = trim($_POST['conteudo_comentario']);
+
+        if (!empty($conteudoComentario)) {
+            $insertComentario = "INSERT INTO comentario (id_usuario, id_publicacao, conteudo) VALUES (?, ?, ?)";
+            $stmtComentario = $obj->prepare($insertComentario);
+            $stmtComentario->bind_param("iis", $userId, $idPublicacao, $conteudoComentario);
+            $stmtComentario->execute();
+
+            $updateTotal = "UPDATE publicacao SET total_comentarios = total_comentarios + 1 WHERE id_publicacao = ?";
+            $stmtUpdate = $obj->prepare($updateTotal);
+            $stmtUpdate->bind_param("i", $idPublicacao);
+            $stmtUpdate->execute();
+        }
+
+
+        if ($stmtComentario->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário enviado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao enviar comentário.";
+        }
+
+        $redirectUrl = 'view-profile.php?id=' . intval($_GET['id']);
+        header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['update_comment'])) {
+        $idComentario = intval($_POST['id_comentario']);
+        $conteudo = trim($_POST['conteudo_comentario']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+        $redirectUrl = 'view-profile.php?id=' . intval($_GET['id']);
+
+
+        if ($conteudo === '') {
+            $_SESSION['error_message'] = "O comentário não pode ficar vazio.";
+            header("Location: $redirectUrl");
+            exit;
+        }
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header("Location: $redirectUrl");
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para editar esse comentário.";
+            header("Location: $redirectUrl");
+            exit;
+        }
+
+        $updateQuery = $obj->prepare("UPDATE comentario SET conteudo = ?, data_atualizacao = NOW() WHERE id_comentario = ?");
+        $updateQuery->bind_param('si', $conteudo, $idComentario);
+        $updateQuery->execute();
+
+        if ($updateQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário atualizado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Nenhuma alteração feita ou erro na atualização.";
+        }
+
+        header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['delete_comment'])) {
+        $idComentario = intval($_POST['id_comentario_excluir']);
+        $idUsuarioLogado = $_SESSION['id_usuario'];
+        $redirectUrl = 'view-profile.php?id=' . intval($_GET['id']);
+
+        $queryCheck = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $queryCheck->bind_param('i', $idComentario);
+        $queryCheck->execute();
+        $result = $queryCheck->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header("Location: $redirectUrl");
+            exit;
+        }
+
+        $row = $result->fetch_assoc();
+        if ($row['id_usuario'] != $idUsuarioLogado) {
+            $_SESSION['error_message'] = "Você não tem permissão para excluir esse comentário.";
+            header("Location: $redirectUrl");
+            exit;
+        }
+
+        $deleteQuery = $obj->prepare("DELETE FROM comentario WHERE id_comentario = ?");
+        $deleteQuery->bind_param('i', $idComentario);
+        $deleteQuery->execute();
+
+        if ($deleteQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário excluído com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao excluir comentário.";
+        }
+
+        header("Location: $redirectUrl");
+        exit;
+    }
+
+    if (isset($_POST['validar_perfil']) && isset($_POST['id_verificar']) && isset($_POST['id_perfil']) && isset($_POST['descricao_validacao'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem validar perfis.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idVerificar = intval($_POST['id_verificar']);
+        $idPerfil = intval($_POST['id_perfil']);
+        $descricaoValidacao = trim($_POST['descricao_validacao']);
+
+        $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+        $stmtMod->bind_param("i", $userId);
+        $stmtMod->execute();
+        $resultMod = $stmtMod->get_result();
+        $moderador = $resultMod->fetch_assoc();
+
+        if (!$moderador) {
+            $_SESSION['error_message'] = "Erro ao identificar moderador.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idModerador = $moderador['id_moderador'];
+
+        $stmtUpdate = $obj->prepare("UPDATE perfil SET status_perfil = 'verificado' WHERE id_perfil = ?");
+        $stmtUpdate->bind_param("i", $idPerfil);
+        $stmtUpdate->execute();
+
+        $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_perfil (id_moderador, id_perfil, descricao_validacao) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iis", $idModerador, $idPerfil, $descricaoValidacao);
+        $stmtInsert->execute();
+
+        if ($stmtUpdate->affected_rows > 0) {
+            $_SESSION['success_message'] = "Perfil validado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao validar o perfil.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
+    if (isset($_POST['id_usuario_banir']) && isset($_POST['acao_banir'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem banir/desbanir usuários.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idUsuarioBanir = intval($_POST['id_usuario_banir']);
+        $acaoBanir = $_POST['acao_banir'];
+
+        $novoStatus = ($acaoBanir === 'banir') ? 'banido' : 'nao_verificado';
+        $descricao = ($acaoBanir === 'banir') ? 'Usuário banido' : 'Usuário desbanido';
+
+        $stmtBanir = $obj->prepare("UPDATE perfil SET status_perfil = ? WHERE id_usuario = ?");
+        $stmtBanir->bind_param("si", $novoStatus, $idUsuarioBanir);
+        $stmtBanir->execute();
+
+        if ($stmtBanir->affected_rows > 0) {
+            $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+            $stmtMod->bind_param("i", $userId);
+            $stmtMod->execute();
+            $resultMod = $stmtMod->get_result();
+            $moderador = $resultMod->fetch_assoc();
+
+            if ($moderador) {
+                $idModerador = $moderador['id_moderador'];
+
+                $stmtPerfil = $obj->prepare("SELECT id_perfil FROM perfil WHERE id_usuario = ?");
+                $stmtPerfil->bind_param("i", $idUsuarioBanir);
+                $stmtPerfil->execute();
+                $resultPerfil = $stmtPerfil->get_result();
+                $perfil = $resultPerfil->fetch_assoc();
+
+                if ($perfil) {
+                    $idPerfil = $perfil['id_perfil'];
+
+                    $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_perfil (id_moderador, id_perfil, descricao_validacao) VALUES (?, ?, ?)");
+                    $stmtInsert->bind_param("iis", $idModerador, $idPerfil, $descricao);
+                    $stmtInsert->execute();
+                }
+            }
+            $_SESSION['success_message'] = ($acaoBanir === 'banir') ? "Usuário banido com sucesso." : "Usuário desbanido com sucesso.";
+        } else {
+            $_SESSION['error_message'] = ($acaoBanir === 'banir') ? "Erro ao banir usuário." : "Erro ao desbanir usuário.";
+        }
+
+        header("Location: view-profile.php?id=" . $idUsuarioBanir);
         exit;
     }
 
@@ -189,16 +431,61 @@
     <section class="profile">
         <div class="profile-content">
             <div class="profile-header">
-                <div>
+                <div class="profile-left">
                     <?php if (!empty($user['foto'])): ?>
                         <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
                     <?php else: ?>
                         <img src="../images/perfil-images/default-profile-photo.png" alt="Foto padrão" class="profile-picture">
                     <?php endif; ?>
+                    <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
+                        <div class="verify-profile">
+                            <?php if ($user['status_perfil'] !== 'banido'): ?>
+                                <?php if ($isVerificado): ?>
+                                    <button class="verified-button" disabled>Verificado</button>
+                                <?php else: ?>
+                                    <form method="POST" action="">
+                                        <input type="hidden" name="id_verificar" value="<?php echo intval($idUsuario); ?>">
+                                        <input type="hidden" name="id_perfil" value="<?php echo htmlspecialchars($user['id_perfil']); ?>">
+                                        <button type="submit" name="validar_perfil" class="verify-button">Validar Perfil</button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <form method="POST" action="" id="banirForm">
+                                    <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
+                                    <input type="hidden" name="acao_banir" value="banir">
+                                    <button type="submit" id="btnBanirUsuario" class="ban-button">Banir Usuário</button>
+                                </form>
+
+                            <?php else: ?>
+                                <form method="POST" action="" id="desbanirForm">
+                                    <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
+                                    <input type="hidden" name="acao_banir" value="desbanir">
+                                    <button type="submit" id="btnDesbanirUsuario" class="unban-button">Desbanir Usuário</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="profile-info">
-                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
+                    <h2>
+                        <?php echo htmlspecialchars($user['nome']); ?>
+
+                        <?php
+                            $status = $user['status_perfil'];
+                            $tipoConta = $user['tipo_conta'];
+
+                            if ($tipoConta === 'Perfil de moderador') {
+                                echo '<img src="../images/perfil-images/moderador.png" alt="Moderador" class="status-icon" title="Moderador">';
+                            } elseif ($status === 'verificado') {
+                                echo '<img src="../images/perfil-images/verificado.png" alt="Verificado" class="status-icon" title="Conta verificada">';
+                            } elseif ($status === 'nao_verificado') {
+                                echo '<img src="../images/perfil-images/nao-verificado.png" alt="Não verificado" class="status-icon" title="Conta não verificada">';
+                            } elseif ($status === 'banido') {
+                                echo '<img src="../images/perfil-images/banido.png" alt="Banido" class="status-icon" title="Conta banida">';
+                            }
+                        ?>
+                    </h2>
 
                     <div class="profile-details">
                         <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>
@@ -259,6 +546,16 @@
                         while ($row = $imgResult->fetch_assoc()) {
                             $images[] = $row['imagem_url'];
                         }
+
+                        $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
+                                FROM comentario c
+                                JOIN usuario u ON c.id_usuario = u.id_usuario
+                                WHERE c.id_publicacao = ?
+                                ORDER BY c.data_criacao DESC
+                            ");
+                            $getComentarios->bind_param("i", $idPost);
+                            $getComentarios->execute();
+                            $comentarios = $getComentarios->get_result();
                     ?>
 
                     <div class="post-item">
@@ -364,54 +661,137 @@
                         <?php endforeach; ?>
                     </div>
 
+                    <?php
+                        $idPost = $post['id_publicacao'];
+
+                        $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
+                            FROM comentario c
+                            JOIN usuario u ON c.id_usuario = u.id_usuario
+                            WHERE c.id_publicacao = ?
+                            ORDER BY c.data_criacao DESC
+                        ");
+                        $getComentarios->bind_param("i", $idPost);
+                        $getComentarios->execute();
+                        $comentarios = $getComentarios->get_result();
+
+                        $comentariosArray = [];
+                        while ($row = $comentarios->fetch_assoc()) {
+                            $comentariosArray[] = $row;
+                        }
+                        $totalComentarios = count($comentariosArray);
+
+                        $jaImpulsionou = false;
+                        $impulsos = 0;
+
+                        if ($isLoggedIn) {
+                            $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
+                            $stmt = $obj->prepare($checkQuery);
+                            $stmt->bind_param("ii", $userId, $idPost);
+                            $stmt->execute();
+                            $stmt->store_result();
+                            $jaImpulsionou = $stmt->num_rows > 0;
+                        }
+
+                        $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
+                        $q->bind_param("i", $idPost);
+                        $q->execute();
+                        $r = $q->get_result()->fetch_assoc();
+                        $impulsos = $r ? intval($r['total_impulsos']) : 0;
+
+                        if ($isLoggedIn && $jaImpulsionou) {
+                            $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
+                        } else {
+                            $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
+                        }
+
+                        $btnClass = 'like-button';
+                        if ($isLoggedIn && $jaImpulsionou) {
+                            $btnClass .= ' impulsionado';
+                        }
+                    ?>
+
                     <div class="post-actions">
-                        <?php
-                            $jaImpulsionou = false;
-                            $impulsos = 0;
+                        <div class="posts-buttons">
+                            <form method="POST" action="view-profile.php?id=<?php echo $idUsuario; ?>" style="display: contents;">
+                                <?php if (!empty($pesquisa)): ?>
+                                    <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                                <?php endif; ?>
+                                <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                <button 
+                                    type="submit" 
+                                    name="impulsionar" 
+                                    class="<?php echo $btnClass; ?>"
+                                >
+                                    <?php echo $labelBotao; ?>
+                                </button>
+                            </form>
 
-                            if ($isLoggedIn) {
-                                $checkQuery = "SELECT 1 FROM impulso_publicacao WHERE id_usuario = ? AND id_publicacao = ?";
-                                $stmt = $obj->prepare($checkQuery);
-                                $stmt->bind_param("ii", $userId, $idPost);
-                                $stmt->execute();
-                                $stmt->store_result();
-                                $jaImpulsionou = $stmt->num_rows > 0;
-                            }
+                            <?php if ($isLoggedIn): ?>
+                                    <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
+                                <?php else: ?>
+                                    <form method="GET" action="src/assets/pages/login.php" style="display: contents;">
+                                        <button type="submit" class="comment-button">💬 Comentar</button>
+                                    </form>
+                                <?php endif; ?>
 
-                            $q = $obj->prepare("SELECT total_impulsos FROM publicacao WHERE id_publicacao = ?");
-                            $q->bind_param("i", $idPost);
-                            $q->execute();
-                            $r = $q->get_result()->fetch_assoc();
-                            $impulsos = $r ? intval($r['total_impulsos']) : 0;
-
-                            if ($isLoggedIn && $jaImpulsionou) {
-                                $labelBotao = '✅ Impulsionado' . ($impulsos > 0 ? " ($impulsos)" : '');
-                            } else {
-                                $labelBotao = '⬆️ Impulsionar' . ($impulsos > 0 ? " ($impulsos)" : '');
-                            }
-
-                            $btnClass = 'like-button';
-                            if ($isLoggedIn && $jaImpulsionou) {
-                                $btnClass .= ' impulsionado';
-                            }
-                        ?>
-                        <form method="POST" action="view-profile.php?id=<?php echo $idUsuario; ?>" style="display: contents;">
-                            <?php if (!empty($pesquisa)): ?>
-                                <input type="hidden" name="pesquisa" value="<?php echo htmlspecialchars($pesquisa); ?>">
+                                <?php if ($totalComentarios > 0): ?>
+                                    <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
+                                        💬 Ver comentários (<?php echo $totalComentarios; ?>)
+                                    </button>
                             <?php endif; ?>
-                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                            <button 
-                                type="submit" 
-                                name="impulsionar" 
-                                class="<?php echo $btnClass; ?>"
-                            >
-                                <?php echo $labelBotao; ?>
-                            </button>
-                        </form>
+                        </div>
 
-                        <button class="comment-button">
-                            <i class="comment-icon">💬</i> Comentar
-                        </button>
+                        <?php if ($isLoggedIn): ?>
+                            <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
+                                    <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
+                                        <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                        <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
+                                        <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
+
+                                        <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
+                                        <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($totalComentarios > 0): ?>
+                            <div class="comments-profile" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
+                                <div class="comments-list-profile" id="comments-<?php echo $idPost; ?>">
+                                    <?php foreach ($comentariosArray as $comentario): ?>
+                                        <div class="comment-profile" style="margin-bottom: 10px;">
+                                            <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                            <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                                            <p class="comment-date">
+                                                <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
+                                            </p>
+
+                                            <?php if ($isLoggedIn && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
+
+                                                <div class="comment-actions">
+                                                    <button class="edit-comment-btn"
+                                                        onclick="editarComentario(
+                                                            <?php echo $idPost; ?>,
+                                                            <?php echo $comentario['id_comentario']; ?>,
+                                                            '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
+                                                        )">✏️ Editar
+                                                    </button>
+
+                                                    <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
+                                                        <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
+                                                        <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
+                                                            🗑️ Excluir
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endwhile; ?>
@@ -494,7 +874,30 @@
             <?php endif; ?>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/view-profile/view-profile.js"></script>
+    <script src="../../scripts/view-comments.js"></script>
+
+
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

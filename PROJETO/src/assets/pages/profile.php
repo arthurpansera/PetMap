@@ -1,6 +1,8 @@
 <?php
     session_start();
 
+    $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+
     if (isset($_SESSION['error_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -53,7 +55,7 @@
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
-    $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, 
+    $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, p.status_perfil,
                 o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 
                 o.endereco_cidade AS ong_endereco_cidade, o.endereco_estado AS ong_endereco_estado, o.endereco_pais AS ong_endereco_pais, o.endereco_cep AS ong_endereco_cep,
                 ci.endereco_rua AS cidadao_endereco_rua, ci.endereco_numero AS cidadao_endereco_numero, ci.endereco_complemento AS cidadao_endereco_complemento, ci.endereco_bairro AS cidadao_endereco_bairro, 
@@ -335,7 +337,7 @@
         exit;
     }
 
-   if (isset($_POST['update_post'])) {
+    if (isset($_POST['update_post'])) {
         $postId = intval($_POST['post_id']);
         $titulo = $_POST['titulo'];
         $conteudo = $_POST['conteudo'];
@@ -615,7 +617,7 @@
 
         <div class="profile-content">
             <div class="profile-header">
-                <div>
+                <div class="profile-left">
                     <?php if (!empty($user['foto'])): ?>
                         <img src="/PetMap/PROJETO/src/assets/images/uploads/profile/<?php echo htmlspecialchars($user['foto']) . '?v=' . time(); ?>" alt="Foto de perfil">
                         <form method="post">
@@ -629,7 +631,24 @@
                 </div>
 
                 <div class="profile-info">
-                    <h2><?php echo htmlspecialchars($user['nome']); ?></h2>
+                    <h2>
+                        <?php echo htmlspecialchars($user['nome']); ?>
+
+                        <?php
+                            $status = $user['status_perfil'];
+                            $tipoConta = $user['tipo_conta'];
+
+                            if ($tipoConta === 'Perfil de moderador') {
+                                echo '<img src="../images/perfil-images/moderador.png" alt="Moderador" class="status-icon" title="Moderador">';
+                            } elseif ($status === 'verificado') {
+                                echo '<img src="../images/perfil-images/verificado.png" alt="Verificado" class="status-icon" title="Conta verificada">';
+                            } elseif ($status === 'nao_verificado') {
+                                echo '<img src="../images/perfil-images/nao-verificado.png" alt="Não verificado" class="status-icon" title="Conta não verificada">';
+                            } elseif ($status === 'banido') {
+                                echo '<img src="../images/perfil-images/banido.png" alt="Banido" class="status-icon" title="Conta banida">';
+                            }
+                        ?>
+                    </h2>
 
                     <div class="profile-details">
                         <p><span class="label">Tipo de Conta:</span> <?php echo htmlspecialchars($user['tipo_conta']); ?></p>
@@ -719,231 +738,231 @@
                             </span>
                         </p>
 
-                    <?php
-                        $tiposFormatados = [
-                            'animal' => 'Animal Perdido',
-                            'resgate' => 'Resgate de Animal',
-                            'informacao' => 'Informação',
-                            'cidadao' => 'Cidadão',
-                            'outro' => 'Outro'
-                        ];
-                    ?>
+                        <?php
+                            $tiposFormatados = [
+                                'animal' => 'Animal Perdido',
+                                'resgate' => 'Resgate de Animal',
+                                'informacao' => 'Informação',
+                                'cidadao' => 'Cidadão',
+                                'outro' => 'Outro'
+                            ];
+                        ?>
 
-                    <p class="post-type">
-                        <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
-                    </p>
-
-                    <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
-                    <p><?php echo $post['conteudo']; ?></p>
-
-                    <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
-                    
-                        <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
-                            📍
-                            <?php
-                                $enderecoFormatado = [];
-
-                                if (!empty($post['endereco_rua'])) {
-                                    $enderecoFormatado[] = $post['endereco_rua'];
-                                }
-                                if (!empty($post['endereco_bairro'])) {
-                                    $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
-                                }
-                                if (!empty($post['endereco_cidade'])) {
-                                    $cidadeEstado = $post['endereco_cidade'];
-                                    if (!empty($post['endereco_estado'])) {
-                                        $cidadeEstado .= ' - ' . strtoupper($post['endereco_estado']);
-                                    }
-                                    $enderecoFormatado[] = $cidadeEstado;
-                                } elseif (!empty($post['endereco_estado'])) {
-                                    $enderecoFormatado[] = strtoupper($post['endereco_estado']);
-                                }
-                                echo implode(', ', $enderecoFormatado);
-                            ?>
+                        <p class="post-type">
+                            <span class="badge">Tipo da publicação: <?php echo $tiposFormatados[$post['tipo_publicacao']] ?? ucfirst($post['tipo_publicacao']); ?></span>
                         </p>
 
-                    <?php else: ?>
+                        <h3 class="post-title"><?php echo htmlspecialchars($post['titulo']); ?></h3>
+                        <p><?php echo $post['conteudo']; ?></p>
 
-                        <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
-                            Endereço não informado
-                        </p>
-
-                    <?php endif; ?>
-
-                    <?php
-                        $images = $images ?? [];
-                        $totalImages = count($images);
-                        $maxVisible = 3;
-
-                        $galleryClass = 'multiple-images';
-                        if ($totalImages == 1) {
-                            $galleryClass = 'single-image';
-                        } elseif ($totalImages == 2) {
-                            $galleryClass = 'two-images';
-                        }
-
-                        $visibleImages = array_slice($images, 0, $maxVisible);
-                        $moreCount = max(0, $totalImages - $maxVisible);
-                    ?>
-
-                    <div class="image-gallery <?php echo $galleryClass; ?>">
-                        <?php foreach ($visibleImages as $index => $imagem): ?>
-                            <?php 
-                                $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
-                            ?>
-                            <div 
-                                class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
-                                <?php if ($isLastVisibleWithMore): ?>
-                                    data-images='<?php echo json_encode($images); ?>'
-                                <?php endif; ?>
-                            >
-                                <?php if ($isLastVisibleWithMore): ?>
-                                    <div class="image-overlay">+<?php echo $moreCount; ?></div>
-                                <?php endif; ?>
-                                <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <?php
-                        $idPost = $post['id_publicacao'];
-
-                        $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
-                            FROM comentario c
-                            JOIN usuario u ON c.id_usuario = u.id_usuario
-                            WHERE c.id_publicacao = ?
-                            ORDER BY c.data_criacao DESC
-                        ");
-                        $getComentarios->bind_param("i", $idPost);
-                        $getComentarios->execute();
-                        $comentarios = $getComentarios->get_result();
-
-                        $comentariosArray = [];
-                        while ($row = $comentarios->fetch_assoc()) {
-                            $comentariosArray[] = $row;
-                        }
-                        $totalComentarios = count($comentariosArray);
-
-                    ?>
-
-                    <div class="post-actions">
-                        <div class="posts-buttons">
-                            <form method="POST" action="profile.php">
-
+                        <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                        
+                            <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                                📍
                                 <?php
-                                    $images = $images ?? [];
-                                    $totalImages = count($images);
-                                    $maxVisible = 3;
+                                    $enderecoFormatado = [];
 
-                                    $galleryClass = 'multiple-images';
-                                    if ($totalImages == 1) {
-                                        $galleryClass = 'single-image';
-                                    } elseif ($totalImages == 2) {
-                                        $galleryClass = 'two-images';
+                                    if (!empty($post['endereco_rua'])) {
+                                        $enderecoFormatado[] = $post['endereco_rua'];
                                     }
-
-                                    $visibleImages = array_slice($images, 0, $maxVisible);
-                                    $moreCount = max(0, $totalImages - $maxVisible);
+                                    if (!empty($post['endereco_bairro'])) {
+                                        $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                                    }
+                                    if (!empty($post['endereco_cidade'])) {
+                                        $cidadeEstado = $post['endereco_cidade'];
+                                        if (!empty($post['endereco_estado'])) {
+                                            $cidadeEstado .= ' - ' . strtoupper($post['endereco_estado']);
+                                        }
+                                        $enderecoFormatado[] = $cidadeEstado;
+                                    } elseif (!empty($post['endereco_estado'])) {
+                                        $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                                    }
+                                    echo implode(', ', $enderecoFormatado);
                                 ?>
+                            </p>
 
-                                <?php
-                                    $naoSeiEndereco = (
-                                        empty($post['endereco_rua']) &&
-                                        empty($post['endereco_bairro']) &&
-                                        empty($post['endereco_cidade']) &&
-                                        empty($post['endereco_estado'])
-                                    ) ? '1' : '0';
+                        <?php else: ?>
+
+                            <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                                Endereço não informado
+                            </p>
+
+                        <?php endif; ?>
+
+                        <?php
+                            $images = $images ?? [];
+                            $totalImages = count($images);
+                            $maxVisible = 3;
+
+                            $galleryClass = 'multiple-images';
+                            if ($totalImages == 1) {
+                                $galleryClass = 'single-image';
+                            } elseif ($totalImages == 2) {
+                                $galleryClass = 'two-images';
+                            }
+
+                            $visibleImages = array_slice($images, 0, $maxVisible);
+                            $moreCount = max(0, $totalImages - $maxVisible);
+                        ?>
+
+                        <div class="image-gallery <?php echo $galleryClass; ?>">
+                            <?php foreach ($visibleImages as $index => $imagem): ?>
+                                <?php 
+                                    $isLastVisibleWithMore = ($index === $maxVisible - 1 && $moreCount > 0);
                                 ?>
-
-                                <button 
-                                    type="button" 
-                                    class="edit-button" 
-                                    onclick="openEditPostModal(this);"
-                                    data-id="<?= $post['id_publicacao']; ?>"
-                                    data-titulo="<?= htmlspecialchars($post['titulo']); ?>"
-                                    data-conteudo="<?= htmlspecialchars($post['conteudo']); ?>"
-                                    data-tipo="<?= $post['tipo_publicacao']; ?>"
-                                    data-endereco_rua="<?= htmlspecialchars($post['endereco_rua']); ?>"
-                                    data-endereco_bairro="<?= htmlspecialchars($post['endereco_bairro']); ?>"
-                                    data-endereco_cidade="<?= htmlspecialchars($post['endereco_cidade']); ?>"
-                                    data-endereco_estado="<?= htmlspecialchars($post['endereco_estado']); ?>"
-                                    data-nao_sei_endereco="<?= $naoSeiEndereco ?>"
-                                    data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8'); ?>'
+                                <div 
+                                    class="image-wrapper<?php echo $isLastVisibleWithMore ? ' more-images-posts' : ''; ?>" 
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        data-images='<?php echo json_encode($images); ?>'
+                                    <?php endif; ?>
                                 >
-                                    ✏️ Editar
-                                </button>
+                                    <?php if ($isLastVisibleWithMore): ?>
+                                        <div class="image-overlay">+<?php echo $moreCount; ?></div>
+                                    <?php endif; ?>
+                                    <img src="../images/uploads/posts/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da publicação">
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                   
 
-                            </form>
+                        <?php
+                            $idPost = $post['id_publicacao'];
 
-                            <form method="POST" action="profile.php">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
-                                <button 
-                                    type="button" 
-                                    class="delete-button" 
-                                    onclick="confirmDeletePost(this)"
-                                >🗑️ Excluir</button>
-                            </form>
+                            $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
+                                FROM comentario c
+                                JOIN usuario u ON c.id_usuario = u.id_usuario
+                                WHERE c.id_publicacao = ?
+                                ORDER BY c.data_criacao DESC
+                            ");
+                            $getComentarios->bind_param("i", $idPost);
+                            $getComentarios->execute();
+                            $comentarios = $getComentarios->get_result();
+
+                            $comentariosArray = [];
+                            while ($row = $comentarios->fetch_assoc()) {
+                                $comentariosArray[] = $row;
+                            }
+                            $totalComentarios = count($comentariosArray);
+                        ?>
+
+                        <div class="post-actions">
+                            <div class="posts-buttons">
+                                <form method="POST" action="profile.php">
+
+                                    <?php
+                                        $images = $images ?? [];
+                                        $totalImages = count($images);
+                                        $maxVisible = 3;
+
+                                        $galleryClass = 'multiple-images';
+                                        if ($totalImages == 1) {
+                                            $galleryClass = 'single-image';
+                                        } elseif ($totalImages == 2) {
+                                            $galleryClass = 'two-images';
+                                        }
+
+                                        $visibleImages = array_slice($images, 0, $maxVisible);
+                                        $moreCount = max(0, $totalImages - $maxVisible);
+                                    ?>
+
+                                    <?php
+                                        $naoSeiEndereco = (
+                                            empty($post['endereco_rua']) &&
+                                            empty($post['endereco_bairro']) &&
+                                            empty($post['endereco_cidade']) &&
+                                            empty($post['endereco_estado'])
+                                        ) ? '1' : '0';
+                                    ?>
+
+                                    <button 
+                                        type="button" 
+                                        class="edit-button" 
+                                        onclick="openEditPostModal(this);"
+                                        data-id="<?= $post['id_publicacao']; ?>"
+                                        data-titulo="<?= htmlspecialchars($post['titulo']); ?>"
+                                        data-conteudo="<?= htmlspecialchars($post['conteudo']); ?>"
+                                        data-tipo="<?= $post['tipo_publicacao']; ?>"
+                                        data-endereco_rua="<?= htmlspecialchars($post['endereco_rua']); ?>"
+                                        data-endereco_bairro="<?= htmlspecialchars($post['endereco_bairro']); ?>"
+                                        data-endereco_cidade="<?= htmlspecialchars($post['endereco_cidade']); ?>"
+                                        data-endereco_estado="<?= htmlspecialchars($post['endereco_estado']); ?>"
+                                        data-nao_sei_endereco="<?= $naoSeiEndereco ?>"
+                                        data-images='<?= htmlspecialchars(json_encode($images), ENT_QUOTES, 'UTF-8'); ?>'
+                                    >
+                                        ✏️ Editar
+                                    </button>
+
+                                </form>
+
+                                <form method="POST" action="profile.php">
+                                    <input type="hidden" name="post_id" value="<?php echo $post['id_publicacao']; ?>">
+                                    <button 
+                                        type="button" 
+                                        class="delete-button" 
+                                        onclick="confirmDeletePost(this)"
+                                    >🗑️ Excluir</button>
+                                </form>
+
+                                <?php if ($totalComentarios > 0): ?>
+                                    <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
+                                        💬 Ver comentários (<?php echo $totalComentarios; ?>)
+                                    </button>
+                                <?php endif; ?>
+
+                            </div>
+
+                            <?php if ($id_usuario): ?>
+                                <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                    <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
+                                        <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
+                                            <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
+                                            <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
+                                            <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
+
+                                            <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
+                                            <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
 
                             <?php if ($totalComentarios > 0): ?>
-                                <button class="toggle-comments-button comment-button" onclick="toggleComments(<?php echo $idPost; ?>)">
-                                    💬 Ver comentários (<?php echo $totalComentarios; ?>)
-                                </button>
+                                <div class="comments-profile" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
+                                    <div class="comments-list-profile" id="comments-<?php echo $idPost; ?>">
+                                        <?php foreach ($comentariosArray as $comentario): ?>
+                                            <div class="comment-profile" style="margin-bottom: 10px;">
+                                                <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                                <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                                                <p class="comment-date">
+                                                    <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
+                                                </p>
+
+                                                <?php if ($id_usuario && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
+
+                                                    <div class="comment-actions">
+                                                        <button class="edit-comment-btn"
+                                                            onclick="editarComentario(
+                                                                <?php echo $idPost; ?>,
+                                                                <?php echo $comentario['id_comentario']; ?>,
+                                                                '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
+                                                            )">✏️ Editar
+                                                        </button>
+
+                                                        <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
+                                                            <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
+                                                            <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
+                                                                🗑️ Excluir
+                                                            </button>
+                                                        </form>
+
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
                             <?php endif; ?>
                         </div>
-
-                        <?php if ($id_usuario): ?>
-                            <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
-                                <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
-                                    <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
-                                        <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
-                                        <input type="hidden" name="id_comentario" id="id_comentario_<?php echo $idPost; ?>" value="">
-                                        <textarea name="conteudo_comentario" id="textarea_comentario_<?php echo $idPost; ?>" rows="2" placeholder="Escreva um comentário..." required></textarea>
-
-                                        <button type="submit" id="submit-button-<?php echo $idPost; ?>" name="comentar">Enviar</button>
-                                        <button type="button" onclick="closeCommentForm(<?php echo $idPost; ?>)">Cancelar</button>
-                                    </form>
-                                </div>
-                            </div>
-
-                        <?php endif; ?>
-
-                        <?php if ($totalComentarios > 0): ?>
-                            <div class="comments" id="comments-wrapper-<?php echo $idPost; ?>" style="display: none;">
-                                <div class="comments-list" id="comments-<?php echo $idPost; ?>">
-                                    <?php foreach ($comentariosArray as $comentario): ?>
-                                        <div class="comment" style="margin-bottom: 10px;">
-                                            <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
-                                            <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
-                                            <p class="comment-date">
-                                                <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
-                                            </p>
-
-                                            <?php if ($id_usuario && $comentario['id_usuario'] == $_SESSION['id_usuario']): ?>
-
-                                                <div class="comment-actions">
-                                                    <button class="edit-comment-btn"
-                                                        onclick="editarComentario(
-                                                            <?php echo $idPost; ?>,
-                                                            <?php echo $comentario['id_comentario']; ?>,
-                                                            '<?php echo htmlspecialchars(addslashes($comentario['conteudo'])); ?>'
-                                                        )">✏️ Editar
-                                                    </button>
-
-                                                    <form method="POST" id="form-excluir-<?= $comentario['id_comentario']; ?>">
-                                                        <input type="hidden" name="id_comentario_excluir" value="<?= $comentario['id_comentario']; ?>">
-                                                        <button type="button" onclick="confirmDelete(this)" name="delete_comment" class="delete-comment-btn">
-                                                            🗑️ Excluir
-                                                        </button>
-                                                    </form>
-
-                                                </div>
-                                            <?php endif; ?>
-
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endwhile; ?>
@@ -1428,6 +1447,26 @@
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/view-comments.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html> 

@@ -29,13 +29,20 @@
     font-size: 22px;
 }
 
-.profile-header img {
+.profile-header .profile-left img {
     border-radius: 50%;
     margin-bottom: 30px;
     width: 250px;
     height: 250px;
     object-fit: cover;
     display: block;
+}
+
+.status-icon {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 5px;
+    vertical-align: middle;
 }
 
 .profile-info {
@@ -755,11 +762,22 @@ input.input-adm {
 }
 
 .comments-list {
-    display: flex;
-    flex-direction: column;
+    margin-top: 10px;
     width: 100%;
-    border-radius: 15px;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
 }
+
+.comments {
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
 
 .comment {
     width: 900px;
@@ -780,6 +798,31 @@ input.input-adm {
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.5;
+}
+
+.comments-profile{
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
+.comments-list-profile{
+    margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
+}
+
+.comment-profile{
+    width: 96%;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
 }
 
 .comment-form textarea {

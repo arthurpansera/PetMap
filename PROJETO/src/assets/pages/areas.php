@@ -2,6 +2,7 @@
     include('../../../conecta_db.php');
 
     session_start();
+
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
     $isModerator = false;
 
@@ -190,10 +191,31 @@
         </div>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const locations = <?php echo $json_locations; ?>;
     </script>
     <script src="../../scripts/pages/areas/areas.js"></script>
+    
+    <?php if ($isLoggedIn): ?>
+    <script>
+    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let timer;
+
+    function resetTimer() {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            window.location.href = "logout-inactivity.php";
+        }, tempoInatividade);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+        document.addEventListener(evt, resetTimer)
+    );
+
+    resetTimer();
+    </script>
+    <?php endif; ?>
 
 </body>
 </html>

@@ -198,10 +198,10 @@
     width: 25%;
     height: 35px;
     margin-top: 15px;
+    margin-bottom: 20px;
     border: none;
     padding: 6px 12px;
     border-radius: 10px;
-
     cursor: pointer;
 }
 

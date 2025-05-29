@@ -1,0 +1,125 @@
+@import url(../../global/global.css);
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+form {
+    background-color:#9c48eb;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(94, 94, 94, 0.6);
+    width: 620px;
+    height: 320px;
+    text-align: center;
+}
+
+form label {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 50px;
+    font-weight: 600;
+    color: #fff;
+}
+
+form input[type="email"] {
+    width: 90%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    margin-bottom: 50px;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+}
+
+form input[type="password"] {
+    width: 90%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    margin-bottom: 50px;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+}
+
+form button {
+    width: 65%;
+    padding: 12px;
+    background-color: #6e1ab3;
+    border: none;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #5a148f; 
+}
+
+.message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
+    height: 10%;
+    margin: 20px auto;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 1.3rem;
+    gap: 12px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.message.success {
+    background-color: #a753f5;
+    color: white;
+    box-shadow: 0 4px 15px rgba(156, 72, 235, 0.6);
+    position: relative;
+}
+
+.message.success::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.message.error {
+    background-color: #ff6b6b;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6);
+    position: relative;
+}
+
+.message.error::before {
+    content: "";
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+
+@media (max-width: 400px) {
+  form {
+        width: 90%;
+        padding: 20px;
+  }
+}

@@ -29,7 +29,7 @@
     font-size: 22px;
 }
 
-.profile-header img {
+.profile-header .profile-left img {
     border-radius: 50%;
     margin-bottom: 30px;
     width: 250px;
@@ -77,6 +77,81 @@
 .profile-details span {
     flex: 1;
     text-align: left;
+}
+
+.status-icon {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 5px;
+    vertical-align: middle;
+}
+
+.verify-profile form {
+    display: flex;
+    flex-direction: column;
+    max-width: 220px;
+}
+
+.verify-button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.verify-button:hover {
+    background-color:rgb(24, 131, 49);
+}
+
+.verified-button {
+    background-color: var(--light-grey);
+    color: black;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: default;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px; 
+    width: 220px;
+}
+
+.ban-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.ban-button:hover {
+    background-color: #a71d2a;
+}
+
+.unban-button {
+    background-color:rgb(31, 126, 226);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.unban-button:hover {
+    background-color: rgb(23, 102, 186);
 }
 
 @media (min-width: 1200px) and (max-width: 1800px) {
@@ -183,13 +258,6 @@
     text-align: left;
 }
 
-.post-actions {
-    margin-top: 30px;
-    display: flex;
-    gap: 20px;
-    justify-content: flex-start;
-}
-
 .post-item img {
     width: 100%;
     max-width: 600px;
@@ -202,11 +270,18 @@
     transition: transform 0.3s ease; 
 }
 
+
 .post-actions {
     margin-top: 30px;
     display: flex;
-    gap: 20px;
+    flex-direction: column;
     justify-content: flex-start;
+}
+
+.posts-buttons {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
 .like-button, .comment-button {
@@ -267,10 +342,19 @@
 }
 
 .comments-list {
-    display: flex;
-    flex-direction: column;
     width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
+}
+
+.comments {
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
     border-radius: 15px;
+    background-color:rgb(255, 255, 255);
 }
 
 .comment {
@@ -292,6 +376,31 @@
     margin-bottom: 12px;
     font-size: 18px;
     line-height: 1.5;
+}
+
+.comments-profile{
+    display: flex;
+    width: 100%;
+    padding-left: 30px;
+    border-radius: 15px;
+    background-color:rgb(255, 255, 255);
+}
+
+.comments-list-profile{
+    margin-top: 10px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    overflow: auto;
+    clear: both;
+}
+
+.comment-profile{
+    width: 96%;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #f1f1f1;
 }
 
 .comment-form textarea {

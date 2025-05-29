@@ -3,13 +3,26 @@
 
     session_start();
 
+    if (isset($_GET['expired']) && $_GET['expired'] == 1) {
+        $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
+    }
+    
+    if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
+    $_SESSION['success_message'] = "Senha redefinida com sucesso!";
+    }
+
+    if (isset($_SESSION['login_error'])) {
+        $_SESSION['error_message'] = 'Usuário e/ou senha incorretos.';
+        unset($_SESSION['login_error']);
+    }
+
     if (isset($_SESSION['error_message'])) {
-        $error_message = $_SESSION['error_message'];
+        $mensagem = addslashes($_SESSION['error_message']);
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: 'Erro!',
-                    text: '$error_message',
+                    text: '{$mensagem}',
                     icon: 'error',
                     confirmButtonText: 'Entendido',
                     confirmButtonColor: '#7A00CC',
@@ -19,6 +32,23 @@
             });
         </script>";
         unset($_SESSION['error_message']);
+    }
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -31,9 +61,10 @@
             die("Erro ao conectar ao banco de dados.");
         }
 
-        $query = "SELECT u.id_usuario, u.senha 
+        $query = "SELECT u.id_usuario, u.senha, p.status_perfil
                 FROM usuario u
                 JOIN contato c ON u.id_usuario = c.id_usuario 
+                JOIN perfil p ON u.id_usuario = p.id_usuario
                 WHERE c.email = ?";
         $stmt = $obj->prepare($query);
         $stmt->bind_param('s', $email);
@@ -44,6 +75,12 @@
             $user = $result->fetch_assoc();
 
             if (password_verify($password, $user['senha'])) {
+                if ($user['status_perfil'] === 'banido') {
+                    $_SESSION['error_message'] = "Sua conta foi banida. Por favor, entre em contato com o suporte.";
+                    header("Location: login.php");
+                    exit();
+                }
+
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['id_usuario'] = $user['id_usuario'];
                 header("Location: ../../../index.php");
@@ -98,8 +135,10 @@
                         <label for="email" class="label-input">E-mail: </label>
                         <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
                         <label for="password" class="label-input">Senha:</label>
-                        <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
+                        <input type="password" name="password" id="password" class="input-box-1" placeholder="Insira sua senha" required>
+                        <a class="forgot-password" href="forgot-password.php">Esqueci minha senha</a>
                         <input type="submit" value="Login" class="login-btn">
+                      
                     </form>
                 </section>
             </section>
