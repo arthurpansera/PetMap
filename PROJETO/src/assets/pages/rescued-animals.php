@@ -84,7 +84,7 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE (
@@ -105,7 +105,7 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
                 WHERE p.tipo_publicacao = 'resgate'
@@ -461,7 +461,35 @@
                         <h3 class="post-title"><?php echo $post['titulo']; ?></h3>
 
                         <p><?php echo $post['conteudo']; ?></p>
-                        
+
+                        <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                            <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
+                                📍
+                                <?php
+                                    $enderecoFormatado = [];
+                                    if (!empty($post['endereco_rua'])) {
+                                        $enderecoFormatado[] = $post['endereco_rua'];
+                                    }
+                                    if (!empty($post['endereco_bairro'])) {
+                                        $enderecoFormatado[] = 'Bairro ' . $post['endereco_bairro'];
+                                    }
+                                    if (!empty($post['endereco_cidade']) && !empty($post['endereco_estado'])) {
+                                        $enderecoFormatado[] = $post['endereco_cidade'] . ' - ' . strtoupper($post['endereco_estado']);
+                                    } elseif (!empty($post['endereco_cidade'])) {
+                                        $enderecoFormatado[] = $post['endereco_cidade'];
+                                    } elseif (!empty($post['endereco_estado'])) {
+                                        $enderecoFormatado[] = strtoupper($post['endereco_estado']);
+                                    }
+                                    echo implode(', ', $enderecoFormatado);
+                                ?>
+                            </p>
+
+                        <?php else: ?>
+                            <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem; font-style: italic;">
+                                Endereço não informado
+                            </p>
+                        <?php endif; ?>
+
                         <?php
                             $images = $images ?? [];
                             $totalImages = count($images);

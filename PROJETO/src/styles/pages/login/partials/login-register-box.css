@@ -30,8 +30,39 @@
     padding-left: 13px;
 }
 
+.input-box-1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto;
+    width: 65%;
+    height: 45px;
+    background-color: var(--light-grey);
+    border-radius: 8px;
+    border: 1px solid var(--dark-grey);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    padding-left: 13px;
+}
 .label-input {
     margin: 0 18%;
+}
+
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin: 10px auto 20px auto;
+    font-size: 0.9rem;
+    color: var(--purple-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.forgot-password:hover {
+    transform: scale(1.05);
 }
 
 .login-btn {

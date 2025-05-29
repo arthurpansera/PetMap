@@ -522,7 +522,7 @@
 
                             <p><?php echo $post['conteudo']; ?></p>
 
-                             <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
+                            <?php if (!empty($post['endereco_rua']) || !empty($post['endereco_bairro']) || !empty($post['endereco_cidade']) || !empty($post['endereco_estado'])): ?>
                                 <p class="post-address" style="margin-top: 8px; color: #555; font-size: 0.95rem;">
                                     📍
                                     <?php

@@ -6,6 +6,50 @@
     if (isset($_GET['expired']) && $_GET['expired'] == 1) {
         $_SESSION['error_message'] = 'Sua sessão expirou por inatividade.';
     }
+    
+    if (isset($_GET['reset']) && $_GET['reset'] === 'success') {
+    $_SESSION['success_message'] = "Senha redefinida com sucesso!";
+    }
+
+    if (isset($_SESSION['login_error'])) {
+        $_SESSION['error_message'] = 'Usuário e/ou senha incorretos.';
+        unset($_SESSION['login_error']);
+    }
+
+    if (isset($_SESSION['error_message'])) {
+        $mensagem = addslashes($_SESSION['error_message']);
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$mensagem}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $email = $_POST['email'];
@@ -91,8 +135,10 @@
                         <label for="email" class="label-input">E-mail: </label>
                         <input type="text" name="email" id="email" class="input-box" placeholder="exemplo@gmail.com" required>
                         <label for="password" class="label-input">Senha:</label>
-                        <input type="password" name="password" id="password" class="input-box" placeholder="Insira sua senha" required>
+                        <input type="password" name="password" id="password" class="input-box-1" placeholder="Insira sua senha" required>
+                        <a class="forgot-password" href="forgot-password.php">Esqueci minha senha</a>
                         <input type="submit" value="Login" class="login-btn">
+                      
                     </form>
                 </section>
             </section>
@@ -127,26 +173,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/login/login.js"></script>
-
-    <?php
-    if (isset($_SESSION['error_message'])) {
-        $mensagem = addslashes($_SESSION['error_message']);
-        echo "<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    title: 'Erro!',
-                    text: '{$mensagem}',
-                    icon: 'error',
-                    confirmButtonText: 'Entendido',
-                    confirmButtonColor: '#7A00CC',
-                    allowOutsideClick: true,
-                    heightAuto: false
-                });
-            });
-        </script>";
-        unset($_SESSION['error_message']);
-    }
-    ?>
 
 </body>
 </html>
