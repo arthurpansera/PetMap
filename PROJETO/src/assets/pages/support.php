@@ -96,34 +96,36 @@
         </nav>
         <div class="content">
             <h2>Suporte PetMap</h2>
-            <div class="support-info">
-                <div class="support-info-1">
-                    <p>O PetMap é uma plataforma colaborativa dedicada à proteção e ao bem-estar dos animais. Nosso objetivo é conectar pessoas, ONGs e comunidades para facilitar o resgate de animais perdidos ou abandonados.</p>
-                    <p>Se você tiver dúvidas, encontrar algum problema na plataforma ou quiser enviar sugestões, nossa equipe de suporte está pronta para ajudar.</p>
-                </div>
-                <div class="support-image">
-                    <img src="../images/example-images/imagem-gato-suporte.jpg" alt="Foto de um Gato">
-                </div>
-                <div class="support-info-2">
-                    <p>Entre em contato com a gente:</p>
-                        <ul class="contact-list">
-                            <li>
-                                <img src="../images/support/gmail.png" alt="Ícone de Email">
-                                <span><strong>Email:</strong> suportepetmap@gmail.com</span>
-                            </li>
-                            <li>
-                                <img src="../images/support/whatsapp.png" alt="Ícone do WhatsApp">
-                                <span><strong>WhatsApp:</strong> (41) 99123-4567</span>
-                            </li>
-                            <li>
-                                <img src="../images/support/clock.png" alt="Ícone de Relógio">
-                                <span><strong>Horário de atendimento:</strong> Segunda a sexta, das 9h às 18h</span>
-                            </li>
-                        </ul>
-                </div>
-                <div class="support-info-3">
-                    <p>Obrigado por fazer parte dessa rede de cuidado e solidariedade com os animais.</p>
-                    <p>Com você, o PetMap vai mais longe!</p>
+
+            <div class="support-img-container">
+                <img src="../images/support/dog.jpg" alt="Cão segurando carta de suporte">
+            </div>
+            
+            <div class="form-container">
+                <form action="#" method="post" class="contact-form">
+                    <h3>Nos mande uma mensagem🐶🐱</h3>
+                    <input type="text" name="full_name" placeholder="Nome completo*" required>
+                    <input type="email" name="email" placeholder="Email*" required>
+                    <input type="text" name="subject" placeholder="Assunto">
+                    <textarea name="message" placeholder="Nos diga seu problema*" required></textarea>
+                    <button type="submit">Enviar mensagem</button>
+                </form>
+
+                <div class="contact-info">
+                    <ul class="contact-list">
+                        <li>
+                            <img src="../images/support/gmail.png" alt="Ícone de Email">
+                            <span><strong>:</strong> suportepetmap@gmail.com</span>
+                        </li>
+                        <li>
+                            <img src="../images/support/whatsapp.png" alt="Ícone do WhatsApp">
+                            <span><strong>:</strong> (41) 99123-4567</span>
+                        </li>
+                        <li>
+                            <img src="../images/support/clock.png" alt="Ícone de Relógio">
+                            <span><strong>:</strong> Segunda a sexta, das 9h às 18h</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
