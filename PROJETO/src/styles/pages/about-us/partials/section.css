@@ -89,13 +89,77 @@
 }
 
 @media (min-width: 1200px) {
-    .content {
-        margin-left: 410px;
-    }
+  .content {
+    margin-left: 410px;
+  }
 }
 
 @media (min-width: 1800px) {
-    .content {
-        margin-left: 600px;
-    }
+  .content {
+    margin-left: 600px;
+  }
+}
+
+@media (max-width: 1199.98px) {
+  .content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .about-us-info-container {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .about-us-image-text {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .about-us-image {
+    display: none;
+
+  }
+
+  #dog-icon {
+    display: none;
+  }
+}
+
+@media (max-width: 767.98px) {
+
+
+  .content h2 {
+    font-size: 1.75rem;
+    width: 100%;
+  }
+
+  .about-us-info-container {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 15px;
+  }
+
+  .btn-about-us {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .content {
+    padding: 15px;
+  }
+
+  .about-us-info-container {
+    width: 100%;
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+
+  .btn-about-us {
+    width: 100%;
+    text-align: center;
+  }
 }

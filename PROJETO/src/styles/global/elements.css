@@ -659,3 +659,117 @@ body.swal2-height-auto {
     background-size: 16px 16px;
     cursor: pointer;
 }
+
+@media (max-width: 991.98px) {
+    nav{
+        height: 10%;
+    }
+    .user-info{
+        display: none;
+    }
+
+    .nav img{
+        display: none;
+    }
+
+    .profile-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .profile-left,
+    .profile-right {
+        width: 100%;
+        max-width: 600px;
+    }
+
+    .profile-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-image img {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-name h2 {
+        font-size: 1.5rem;
+    }
+
+    .profile-info p {
+        font-size: 0.95rem;
+    }
+
+    .profile-actions {
+        justify-content: center;
+    }
+
+    .profile-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .post {
+        padding: 1rem;
+    }
+    .post-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .post-user {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .post-content p {
+        font-size: 0.95rem;
+    }
+
+    .comment-section textarea {
+        font-size: 0.95rem;
+    }
+
+    .comment {
+        font-size: 0.9rem;
+    }
+
+    .post-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    body {
+        font-size: 14px;
+    }
+
+    .profile-image img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .comment-section button {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .gallery img {
+        max-height: 150px;
+    }
+}

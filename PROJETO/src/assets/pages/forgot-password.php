@@ -12,7 +12,6 @@ $showForm = $msg !== 'success';
     <link rel="stylesheet" href="../../styles/pages/forgot-password/section.css" />
 </head>
 <body>
-
     <?php if ($msg): ?>
         <div class="message 
             <?= $msg === 'success' ? 'success' : 'error' ?>">
@@ -38,6 +37,5 @@ $showForm = $msg !== 'success';
             <button type="submit">Enviar link de recuperação</button>
         </form>
     <?php endif; ?>
-
 </body>
 </html>

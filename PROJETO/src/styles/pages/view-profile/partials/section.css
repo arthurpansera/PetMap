@@ -507,6 +507,35 @@
     margin-top: 10px;
 }
 
+.profile-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-left: 0;
+}
+
+.profile-info {
+    align-items: center;
+    text-align: center;
+    margin-left: 0;
+}
+
+.comment-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.tabs {
+    flex-direction: column;
+}
+
+.comment-form textarea {
+    width: 100%;
+}
+
+.comment-form button {
+    width: 100%;
+}
 .verify-post {
     display: flex;
     justify-content: flex-start;
@@ -593,4 +622,47 @@
 
 .delete-comment-button:hover {
     background-color: #c12232;
+}
+
+@media (min-width: 1200px) and (max-width: 1800px) {
+    .profile {
+        max-width: 900px;
+        margin-left: 470px;
+    }
+
+    .profile-header {
+        font-size: 22px;
+    }
+
+    .profile-header img {
+        max-width: 220px;
+        max-height: 220px;
+    }
+
+    .content,
+    .content-area {
+        margin-left: 420px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .profile,
+    .content,
+    .content-area {
+        margin-left: 600px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .profile,
+    .post-item,
+    .comment,
+    .comment-profile,
+    .form-container,
+    .content,
+    .content-area {
+        width: 95%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
 }

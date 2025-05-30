@@ -932,3 +932,124 @@ input.input-adm {
     margin-bottom: 5px;
     margin-top: 10px;
 }
+
+@media (max-width: 991px) {
+    .profile {
+        padding: 20px;
+        margin: 100px auto 40px;
+        max-width: 95%;
+        max-height: none;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .profile-header .profile-left img {
+        width: 180px;
+        height: 180px;
+        margin-bottom: 20px;
+    }
+
+    .profile-info {
+        align-items: center;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+
+    .profile-buttons .functions-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .content, .post-item {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .post-item img {
+        max-width: 100%;
+    }
+
+    .row-style {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .row-style-content {
+        width: 100%;
+    }
+
+    .modal-content, .adress-modal, .post-edit-modal-content {
+        width: 95%;
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .post-edit-modal button {
+        width: 100%;
+    }
+
+    .post-title {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-header .profile-left img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .profile-details .label {
+        width: 120px;
+        font-size: 16px;
+    }
+
+    .profile-details span {
+        font-size: 16px;
+    }
+
+    .edit-button, .delete-button, .comment-button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .content h2 {
+        font-size: 26px;
+    }
+
+    .post-title {
+        font-size: 20px;
+    }
+
+    .modal button.profile-save {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .form-content {
+        gap: 30px;
+    }
+
+    .profile-edit, .profile-delete, .btn-remove-photo {
+        font-size: 16px;
+        padding: 10px 16px;
+    }
+
+    .tooltip-text {
+        font-size: 11px;
+    }
+
+    .logout-button img {
+        width: 28px;
+        height: 28px;
+    }
+
+    #edit-image-gallery > div {
+        max-width: 90px;
+    }
+}

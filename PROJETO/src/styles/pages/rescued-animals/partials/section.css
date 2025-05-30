@@ -249,3 +249,71 @@
         margin-left: 600px;
     }
 }
+
+@media (min-width: 1200px) and (max-width: 1799px) {
+    .content {
+        margin-left: 410px;
+    }
+
+    .post-item {
+        width: 90%;
+        max-width: 900px;
+    }
+}
+
+@media (min-width: 1800px) {
+    .content {
+        margin-left: 600px;
+    }
+
+    .post-item {
+        width: 90%;
+        max-width: 900px;
+    }
+}
+
+@media (max-width: 1199px) {
+    .content {
+        width: 95%;
+        margin: 100px auto 0 auto;
+        padding: 20px;
+    }
+
+    .post-item {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .comment {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .comment-form button {
+        width: 100%;
+    }
+
+    .comment-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+    }
+
+    .posts-buttons {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .comments {
+        padding-left: 0;
+        flex-direction: column;
+    }
+
+    .no-posts-image {
+        width: 100%;
+    }
+}

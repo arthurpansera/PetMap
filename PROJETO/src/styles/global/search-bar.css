@@ -63,3 +63,57 @@
     transition: background-color 0.2s ease;
     border-radius: 10px;
 }
+
+@media (max-width: 768px) {
+  .search-bar {
+    max-width: 300px;
+    width: 90%;
+    padding: 5px 8px;
+  }
+
+  .search-bar input[type="text"] {
+    font-size: 13px;
+    padding: 5px 10px;
+  }
+
+  .search-bar button {
+    font-size: 14px;
+    padding: 5px 10px;
+  }
+
+  .user-suggestions {
+    width: 90%;
+    max-height: 100px;
+    top: calc(50% + 28px);
+  }
+}
+
+@media (max-width: 480px) {
+  .search-bar {
+    max-width: 260px;
+    width: 95%;
+    padding: 4px 6px;
+    border-radius: 20px;
+  }
+
+  .search-bar input[type="text"] {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  .search-bar button {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  .user-suggestions {
+    width: 95%;
+    max-height: 90px;
+    top: calc(50% + 25px);
+    font-size: 13px;
+  }
+
+  .user-suggestions .suggestion-item {
+    padding: 6px 8px;
+  }
+}

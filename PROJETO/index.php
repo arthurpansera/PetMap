@@ -41,9 +41,16 @@
     $isModerator = false;
 
     $obj = conecta_db();
+
+    if (!$obj) {
+        header("Location: src/assets/pages/database-error.php");
+        exit;
+    }
+
     $obj->query("SET lc_time_names = 'pt_BR'");
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
+
 
     if ($isLoggedIn) {
         $userId = $_SESSION['id_usuario'];
@@ -439,7 +446,14 @@
         </div> 
     </header>
     <section class="options">
-        <nav class="left-menu">
+
+        <div class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" role="button" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="left-menu" id="leftMenu">
             <ul>
                 <li><a href="index.php">Página Principal</a></li>
                 <li><a href="src/assets/pages/rescued-animals.php">Animais Resgatados</a></li>
@@ -452,11 +466,26 @@
                 <li><a href="src/assets/pages/frequent-questions.php">Perguntas Frequentes</a></li>
                 <li><a href="src/assets/pages/support.php">Suporte</a></li>
             </ul>
+            <?php if ($isLoggedIn): ?>
+                <div class="mobile-user-options">
+                    <ul>
+                        <li><a href="src/assets/pages/profile.php">Meu Perfil</a></li>
+                        <li>
+                            <form action="index.php" method="POST">
+                                <button type="submit" name="logout">Sair</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="footer">
                 <p>&copy;2025 - PetMap.</p>
                 <p>Todos os direitos reservados.</p>
             </div>
         </nav> 
+
+        <div class="menu-overlay" id="menuOverlay"></div>
+        
         <div class="content">
             <div class="order-dropdown">
                 <button class="order-button" id="orderToggle">⮃ Ordenar</button>
@@ -867,6 +896,7 @@
 
     <script src="src/scripts/pages/index/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="src/scripts/left-menu.js"></script>
     <script src="src/scripts/order-posts.js"></script>
     <script src="src/scripts/register-validation.js"></script>
     <script src="src/scripts/view-comments.js"></script>
@@ -874,7 +904,7 @@
 
     <?php if ($isLoggedIn): ?>
     <script>
-    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
+    let tempoInatividade = 15 * 60 * 1000;
     let timer;
 
     function resetTimer() {

@@ -38,6 +38,11 @@
 
         $obj = conecta_db();
 
+        if (!$obj) {
+            header("Location: database-error.php");
+            exit;
+        }
+
         $query_check_email = "SELECT id_usuario FROM contato WHERE email = ?";
         $stmt_check_email = $obj->prepare($query_check_email);
         $stmt_check_email->bind_param("s", $email);
