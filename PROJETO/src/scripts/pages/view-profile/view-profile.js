@@ -59,3 +59,49 @@ function showSection(sectionId) {
     const target = document.getElementById(sectionId);
     if (target) target.style.display = "block";
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteButtons = document.querySelectorAll('.sweet-remove-btn');
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Você deseja remover esta publicação?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Sim, remover',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            });
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteCommentButtons = document.querySelectorAll('.sweet-remove-comment-btn');
+
+    deleteCommentButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: 'Você deseja remover este comentário?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#aaa',
+                confirmButtonText: 'Sim, remover',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest('form').submit();
+                }
+            });
+        });
+    });
+});

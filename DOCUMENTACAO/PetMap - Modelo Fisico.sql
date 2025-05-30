@@ -58,7 +58,7 @@ CREATE TABLE perfil (
     id_usuario INT NOT NULL,
     descricao TEXT,
     foto VARCHAR(255),
-    status_perfil ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
+    status_perfil ENUM('verificado', 'nao_verificado', 'banido') DEFAULT 'nao_verificado' NOT NULL,
     PRIMARY KEY (id_perfil),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -78,7 +78,7 @@ CREATE TABLE publicacao (
     titulo VARCHAR(255) NOT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_publicacao ENUM('verificado', 'nao_verificado', 'removido') DEFAULT 'nao_verificado' NOT NULL,
+    status_publicacao ENUM('verificado', 'nao_verificado') DEFAULT 'nao_verificado' NOT NULL,
     tipo_publicacao ENUM('animal', 'resgate', 'informacao', 'outro') NOT NULL,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total_impulsos INT DEFAULT 0,
@@ -113,30 +113,13 @@ CREATE TABLE comentario (
     id_comentario INT NOT NULL AUTO_INCREMENT,
     id_usuario INT NOT NULL,
     id_publicacao INT DEFAULT NULL,
-    id_comentario_pai INT DEFAULT NULL,
     conteudo TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status_comentario ENUM('verificado', 'nao_verificado', 'banido') DEFAULT 'nao_verificado' NOT NULL,
+    status_comentario ENUM('verificado', 'nao_verificado') DEFAULT 'nao_verificado' NOT NULL,
     data_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    total_impulsos INT DEFAULT 0,
-    total_comentarios INT DEFAULT 0,
     PRIMARY KEY (id_comentario),
     FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE,
-    FOREIGN KEY (id_comentario_pai) REFERENCES comentario(id_comentario) ON DELETE CASCADE,
-    CHECK (
-        (id_publicacao IS NOT NULL AND id_comentario_pai IS NULL) OR
-        (id_publicacao IS NULL AND id_comentario_pai IS NOT NULL)
-    )
-);
-
-CREATE TABLE impulso_comentario (
-    id_usuario INT NOT NULL,
-    id_comentario INT NOT NULL,
-    data_impulso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_usuario, id_comentario),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
 );
 
 CREATE TABLE moderador_valida_comentario (
@@ -151,13 +134,7 @@ CREATE TABLE moderador_valida_comentario (
 CREATE TABLE imagem (
     id_imagem INT NOT NULL AUTO_INCREMENT,
     id_publicacao INT,
-    id_comentario INT,
     imagem_url VARCHAR(255) NOT NULL,
     PRIMARY KEY (id_imagem),
-    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE,
-    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE,
-    CHECK (
-        (id_publicacao IS NOT NULL AND id_comentario IS NULL) OR
-        (id_publicacao IS NULL AND id_comentario IS NOT NULL)
-    )
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
 );

@@ -56,24 +56,27 @@ function editarComentario(idPost, idComentario, texto) {
 }
 
 function editarComentarioPerfil(idPost, idComentario, conteudo) {
-    document.getElementById('id_comentario_perfil').value = idComentario;
-    document.getElementById('textarea_comentario_perfil').value = conteudo;
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.style.display = 'none';
+    });
 
-    const form = document.getElementById('floating-edit-form');
-    form.style.display = 'block';
+    const formWrapper = document.getElementById(`edit-form-${idComentario}`);
+    const textarea = document.getElementById(`textarea_comentario_perfil_${idComentario}`);
+    const inputId = document.getElementById(`id_comentario_perfil_${idComentario}`);
 
-    if (form.parentNode) {
-        form.parentNode.removeChild(form);
+    if (formWrapper && textarea && inputId) {
+        textarea.value = conteudo;
+        inputId.value = idComentario;
+        formWrapper.style.display = 'block';
+        textarea.focus();
     }
-
-    const comentarioDiv = document.querySelector(`#form-excluir-${idComentario}`).closest('.comment');
-
-    comentarioDiv.insertAdjacentElement('afterend', form);
 }
 
-function closeCommentFormPerfil() {
-    const form = document.getElementById('floating-edit-form');
-    form.style.display = 'none';
+function closeCommentFormPerfil(idComentario) {
+    const formWrapper = document.getElementById(`edit-form-${idComentario}`);
+    if (formWrapper) {
+        formWrapper.style.display = 'none';
+    }
 }
 
 function confirmDelete(button) {

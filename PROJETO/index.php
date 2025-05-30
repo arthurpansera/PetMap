@@ -91,17 +91,20 @@
     if (!empty($pesquisa)) {
         $searchTerm = '%' . $pesquisa . '%';
 
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.status_publicacao, 
+                        p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
-                WHERE p.titulo LIKE ? 
-                    OR p.conteudo LIKE ? 
-                    OR u.nome LIKE ? 
-                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y') LIKE ? 
-                    OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y %H:%i') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
-                    OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?
+                JOIN perfil pf ON u.id_usuario = pf.id_usuario
+                WHERE (p.titulo LIKE ? 
+                        OR p.conteudo LIKE ? 
+                        OR u.nome LIKE ? 
+                        OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y') LIKE ? 
+                        OR DATE_FORMAT(p.data_criacao, '%d/%m/%Y %H:%i') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%d de %M de %Y') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%Hh%i') LIKE ?
+                        OR DATE_FORMAT(p.data_criacao, '%H:%i') LIKE ?)
+                    AND pf.status_perfil != 'banido'
                 ORDER BY $orderBy";
 
         $stmt = $obj->prepare($query);
@@ -109,10 +112,14 @@
         $stmt->execute();
         $result = $stmt->get_result();
     } else {
-        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao,p.data_atualizacao,p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
+        $query = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao, p.status_publicacao, 
+                        p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, u.nome 
                 FROM publicacao p 
                 JOIN usuario u ON p.id_usuario = u.id_usuario 
+                JOIN perfil pf ON u.id_usuario = pf.id_usuario
+                WHERE pf.status_perfil != 'banido'
                 ORDER BY $orderBy";
+
         $result = $obj->query($query);
     }
 
@@ -518,19 +525,25 @@
 
                         <div class="post-item">
                             <p class="post-info">
-                                <span class="author-name"><?php echo $post['nome']; ?></span> • 
-                                <span class="post-time">
-                                    <?php 
-                                        setlocale(LC_TIME, 'pt_BR.UTF-8');
-                                        echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
-                                    ?>
+                                <span>
+                                    <span class="author-name"><?php echo $post['nome']; ?></span> • 
+                                    <span class="post-time">
+                                        <?php 
+                                            setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                            echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                        ?>
 
-                                    <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
-                                        <em style="font-size: 0.85em; color: #777;">
-                                            (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
-                                        </em>
-                                    <?php endif; ?>
+                                        <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                            <em style="font-size: 0.85em; color: #777;">
+                                                (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                            </em>
+                                        <?php endif; ?>
+                                    </span>
                                 </span>
+
+                                <?php if ($post['status_publicacao'] === 'verificado'): ?>
+                                    <span class="verified-label">✔️ Publicação Verificada</span>
+                                <?php endif; ?>
                             </p>
 
                             <?php
@@ -617,10 +630,12 @@
                             <?php
                                 $idPost = $post['id_publicacao'];
 
-                                $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
+                                $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, c.status_comentario, u.nome
                                     FROM comentario c
                                     JOIN usuario u ON c.id_usuario = u.id_usuario
+                                    JOIN perfil pf ON u.id_usuario = pf.id_usuario
                                     WHERE c.id_publicacao = ?
+                                    AND pf.status_perfil != 'banido'
                                     ORDER BY c.data_criacao DESC
                                 ");
                                 $getComentarios->bind_param("i", $idPost);
@@ -688,7 +703,7 @@
                                 </div>
 
                                 <?php if ($isLoggedIn): ?>
-                                    <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                                    <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                         <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
                                             <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
                                                 <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
@@ -707,7 +722,15 @@
                                         <div class="comments-list" id="comments-<?php echo $idPost; ?>">
                                             <?php foreach ($comentariosArray as $comentario): ?>
                                                 <div class="comment" style="margin-bottom: 10px;">
-                                                    <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                                    <div class="comment-user-row">
+                                                        <div class="comment-user-name">
+                                                            <strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:
+                                                        </div>
+
+                                                        <?php if (isset($comentario['status_comentario']) && $comentario['status_comentario'] === 'verificado'): ?>
+                                                            <span class="verified-comment-label">✔️ Comentário Verificado</span>
+                                                        <?php endif; ?>
+                                                    </div>
                                                     <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
                                                     <p class="comment-date">
                                                         <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>

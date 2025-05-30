@@ -40,6 +40,17 @@
     font-size: 16px;
     color: #686868;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.verified-label {
+    font-weight: bold;
+    color: black;
+    font-size: 16px;
+    white-space: nowrap;
 }
 
 .author-name {
@@ -208,6 +219,23 @@
 .comment-actions button:hover {
     background-color: #cfcfcf;
     transform: scale(1.05);
+}
+
+.comment-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.verified-comment-label {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: auto;
+    white-space: nowrap;
 }
 
 @media (min-width: 1200px) {
