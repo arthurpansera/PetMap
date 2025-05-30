@@ -582,7 +582,7 @@
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="areas.php">Áreas de Maior Abandono</a></li>
-                <?php if ($isModerator): ?>
+                <?php if ($isModerator ): ?>
                     <li><a href="registered-users.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="about-us.php">Sobre Nós</a></li>

@@ -3,6 +3,7 @@
     session_start();
 
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+    $isModerator = true;
 
     $obj = conecta_db();
 
