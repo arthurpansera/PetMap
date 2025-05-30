@@ -94,7 +94,7 @@
     $isVerificado = ($statusPerfil === 'verificado');
 
     $queryPosts = "SELECT p.id_publicacao, p.titulo, p.conteudo, p.tipo_publicacao, p.data_criacao, p.data_atualizacao,
-            p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado
+            p.endereco_rua, p.endereco_bairro, p.endereco_cidade, p.endereco_estado, p.status_publicacao
         FROM publicacao p
         WHERE p.id_usuario = ?
         ORDER BY p.data_criacao DESC
@@ -104,6 +104,9 @@
     $stmtPosts->bind_param("i", $idUsuario);
     $stmtPosts->execute();
     $result_posts = $stmtPosts->get_result();
+
+    $statusPublicacao = $publicacao['status_publicacao'] ?? 'nao_verificado';
+    $isPublicacaoVerificado = ($statusPublicacao === 'verificado');
 
     if (isset($_POST['impulsionar']) && isset($_POST['id_publicacao'])) {
         if (!$isLoggedIn) {
@@ -154,7 +157,7 @@
 
     if (isset($_POST['comentar']) && isset($_POST['id_publicacao']) && isset($_POST['conteudo_comentario'])) {
         if (!$isLoggedIn) {
-            header("Location: src/assets/pages/login.php");
+            header("Location: login.php");
             exit;
         }
 
@@ -360,6 +363,158 @@
         exit;
     }
 
+    if (isset($_POST['validar_publicacao']) && isset($_POST['id_publicacao_validar']) && isset($_POST['descricao_validacao_pub'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem validar publicações.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idPublicacao = intval($_POST['id_publicacao_validar']);
+        $descricaoValidacao = trim($_POST['descricao_validacao_pub']);
+
+        $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+        $stmtMod->bind_param("i", $userId);
+        $stmtMod->execute();
+        $resultMod = $stmtMod->get_result();
+        $moderador = $resultMod->fetch_assoc();
+
+        if (!$moderador) {
+            $_SESSION['error_message'] = "Erro ao identificar moderador.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idModerador = $moderador['id_moderador'];
+
+        $stmtUpdate = $obj->prepare("UPDATE publicacao SET status_publicacao = 'verificado' WHERE id_publicacao = ?");
+        $stmtUpdate->bind_param("i", $idPublicacao);
+        $stmtUpdate->execute();
+
+        $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_publicacao (id_moderador, id_publicacao, descricao_validacao) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iis", $idModerador, $idPublicacao, $descricaoValidacao);
+        $stmtInsert->execute();
+
+        if ($stmtUpdate->affected_rows > 0) {
+            $_SESSION['success_message'] = "Publicação validada com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao validar a publicação.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
+    if (isset($_POST['remover_publicacao']) && isset($_POST['id_publicacao_remover'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem remover publicações.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idPublicacao = intval($_POST['id_publicacao_remover']);
+
+        $checkQuery = $obj->prepare("SELECT id_publicacao FROM publicacao WHERE id_publicacao = ?");
+        $checkQuery->bind_param("i", $idPublicacao);
+        $checkQuery->execute();
+        $result = $checkQuery->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Publicação não encontrada.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $deleteQuery = $obj->prepare("DELETE FROM publicacao WHERE id_publicacao = ?");
+        $deleteQuery->bind_param("i", $idPublicacao);
+        $deleteQuery->execute();
+
+        if ($deleteQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Publicação removida com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao remover a publicação.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
+    if (isset($_POST['validar_comentario']) && isset($_POST['id_comentario_validar']) && isset($_POST['descricao_validacao_com'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem validar comentários.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idComentario = intval($_POST['id_comentario_validar']);
+        $descricaoValidacao = trim($_POST['descricao_validacao_com']);
+
+        $stmtMod = $obj->prepare("SELECT id_moderador FROM moderador WHERE id_usuario = ?");
+        $stmtMod->bind_param("i", $userId);
+        $stmtMod->execute();
+        $resultMod = $stmtMod->get_result();
+        $moderador = $resultMod->fetch_assoc();
+
+        if (!$moderador) {
+            $_SESSION['error_message'] = "Erro ao identificar moderador.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idModerador = $moderador['id_moderador'];
+
+        $stmtUpdate = $obj->prepare("UPDATE comentario SET status_comentario = 'verificado' WHERE id_comentario = ?");
+        $stmtUpdate->bind_param("i", $idComentario);
+        $stmtUpdate->execute();
+
+        $stmtInsert = $obj->prepare("INSERT INTO moderador_valida_comentario (id_moderador, id_comentario, descricao_validacao) VALUES (?, ?, ?)");
+        $stmtInsert->bind_param("iis", $idModerador, $idComentario, $descricaoValidacao);
+        $stmtInsert->execute();
+
+        if ($stmtUpdate->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário validado com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao validar o comentário.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
+    if (isset($_POST['remover_comentario']) && isset($_POST['id_comentario_remover'])) {
+        if (!$isModerator) {
+            $_SESSION['error_message'] = "Apenas moderadores podem remover comentários.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $idComentario = intval($_POST['id_comentario_remover']);
+
+        $checkQuery = $obj->prepare("SELECT id_comentario FROM comentario WHERE id_comentario = ?");
+        $checkQuery->bind_param("i", $idComentario);
+        $checkQuery->execute();
+        $result = $checkQuery->get_result();
+
+        if ($result->num_rows === 0) {
+            $_SESSION['error_message'] = "Comentário não encontrado.";
+            header("Location: view-profile.php?id=" . intval($_GET['id']));
+            exit;
+        }
+
+        $deleteQuery = $obj->prepare("DELETE FROM comentario WHERE id_comentario = ?");
+        $deleteQuery->bind_param("i", $idComentario);
+        $deleteQuery->execute();
+
+        if ($deleteQuery->affected_rows > 0) {
+            $_SESSION['success_message'] = "Comentário removido com sucesso.";
+        } else {
+            $_SESSION['error_message'] = "Erro ao remover o comentário.";
+        }
+
+        header("Location: view-profile.php?id=" . intval($_GET['id']));
+        exit;
+    }
+
     if (isset($_POST['logout'])) {
         session_destroy();
         header("Location: login.php");
@@ -441,27 +596,27 @@
                         <div class="verify-profile">
                             <?php if ($user['status_perfil'] !== 'banido'): ?>
                                 <?php if ($isVerificado): ?>
-                                    <button class="verified-button" disabled>Verificado</button>
+                                    <button class="verified-button" disabled>✔️ Verificado</button>
                                 <?php else: ?>
                                     <form method="POST" action="">
                                         <input type="hidden" name="id_verificar" value="<?php echo intval($idUsuario); ?>">
                                         <input type="hidden" name="id_perfil" value="<?php echo htmlspecialchars($user['id_perfil']); ?>">
                                         <input type="hidden" name="descricao_validacao" value="Usuário OK">
-                                        <button type="submit" name="validar_perfil" class="verify-button">Validar Perfil</button>
+                                        <button type="submit" name="validar_perfil" class="verify-button">✅ Validar Perfil</button>
                                     </form>
                                 <?php endif; ?>
 
                                 <form method="POST" action="" id="banirForm">
                                     <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
                                     <input type="hidden" name="acao_banir" value="banir">
-                                    <button type="submit" id="btnBanirUsuario" class="ban-button">Banir Usuário</button>
+                                    <button type="submit" id="btnBanirUsuario" class="ban-button">🔒 Banir Usuário</button>
                                 </form>
 
                             <?php else: ?>
                                 <form method="POST" action="" id="desbanirForm">
                                     <input type="hidden" name="id_usuario_banir" value="<?php echo intval($idUsuario); ?>">
                                     <input type="hidden" name="acao_banir" value="desbanir">
-                                    <button type="submit" id="btnDesbanirUsuario" class="unban-button">Desbanir Usuário</button>
+                                    <button type="submit" id="btnDesbanirUsuario" class="unban-button">🔓 Desbanir Usuário</button>
                                 </form>
                             <?php endif; ?>
                         </div>
@@ -548,7 +703,7 @@
                             $images[] = $row['imagem_url'];
                         }
 
-                        $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, u.nome
+                        $getComentarios = $obj->prepare("SELECT c.conteudo, c.data_criacao, c.status_comentario, u.nome
                                 FROM comentario c
                                 JOIN usuario u ON c.id_usuario = u.id_usuario
                                 WHERE c.id_publicacao = ?
@@ -561,19 +716,25 @@
 
                     <div class="post-item">
                         <p class="post-info">
-                            <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
-                            <span class="post-time">
-                                <?php 
-                                    setlocale(LC_TIME, 'pt_BR.UTF-8');
-                                    echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
-                                ?>
+                            <span>
+                                <span class="author-name"><?php echo htmlspecialchars($user['nome']); ?></span> • 
+                                <span class="post-time">
+                                    <?php 
+                                        setlocale(LC_TIME, 'pt_BR.UTF-8');
+                                        echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_criacao'])));
+                                    ?>
 
-                                <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
-                                    <em style="font-size: 0.85em; color: #777;">
-                                        (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
-                                    </em>
-                                <?php endif; ?>
+                                    <?php if (!empty($post['data_atualizacao']) && $post['data_criacao'] != $post['data_atualizacao']): ?>
+                                        <em style="font-size: 0.85em; color: #777;">
+                                            (editado às <?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($post['data_atualizacao']))); ?>)
+                                        </em>
+                                    <?php endif; ?>
+                                </span>
                             </span>
+
+                            <?php if ($post['status_publicacao'] === 'verificado'): ?>
+                                <span class="verified-label">✔️ Publicação Verificada</span>
+                            <?php endif; ?>
                         </p>
 
                     <?php
@@ -665,7 +826,7 @@
                     <?php
                         $idPost = $post['id_publicacao'];
 
-                        $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, u.nome
+                        $getComentarios = $obj->prepare("SELECT c.id_comentario, c.conteudo, c.data_criacao, c.id_usuario, c.status_comentario, u.nome
                             FROM comentario c
                             JOIN usuario u ON c.id_usuario = u.id_usuario
                             WHERE c.id_publicacao = ?
@@ -730,7 +891,7 @@
                             <?php if ($isLoggedIn): ?>
                                     <button class="comment-button" onclick="toggleCommentForm(<?php echo $idPost; ?>)">💬 Comentar</button>
                                 <?php else: ?>
-                                    <form method="GET" action="src/assets/pages/login.php" style="display: contents;">
+                                    <form method="GET" action="login.php" style="display: contents;">
                                         <button type="submit" class="comment-button">💬 Comentar</button>
                                     </form>
                                 <?php endif; ?>
@@ -743,7 +904,7 @@
                         </div>
 
                         <?php if ($isLoggedIn): ?>
-                            <div class="comment-form-containe comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
+                            <div class="comment-form-container comment-form" id="comment-form-<?php echo $idPost; ?>" style="display: none">
                                 <div id="comment-form-container-<?php echo $idPost; ?>" style="display:none;">
                                     <form method="POST" class="comment-form" id="comment-form-<?php echo $idPost; ?>">
                                         <input type="hidden" name="id_publicacao" value="<?php echo $idPost; ?>">
@@ -762,7 +923,15 @@
                                 <div class="comments-list-profile" id="comments-<?php echo $idPost; ?>">
                                     <?php foreach ($comentariosArray as $comentario): ?>
                                         <div class="comment-profile" style="margin-bottom: 10px;">
-                                            <p class="comment-user"><strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:</p>
+                                            <div class="comment-user-row">
+                                                <div class="comment-user-name">
+                                                    <strong><?php echo htmlspecialchars($comentario['nome']); ?></strong> comentou:
+                                                </div>
+
+                                                <?php if (isset($comentario['status_comentario']) && $comentario['status_comentario'] === 'verificado'): ?>
+                                                    <span class="verified-comment-label">✔️ Comentário Verificado</span>
+                                                <?php endif; ?>
+                                            </div>
                                             <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
                                             <p class="comment-date">
                                                 <small><?php echo utf8_encode(strftime('%d de %B de %Y, %Hh%M', strtotime($comentario['data_criacao']))); ?></small>
@@ -794,6 +963,31 @@
                             </div>
                         <?php endif; ?>
                     </div>
+                    <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
+                        <div class="verify-post">
+                            <?php if ($post['status_publicacao'] === 'verificado'): ?>
+                                <button class="verified-post-button" disabled>
+                                    ✔️ Publicação Verificada
+                                </button>
+                            <?php else: ?>
+                                <form method="POST" action="">
+                                    <input type="hidden" name="id_publicacao_validar" value="<?php echo intval($post['id_publicacao']); ?>">
+                                    <input type="hidden" name="descricao_validacao_pub" value="Publicação OK">
+                                    <button type="submit" name="validar_publicacao" class="verify-post-button">
+                                        ✅ Validar Publicação
+                                    </button>
+                                </form>
+                            <?php endif; ?>
+
+                            <form method="POST" action="" class="remover-publicacao-form">
+                                <input type="hidden" name="id_publicacao_remover" value="<?php echo intval($post['id_publicacao']); ?>">
+                                <input type="hidden" name="remover_publicacao" value="Remover Publicação">
+                                <button type="button" class="delete-post-button sweet-remove-btn">
+                                    🗑️ Remover Publicação
+                                </button>
+                            </form>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <?php endwhile; ?>
             <?php elseif ($user['tipo_conta'] === 'Perfil de moderador'): ?>
@@ -847,16 +1041,59 @@
         <div class="comentarios-perfil" id="comentarios-perfil">
             <h2>Comentários</h2>
             <?php if (count($comentariosDoUsuario) > 0): ?>
-                
                 <div class="comments-list">
                     <?php foreach ($comentariosDoUsuario as $comentario): ?>
                         <div class="comment">
-                            <p class="comment-on-post">
-                                Você comentou em: <strong ><?php echo htmlspecialchars($comentario['titulo_publicacao']); ?></strong>
-                                às <strong><?php echo strftime('%Hh%M, %d de %B de %Y', strtotime($comentario['data_criacao'])); ?></strong>
-                            </p>
+                            <div class="comment-meta-row">
+                                <div class="comment-meta-left">
+                                    <?php echo htmlspecialchars($comentario['nome']); ?> comentou em: <strong><?php echo htmlspecialchars($comentario['titulo_publicacao']); ?></strong>
+                                    às <strong><?php echo strftime('%Hh%M, %d de %B de %Y', strtotime($comentario['data_criacao'])); ?></strong>
+                                </div>
+
+                                <?php
+                                    $stmtStatus = $obj->prepare("SELECT status_comentario FROM comentario WHERE id_comentario = ?");
+                                    $stmtStatus->bind_param("i", $comentario['id_comentario']);
+                                    $stmtStatus->execute();
+                                    $resultStatus = $stmtStatus->get_result();
+                                    $statusComentario = $resultStatus->fetch_assoc()['status_comentario'];
+                                ?>
+
+                                <?php if ($statusComentario === 'verificado'): ?>
+                                    <div class="comment-meta-right">
+                                        ✔️ Comentário Verificado
+                                    </div>
+                                <?php endif; ?>
+                            </div>
 
                              <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                             <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
+                                <div class="verify-comment">
+                                    <?php
+                                        $stmtStatus = $obj->prepare("SELECT status_comentario FROM comentario WHERE id_comentario = ?");
+                                        $stmtStatus->bind_param("i", $comentario['id_comentario']);
+                                        $stmtStatus->execute();
+                                        
+                                        $resultStatus = $stmtStatus->get_result();
+                                        $statusComentario = $resultStatus->fetch_assoc()['status_comentario'];
+                                    ?>
+
+                                    <?php if ($statusComentario === 'verificado'): ?>
+                                        <button class="verified-comment-button" disabled>✔️ Comentário Verificado</button>
+                                    <?php else: ?>
+                                        <form method="POST" action="">
+                                            <input type="hidden" name="id_comentario_validar" value="<?php echo intval($comentario['id_comentario']); ?>">
+                                            <input type="hidden" name="descricao_validacao_com" value="Comentário OK">
+                                            <button type="submit" name="validar_comentario" class="verify-comment-button">✅ Validar Comentário</button>
+                                        </form>
+                                    <?php endif; ?>
+
+                                    <form method="POST" action="" class="remover-comentario-form">
+                                        <input type="hidden" name="id_comentario_remover" value="<?php echo intval($comentario['id_comentario']); ?>">
+                                        <input type="hidden" name="remover_comentario" value="Remover Comentário">
+                                        <button type="button" class="delete-comment-button sweet-remove-comment-btn">🗑️ Remover Comentário</button>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
 
@@ -873,6 +1110,7 @@
             <?php else: ?>
                 <p style="font-size: 1.2rem; ">Este usuário ainda não comentou em nenhuma publicação.</p><br><br>
             <?php endif; ?>
+        </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

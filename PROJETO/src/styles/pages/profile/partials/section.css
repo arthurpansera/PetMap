@@ -497,6 +497,17 @@ input.input-adm {
     font-size: 16px;
     color: #686868;
     margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.verified-label {
+    font-weight: bold;
+    color: black;
+    font-size: 16px;
+    white-space: nowrap;
 }
 
 .author-name {
@@ -790,6 +801,43 @@ input.input-adm {
 
 .comment:hover {
     transform: translateY(-5px);
+}
+
+.comment-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.verified-comment-label {
+    color: black;
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.comment-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.comment-meta-left {
+    font-weight: normal;
+    color: black;
+}
+
+.comment-meta-right {
+    font-weight: bold;
+    color: black;
+    white-space: nowrap;
 }
 
 .comment p {
