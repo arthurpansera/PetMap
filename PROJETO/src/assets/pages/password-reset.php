@@ -1,36 +1,42 @@
 <?php
-session_start();
-include('../../../conecta_db.php');
-$obj = conecta_db();
+    session_start();
+    include('../../../conecta_db.php');
+    $obj = conecta_db();
 
-if (!isset($_GET['token']) || !isset($_SESSION['token_recuperacao']) || $_GET['token'] !== $_SESSION['token_recuperacao']) {
-    die("Token inválido ou expirado.");
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nova_senha = $_POST['senha'];
-    $email = $_SESSION['email_recuperacao'];
-
-    $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
-
-    $query = "UPDATE usuario u
-        JOIN contato c ON u.id_usuario = c.id_usuario
-        SET u.senha = ?
-        WHERE c.email = ?
-    ";
-
-    $stmt = $obj->prepare($query);
-    $stmt->bind_param("ss", $senha_hash, $email);
-
-    if ($stmt->execute()) {
-        unset($_SESSION['token_recuperacao']);
-        unset($_SESSION['email_recuperacao']);
-        header("Location: login.php?reset=success");
-    } else {
-        echo "Erro ao redefinir a senha.";
+    if (!$obj) {
+        header("Location: database-error.php");
+        exit;
     }
-    exit;
-}
+
+    if (!isset($_GET['token']) || !isset($_SESSION['token_recuperacao']) || $_GET['token'] !== $_SESSION['token_recuperacao']) {
+        header("Location: expired-token.php");
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $nova_senha = $_POST['senha'];
+        $email = $_SESSION['email_recuperacao'];
+
+        $senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+
+        $query = "UPDATE usuario u
+            JOIN contato c ON u.id_usuario = c.id_usuario
+            SET u.senha = ?
+            WHERE c.email = ?
+        ";
+
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param("ss", $senha_hash, $email);
+
+        if ($stmt->execute()) {
+            unset($_SESSION['token_recuperacao']);
+            unset($_SESSION['email_recuperacao']);
+            header("Location: login.php?reset=success");
+        } else {
+            echo "Erro ao redefinir a senha.";
+        }
+        exit;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -49,4 +55,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 </body>
 </html>
-

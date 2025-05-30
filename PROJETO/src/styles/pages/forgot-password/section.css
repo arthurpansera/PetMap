@@ -116,6 +116,39 @@ form button:hover {
     background-repeat: no-repeat;
 }
 
+.expired-container{
+    width: 500px;
+    height: 250px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #ff6b6b;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.expired-container h1 {
+    margin-bottom: 30px;
+}
+
+.expired-container a {
+    display: inline-block;
+    font-size: 20px;
+    color: rgb(252, 223, 223);
+    text-decoration: underline;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.expired-container a:hover {
+    transform: scale(1.04);
+    color: rgb(255, 255, 255);
+}
+
+.expired-container p {
+    font-size: 25px;
+    margin-bottom: 40px;
+}
 
 @media (max-width: 400px) {
   form {

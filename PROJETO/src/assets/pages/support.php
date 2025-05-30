@@ -3,10 +3,52 @@
 
     session_start();
 
+
+
+    if (isset($_SESSION['error_message'])) {
+        $mensagem = addslashes($_SESSION['error_message']);
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Erro!',
+                    text: '{$mensagem}',
+                    icon: 'error',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['error_message']);
+    }
+
+    if (isset($_SESSION['success_message'])) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: '{$_SESSION['success_message']}',
+                    icon: 'success',
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#7A00CC',
+                    allowOutsideClick: true,
+                    heightAuto: false
+                });
+            });
+        </script>";
+        unset($_SESSION['success_message']);
+    }
+
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
     $isModerator = false;
 
     $obj = conecta_db();
+
+    if (!$obj) {
+        header("Location: database-error.php");
+        exit;
+    }
 
     if ($isLoggedIn) {
         $userId = $_SESSION['id_usuario'];
@@ -76,7 +118,13 @@
         </div> 
     </header>
     <section class="options">
-        <nav class="left-menu">
+        <div class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" role="button" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="left-menu" id="leftMenu">
             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
@@ -89,69 +137,134 @@
                 <li><a href="frequent-questions.php">Perguntas Frequentes</a></li>
                 <li><a href="support.php">Suporte</a></li>
             </ul>
+            <?php if ($isLoggedIn): ?>
+                <div class="mobile-user-options">
+                    <ul>
+                        <li><a href="profile.php">Meu Perfil</a></li>
+                        <li>
+                            <form action="support.php" method="POST">
+                                <button type="submit" name="logout">Sair</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="footer">
                 <p>&copy;2025 - PetMap.</p>
                 <p>Todos os direitos reservados.</p>
             </div>
         </nav>
+
+
+        <div class="menu-overlay" id="menuOverlay"></div>
+    
         <div class="content">
             <h2>Suporte PetMap</h2>
-
-            <div class="support-img-container">
-                <img src="../images/support/dog.jpg" alt="Cão segurando carta de suporte">
-            </div>
             
-            <div class="form-container">
-                <form action="#" method="post" class="contact-form">
-                    <h3>Nos mande uma mensagem🐶🐱</h3>
-                    <input type="text" name="full_name" placeholder="Nome completo*" required>
-                    <input type="email" name="email" placeholder="Email*" required>
-                    <input type="text" name="subject" placeholder="Assunto">
-                    <textarea name="message" placeholder="Nos diga seu problema*" required></textarea>
-                    <button type="submit">Enviar mensagem</button>
-                </form>
+            <div class="support-container">
 
-                <div class="contact-info">
-                    <ul class="contact-list">
-                        <li>
-                            <img src="../images/support/gmail.png" alt="Ícone de Email">
-                            <span><strong>:</strong> suportepetmap@gmail.com</span>
-                        </li>
-                        <li>
-                            <img src="../images/support/whatsapp.png" alt="Ícone do WhatsApp">
-                            <span><strong>:</strong> (41) 99123-4567</span>
-                        </li>
-                        <li>
-                            <img src="../images/support/clock.png" alt="Ícone de Relógio">
-                            <span><strong>:</strong> Segunda a sexta, das 9h às 18h</span>
-                        </li>
-                    </ul>
+                <p class="form-intro">
+                    O <strong>PetMap</strong> é uma plataforma colaborativa voltada à causa animal. Nosso objetivo é conectar pessoas e ONGs para prevenir o abandono e resgatar animais em situação de risco. 💜<br>
+                    Caso tenha dúvidas, sugestões ou precise de ajuda, preencha o formulário abaixo
+                </p>
+
+                <?php if ($isLoggedIn): ?>
+                    <button class="toggle-button" onclick="toggleForm()">Nos mande uma mensagem 🐶🐱</button>
+                <?php else: ?>
+                    <button class="toggle-button" onclick="showLoginAlert()">Nos mande uma mensagem 🐶🐱</button>
+                <?php endif; ?>
+
+                <div id="form-wrapper">
+                    <div class="form-wrapper">
+                        <form action="send-message-support.php" method="post" class="contact-form">
+                            <input type="text" name="full_name" placeholder="Insira seu nome completo*" required value="<?= htmlspecialchars($userName ?? '') ?>">
+                            <input type="email" name="email" placeholder="exemplo@gmail.com*" required>
+                            <select name="subject" required>
+                                <option value="" disabled selected>Selecione um assunto*</option>
+                                <option value="problema-login">Problema com login</option>
+                                <option value="bug-site">Bug no site</option>
+                                <option value="duvidas-uso">Dúvidas sobre uso</option>
+                                <option value="sugestoes">Sugestões</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                            <textarea name="message" placeholder="Nos diga seu problema*" required></textarea>
+                            <button type="submit">Enviar mensagem</button>
+                        </form>
+                        
+                    </div>
                 </div>
-            </div>
+
+                <div class="container-bottom">
+                    <div class="contact-info">
+                        <ul class="contact-list">
+                            <li>
+                                <img src="../images/support/gmail.png" alt="Ícone de Email">
+                                <span><strong></strong>petmap0328@gmail.com</span>
+                            </li>
+                            <li>
+                                <img src="../images/support/whatsapp.png" alt="Ícone do WhatsApp">
+                                <span><strong></strong> (41) 99123-4567</span>
+                            </li>
+                            <li>
+                                <img src="../images/support/clock.png" alt="Ícone de Relógio">
+                                <span><strong></strong> Segunda a sexta, das 9h às 18h</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="support-img-container">
+                        <img src="../images/support/support-dog-icon.png" alt="Cão segurando carta de suporte">
+                    </div>
+                </div>
+            </div>  
         </div>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../scripts/pages/support/support.js"></script>
+    <script src="../../scripts/left-menu.js"></script>
+
+
 
     <?php if ($isLoggedIn): ?>
-    <script>
-    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
-    let timer;
+        <script>
 
-    function resetTimer() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            window.location.href = "logout-inactivity.php";
-        }, tempoInatividade);
-    }
+            let tempoInatividade = 15 * 60 * 1000;
+            let timer;
 
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
-        document.addEventListener(evt, resetTimer)
-    );
+            function resetTimer() {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    window.location.href = "logout-inactivity.php";
+                }, tempoInatividade);
+            }
 
-    resetTimer();
-    </script>
+            ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+                document.addEventListener(evt, resetTimer)
+            );
+
+            resetTimer();
+        </script>
     <?php endif; ?>
 
+    <script>
+        function toggleForm() {
+            const form = document.getElementById('form-wrapper');
+            form.classList.toggle('show');
+        }
+
+        function showLoginAlert() {
+            Swal.fire({
+                title: 'Atenção!',
+                text: 'Você precisa estar logado para enviar uma mensagem ao suporte.',
+                icon: 'warning',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#7A00CC',
+                allowOutsideClick: true,
+                heightAuto: false
+            });
+        }
+
+    </script>
 </body>
 </html>

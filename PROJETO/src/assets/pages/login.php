@@ -58,7 +58,8 @@
         $obj = conecta_db();
 
         if (!$obj) {
-            die("Erro ao conectar ao banco de dados.");
+            header("Location: database-error.php");
+            exit;
         }
 
         $query = "SELECT u.id_usuario, u.senha, p.status_perfil

@@ -129,3 +129,79 @@ select.mid-inputUser option {
     background-color: var(--dark-purple);
     box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
 }
+
+@media (max-width: 991.98px) {
+  .box-container {
+    width: 85%;
+  }
+
+  .input-register {
+    width: 85%;
+  }
+
+  .container-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .register-btn {
+    width: 60%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .main-content {
+    margin: 30px 0;
+    padding-top: 70px;
+  }
+
+  .box-container {
+    width: 95%;
+    padding: 1rem;
+    margin-bottom: 4rem;
+  }
+
+  .box-container h1 {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .input-register {
+    width: 100%;
+  }
+
+  .full-inputUser,
+  .mid-inputUser {
+    font-size: 0.95rem;
+    height: 38px;
+  }
+
+  label {
+    font-size: 0.95rem;
+  }
+
+  .register-btn {
+    width: 80%;
+    font-size: 1rem;
+    height: 42px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .box-container h1 {
+    font-size: 1.2rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  .register-btn {
+    width: 90%;
+    font-size: 0.95rem;
+  }
+
+  .container-row {
+    gap: 1.5rem;
+  }
+}

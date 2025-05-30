@@ -221,3 +221,122 @@
         margin-left: 600px;
     }
 }
+
+@media (max-width: 1199px) {
+    .content {
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px;
+        margin-top: 80px;
+    }
+
+    .post-item {
+        width: 100%;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .post-item img {
+        max-width: 100%;
+    }
+
+    .posts-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .like-button, .comment-button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 0;
+        font-size: 16px;
+    }
+
+    .comment-form button {
+        width: 50%;
+    }
+}
+
+@media (max-width: 767px) {
+    .content {
+        width: 95%;
+        padding: 15px;
+        margin-top: 60px;
+    }
+
+    .post-item {
+        width: 100%;
+        padding: 15px;
+        margin: 15px 0;
+    }
+
+    .post-title {
+        font-size: 20px;
+    }
+
+    .content h2 {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .post-info {
+        font-size: 14px;
+    }
+
+    .post-item p {
+        font-size: 16px;
+    }
+
+    .like-button, .comment-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .comments {
+        padding-left: 10px;
+    }
+
+    .comment-form textarea {
+        height: 100px;
+    }
+
+    .comment-form button {
+        width: 70%;
+        height: 30px;
+        font-size: 14px;
+    }
+
+    .posts-buttons {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 400px) {
+    .content {
+        margin-top: 40px;
+        padding: 10px;
+    }
+
+    .content h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .post-title {
+        font-size: 18px;
+    }
+
+    .post-item p {
+        font-size: 14px;
+    }
+
+    .like-button, .comment-button {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .comment-form button {
+        width: 100%;
+    }
+}

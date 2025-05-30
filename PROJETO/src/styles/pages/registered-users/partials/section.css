@@ -101,14 +101,64 @@
     border: 1px solid #ddd;
 }
 
-@media (min-width: 1200px) {
+@media (max-width: 1199px) {
+    .content {
+        width: 95%;
+        margin: 100px auto 0 auto;
+        padding: 20px;
+    }
+
+    .content h2 {
+        font-size: 28px;
+    }
+
+    .content .box {
+        width: 100%;
+        padding: 20px;
+        font-size: 15px;
+    }
+
+    .registered-users-table th,
+    .registered-users-table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .btn-ver-perfil {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .status-icon {
+        width: 16px;
+        height: 16px;
+        margin-left: 10px;
+    }
+
+    .no-data-message {
+        font-size: 16px;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1799px) {
     .content {
         margin-left: 410px;
+    }
+
+    .content .box {
+        width: 90%;
+        max-width: 900px;
     }
 }
 
 @media (min-width: 1800px) {
     .content {
         margin-left: 600px;
+    }
+
+    .content .box {
+        width: 90%;
+        max-width: 900px;
     }
 }

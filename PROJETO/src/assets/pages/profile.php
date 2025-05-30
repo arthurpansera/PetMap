@@ -2,6 +2,8 @@
     session_start();
 
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+    $isModerator = false;
+
 
     if (isset($_SESSION['error_message'])) {
         echo "<script>
@@ -52,6 +54,12 @@
     $id_usuario = $_SESSION['id_usuario'];
 
     $obj = conecta_db();
+
+    if (!$obj) {
+        header("Location: database-error.php");
+        exit;
+    }
+
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
 
@@ -585,24 +593,39 @@
     </header>
     
     <section class="options">
-        <nav class="left-menu">
+        <div class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" role="button" tabindex="0">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <nav class="left-menu" id="leftMenu">
             <ul>
                 <li><a href="../../../index.php">Página Principal</a></li>
                 <li><a href="rescued-animals.php">Animais Resgatados</a></li>
                 <li><a href="lost-animals.php">Animais Perdidos</a></li>
                 <li><a href="areas.php">Áreas de Maior Abandono</a></li>
-                <?php if ($user['tipo_conta'] == 'Perfil de moderador'): ?>
+                <?php if ($isModerator): ?>
                     <li><a href="registered-users.php">Usuários Cadastrados</a></li>
                 <?php endif; ?>
                 <li><a href="about-us.php">Sobre Nós</a></li>
                 <li><a href="frequent-questions.php">Perguntas Frequentes</a></li>
                 <li><a href="support.php">Suporte</a></li>
             </ul>
+            <?php if ($isLoggedIn): ?>
+                <div class="mobile-user-options">
+                    <ul>
+                        <li><a href="profile.php">Meu Perfil</a></li>
+                    </ul>
+                </div>
+            <?php endif; ?>
             <div class="footer">
                 <p>&copy;2025 - PetMap.</p>
                 <p>Todos os direitos reservados.</p>
             </div>
         </nav>
+
+        <div class="menu-overlay" id="menuOverlay"></div>
     </section>
 
     <section class="profile">
@@ -1447,25 +1470,27 @@
     <script src="../../scripts/pages/profile/profile.js"></script>
     <script src="../../scripts/view-comments.js"></script>
     <script src="../../scripts/register-validation.js"></script>
+    <script src="../../scripts/left-menu.js"></script>
+
 
     <?php if ($isLoggedIn): ?>
-    <script>
-    let tempoInatividade = 15 * 60 * 1000; // 15 minutos
-    let timer;
+        <script>
+            let tempoInatividade = 15 * 60 * 1000;
+            let timer;
 
-    function resetTimer() {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            window.location.href = "logout-inactivity.php";
-        }, tempoInatividade);
-    }
+            function resetTimer() {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    window.location.href = "logout-inactivity.php";
+                }, tempoInatividade);
+            }
 
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
-        document.addEventListener(evt, resetTimer)
-    );
+            ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt =>
+                document.addEventListener(evt, resetTimer)
+            );
 
-    resetTimer();
-    </script>
+            resetTimer();
+        </script>
     <?php endif; ?>
 
 </body>

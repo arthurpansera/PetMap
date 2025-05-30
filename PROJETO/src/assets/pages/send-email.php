@@ -1,69 +1,75 @@
 <?php
-session_start();
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+    session_start();
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
 
-require 'PHPMailer/src/Exception.php';
-require 'PHPMailer/src/PHPMailer.php';
-require 'PHPMailer/src/SMTP.php';
+    require 'PHPMailer/src/Exception.php';
+    require 'PHPMailer/src/PHPMailer.php';
+    require 'PHPMailer/src/SMTP.php';
 
-include('../../../conecta_db.php');
-$obj = conecta_db();
+    include('../../../conecta_db.php');
+    $obj = conecta_db();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = $_POST['email'];
+    if (!$obj) {
+        header("Location: database-error.php");
+        exit;
+    }
 
-    $query = "SELECT u.id_usuario 
-              FROM usuario u 
-              JOIN contato c ON u.id_usuario = c.id_usuario
-              WHERE c.email = ?
-              LIMIT 1";
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $email = $_POST['email'];
 
-    $stmt = $obj->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+        $query = "SELECT u.id_usuario 
+                FROM usuario u 
+                JOIN contato c ON u.id_usuario = c.id_usuario
+                WHERE c.email = ?
+                LIMIT 1";
 
-    if ($result->num_rows > 0) {
-        $token = bin2hex(random_bytes(16));
-        $_SESSION['token_recuperacao'] = $token;
-        $_SESSION['email_recuperacao'] = $email;
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-        $link = "http://localhost/PetMap/PROJETO/src/assets/pages/password-reset.php?token=$token";
+        if ($result->num_rows > 0) {
+            $token = bin2hex(random_bytes(16));
+            $_SESSION['token_recuperacao'] = $token;
+            $_SESSION['email_recuperacao'] = $email;
 
-        $mail = new PHPMailer(true);
+            $link = "http://localhost/PetMap/PROJETO/src/assets/pages/password-reset.php?token=$token";
 
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'petmap0328@gmail.com';
-            $mail->Password = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+            $mail = new PHPMailer(true);
 
-            $mail->setFrom('petmap0328@gmail.com', 'PetMap');
-            $mail->addAddress($email);
+            try {
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'petmap0328@gmail.com';
+                $mail->Password = 'zjyd ntit xlsk vjur';
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
 
-            $mail->isHTML(true);
-            $mail->Subject = 'Redefina sua senha';
-            $mail->Body    = "Clique no link para redefinir sua senha: <a href='$link'>$link</a>";
+                $mail->setFrom('petmap0328@gmail.com', 'PetMap');
+                $mail->addAddress($email);
 
-            if ($mail->send()) {
-                header("Location: forgot-password.php?msg=success");
-                exit;
-            } else {
+                $mail->isHTML(true);
+                $mail->Subject = 'Redefina sua senha';
+                $mail->Body    = "Clique no link para redefinir sua senha: <a href='$link'>$link</a>";
+
+                if ($mail->send()) {
+                    header("Location: forgot-password.php?msg=success");
+                    exit;
+                } else {
+                    header("Location: forgot-password.php?msg=error");
+                    exit;
+                }
+
+            } catch (Exception $e) {
                 header("Location: forgot-password.php?msg=error");
                 exit;
             }
 
-        } catch (Exception $e) {
-            header("Location: forgot-password.php?msg=error");
+        } else {
+            header("Location: forgot-password.php?msg=email_not_found");
             exit;
         }
-
-    } else {
-        header("Location: forgot-password.php?msg=email_not_found");
-        exit;
     }
-}
+?>
