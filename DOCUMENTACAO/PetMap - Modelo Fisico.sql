@@ -138,3 +138,13 @@ CREATE TABLE imagem (
     PRIMARY KEY (id_imagem),
     FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE
 );
+
+CREATE TABLE notificacao (
+    id_notificacao INT NOT NULL AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    mensagem TEXT NOT NULL,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('lida','nao_lida') DEFAULT 'nao_lida',
+    PRIMARY KEY (id_notificacao),
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+);
