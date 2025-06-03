@@ -1091,8 +1091,8 @@
                                 <?php endif; ?>
                             </div>
 
-                             <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
-                             <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
+                            <p class="comment-content"><?php echo nl2br(htmlspecialchars($comentario['conteudo'])); ?></p>
+                            <?php if ($isModerator && $user['tipo_conta'] !== 'Perfil de moderador'): ?>
                                 <div class="verify-comment">
                                     <?php
                                         $stmtStatus = $obj->prepare("SELECT status_comentario FROM comentario WHERE id_comentario = ?");

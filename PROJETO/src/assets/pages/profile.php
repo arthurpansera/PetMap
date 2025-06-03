@@ -4,7 +4,6 @@
     $isLoggedIn = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
     $isModerator = false;
 
-
     if (isset($_SESSION['error_message'])) {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -62,6 +61,25 @@
 
     date_default_timezone_set('America/Sao_Paulo');
     setlocale(LC_TIME, 'pt_BR.UTF-8', 'pt_BR', 'Portuguese_Brazil');
+
+    if ($isLoggedIn) {
+        $userId = $_SESSION['id_usuario'];
+        
+        $query = "SELECT nome, descricao FROM usuario u 
+                  JOIN perfil p ON u.id_usuario = p.id_usuario 
+                  WHERE u.id_usuario = ?";
+        $stmt = $obj->prepare($query);
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $userProfile = $stmt->get_result()->fetch_assoc();
+    
+        if ($userProfile) {
+            $userName = $userProfile['nome'];
+            if ($userProfile['descricao'] === 'Perfil de moderador') {
+                $isModerator = true;
+            }
+        }
+    }
 
     $query = "SELECT u.id_usuario, u.nome, c.email, c.telefone, p.foto, p.descricao AS tipo_conta, p.status_perfil,
                 o.endereco_rua AS ong_endereco_rua, o.endereco_numero AS ong_endereco_numero, o.endereco_complemento AS ong_endereco_complemento, o.endereco_bairro AS ong_endereco_bairro, 

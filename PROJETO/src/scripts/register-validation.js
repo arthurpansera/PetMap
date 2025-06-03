@@ -126,7 +126,6 @@ document.querySelectorAll('.required').forEach((input) => {
         break;
 
       case "número":
-      case "numero":
         !isNum(value) ? setError(input) : removeError(input);
         break;
 
@@ -274,7 +273,7 @@ function isTelephone(tel) {
 }
 
 function validPassword(pass) {
-  return pass.length >= 6;
+  return pass.length >= 8;
 }
 
 function isCEP(cep) {
@@ -293,9 +292,7 @@ function isRoad(rua) {
 }
 
 function isNum(num) {
-  if (!/^\d+$/.test(num)) return false;
-  if (hasRepeatedDigits(num)) return false;
-  return true;
+  return /^\d+$/.test(num);
 }
 
 // ------------------ API DO CEP ------------------

@@ -3,8 +3,6 @@
 
     session_start();
 
-
-
     if (isset($_SESSION['error_message'])) {
         $mensagem = addslashes($_SESSION['error_message']);
         echo "<script>
@@ -54,13 +52,13 @@
         $userId = $_SESSION['id_usuario'];
         
         $query = "SELECT nome, descricao FROM usuario u 
-                  JOIN perfil p ON u.id_usuario = p.id_usuario 
-                  WHERE u.id_usuario = ?";
+                    JOIN perfil p ON u.id_usuario = p.id_usuario 
+                    WHERE u.id_usuario = ?";
         $stmt = $obj->prepare($query);
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $userProfile = $stmt->get_result()->fetch_assoc();
-    
+
         if ($userProfile) {
             $userName = $userProfile['nome'];
             if ($userProfile['descricao'] === 'Perfil de moderador') {
@@ -155,9 +153,8 @@
             </div>
         </nav>
 
-
         <div class="menu-overlay" id="menuOverlay"></div>
-    
+
         <div class="content">
             <h2>Suporte PetMap</h2>
             
@@ -223,8 +220,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../scripts/pages/support/support.js"></script>
     <script src="../../scripts/left-menu.js"></script>
-
-
 
     <?php if ($isLoggedIn): ?>
         <script>

@@ -7,13 +7,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
-    width: calc(100% - 600px) !important;
+    width: calc(100% - 300px) !important;
     max-width: 1000px;
-    margin-left: 600px;
     height: auto;
     margin-top: 120px;
     box-sizing: border-box;
@@ -43,6 +41,7 @@
     display: none;
     width: 100%;
 }
+
 #form-wrapper.show {
     display: block;
 }
@@ -51,7 +50,7 @@
     background-color: #8257e6;
     width: 45%;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     padding: 12px 20px;
     border: none;
     border-radius: 8px;
@@ -60,6 +59,7 @@
     margin-top: 50px;
     margin-bottom: 50px;
 }
+
 .toggle-button:hover {
     background-color: #6842c2;
 }
@@ -72,7 +72,7 @@
 }
 
 .form-intro {
-    font-size: 19px;
+    font-size: 16px;
     color: #000000;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -94,7 +94,7 @@
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 16px;
     resize: none;
 }
 
@@ -122,7 +122,7 @@
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    font-size: 15px;
+    font-size: 16px;
     font-family: inherit;
     background-color: white;
     color: #666;
@@ -175,7 +175,7 @@
     color: #000000;
     text-align: left;
     border-top: 1px solid #eee;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .contact-info ul {
@@ -207,16 +207,28 @@
     margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-    .container-bottom {
-        flex-direction: column;
-        gap: 30px;
-        text-align: center;
-    }
+@media (min-width: 1200px) {
+  .content {
+    margin-left: 410px;
+  }
+}
 
-    .contact-info {
-        text-align: center;
-    }
+@media (min-width: 1800px) {
+  .content {
+    margin-left: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-bottom {
+      flex-direction: column;
+      gap: 30px;
+      text-align: center;
+  }
+
+  .contact-info {
+      text-align: center;
+  }
 }
 
 @media (max-width: 1199.98px) {
