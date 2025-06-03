@@ -273,6 +273,21 @@
                 $stmtUpd->execute();
 
                 $_SESSION['impulsionado_' . $idPublicacao] = true;
+
+                $stmt = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+                $stmt->bind_param("i", $idPublicacao);
+                $stmt->execute();
+                $res = $stmt->get_result()->fetch_assoc();
+
+                $id_usuario_dono = $res['id_usuario'] ?? null;
+
+                if ($id_usuario_dono && $id_usuario_dono != $userId) {
+                    $mensagem = 'Seu post foi impulsionado por ' . htmlspecialchars($userName);
+
+                    $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, ?, 'impulso', ?)");
+                    $stmtNotif->bind_param("iiis", $id_usuario_dono, $userId, $idPublicacao, $mensagem);
+                    $stmtNotif->execute();
+                }
             }
         }
 
@@ -303,6 +318,21 @@
             $stmtUpdate = $obj->prepare($updateTotal);
             $stmtUpdate->bind_param("i", $idPublicacao);
             $stmtUpdate->execute();
+
+            $stmt = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+            $stmt->bind_param("i", $idPublicacao);
+            $stmt->execute();
+            $res = $stmt->get_result()->fetch_assoc();
+
+            $id_usuario_dono = $res['id_usuario'] ?? null;
+
+            if ($id_usuario_dono && $id_usuario_dono != $userId) {
+                $mensagem = 'Você recebeu um comentário de ' . htmlspecialchars($userName);
+                
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, ?, 'comentario', ?)");
+                $stmtNotif->bind_param("iiis", $id_usuario_dono, $userId, $idPublicacao, $mensagem);
+                $stmtNotif->execute();
+            }
         }
 
         $redirectUrl = 'index.php';
