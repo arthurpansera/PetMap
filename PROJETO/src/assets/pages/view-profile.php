@@ -153,6 +153,21 @@
                 $stmtUpd->execute();
 
                 $_SESSION['impulsionado_' . $idPublicacao] = true;
+
+                $stmt = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+                $stmt->bind_param("i", $idPublicacao);
+                $stmt->execute();
+                $res = $stmt->get_result()->fetch_assoc();
+
+                $id_usuario_dono = $res['id_usuario'] ?? null;
+
+                if ($id_usuario_dono && $id_usuario_dono != $userId) {
+                    $mensagem = 'Seu post foi impulsionado por ' . htmlspecialchars($userName);
+
+                    $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, ?, 'impulso', ?)");
+                    $stmtNotif->bind_param("iiis", $id_usuario_dono, $userId, $idPublicacao, $mensagem);
+                    $stmtNotif->execute();
+                }
             }
         }
 
@@ -180,8 +195,22 @@
             $stmtUpdate = $obj->prepare($updateTotal);
             $stmtUpdate->bind_param("i", $idPublicacao);
             $stmtUpdate->execute();
-        }
 
+            $stmt = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+            $stmt->bind_param("i", $idPublicacao);
+            $stmt->execute();
+            $res = $stmt->get_result()->fetch_assoc();
+
+            $id_usuario_dono = $res['id_usuario'] ?? null;
+
+            if ($id_usuario_dono && $id_usuario_dono != $userId) {
+                $mensagem = 'Você recebeu um comentário de ' . htmlspecialchars($userName);
+                
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, ?, 'comentario', ?)");
+                $stmtNotif->bind_param("iiis", $id_usuario_dono, $userId, $idPublicacao, $mensagem);
+                $stmtNotif->execute();
+            }
+        }
 
         if ($stmtComentario->affected_rows > 0) {
             $_SESSION['success_message'] = "Comentário enviado com sucesso.";
@@ -310,6 +339,20 @@
         $stmtInsert->execute();
 
         if ($stmtUpdate->affected_rows > 0) {
+            $stmtUser = $obj->prepare("SELECT id_usuario FROM perfil WHERE id_perfil = ?");
+            $stmtUser->bind_param("i", $idPerfil);
+            $stmtUser->execute();
+            $resUser = $stmtUser->get_result()->fetch_assoc();
+            $idUsuarioDono = $resUser['id_usuario'] ?? null;
+
+            if ($idUsuarioDono && $idUsuarioDono != $userId) {
+                $mensagem = "Seu perfil foi validado por um moderador.";
+
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_perfil, tipo, mensagem) VALUES (?, ?, ?, 'validacao_perfil', ?)");
+                $stmtNotif->bind_param("iiis", $idUsuarioDono, $userId, $idPerfil, $mensagem);
+                $stmtNotif->execute();
+            }
+
             $_SESSION['success_message'] = "Perfil validado com sucesso.";
         } else {
             $_SESSION['error_message'] = "Erro ao validar o perfil.";
@@ -402,6 +445,20 @@
         $stmtInsert->execute();
 
         if ($stmtUpdate->affected_rows > 0) {
+            $stmtUser = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+            $stmtUser->bind_param("i", $idPublicacao);
+            $stmtUser->execute();
+            $resUser = $stmtUser->get_result()->fetch_assoc();
+            $idUsuarioDono = $resUser['id_usuario'] ?? null;
+
+            if ($idUsuarioDono && $idUsuarioDono != $userId) {
+                $mensagem = "Sua publicação foi validada por um moderador.";
+
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, ?, 'validacao_publicacao', ?)");
+                $stmtNotif->bind_param("iiis", $idUsuarioDono, $userId, $idPublicacao, $mensagem);
+                $stmtNotif->execute();
+            }
+
             $_SESSION['success_message'] = "Publicação validada com sucesso.";
         } else {
             $_SESSION['error_message'] = "Erro ao validar a publicação.";
@@ -431,11 +488,25 @@
             exit;
         }
 
+        $stmtUser = $obj->prepare("SELECT id_usuario FROM publicacao WHERE id_publicacao = ?");
+        $stmtUser->bind_param("i", $idPublicacao);
+        $stmtUser->execute();
+        $resUser = $stmtUser->get_result()->fetch_assoc();
+        $idUsuarioDono = $resUser['id_usuario'] ?? null;
+
         $deleteQuery = $obj->prepare("DELETE FROM publicacao WHERE id_publicacao = ?");
         $deleteQuery->bind_param("i", $idPublicacao);
         $deleteQuery->execute();
 
         if ($deleteQuery->affected_rows > 0) {
+            if ($idUsuarioDono && $idUsuarioDono != $userId) {
+                $mensagem = "Uma de suas publicações foi removida por um moderador.";
+
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_publicacao, tipo, mensagem) VALUES (?, ?, NULL, 'remocao_publicacao', ?)");
+                $stmtNotif->bind_param("iis", $idUsuarioDono, $userId, $mensagem);
+                $stmtNotif->execute();
+            }
+
             $_SESSION['success_message'] = "Publicação removida com sucesso.";
         } else {
             $_SESSION['error_message'] = "Erro ao remover a publicação.";
@@ -478,6 +549,20 @@
         $stmtInsert->execute();
 
         if ($stmtUpdate->affected_rows > 0) {
+            $stmtUser = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+            $stmtUser->bind_param("i", $idComentario);
+            $stmtUser->execute();
+            $resUser = $stmtUser->get_result()->fetch_assoc();
+            $idUsuarioDono = $resUser['id_usuario'] ?? null;
+
+            if ($idUsuarioDono && $idUsuarioDono != $userId) {
+                $mensagem = "Seu comentário foi validado por um moderador.";
+
+                $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_comentario, tipo, mensagem) VALUES (?, ?, ?, 'validacao_comentario', ?)");
+                $stmtNotif->bind_param("iiis", $idUsuarioDono, $userId, $idComentario, $mensagem);
+                $stmtNotif->execute();
+            }
+
             $_SESSION['success_message'] = "Comentário validado com sucesso.";
         } else {
             $_SESSION['error_message'] = "Erro ao validar o comentário.";
@@ -505,6 +590,20 @@
             $_SESSION['error_message'] = "Comentário não encontrado.";
             header("Location: view-profile.php?id=" . intval($_GET['id']));
             exit;
+        }
+
+        $stmtUser = $obj->prepare("SELECT id_usuario FROM comentario WHERE id_comentario = ?");
+        $stmtUser->bind_param("i", $idComentario);
+        $stmtUser->execute();
+        $resUser = $stmtUser->get_result()->fetch_assoc();
+        $idUsuarioDono = $resUser['id_usuario'] ?? null;
+
+        if ($idUsuarioDono && $idUsuarioDono != $userId) {
+            $mensagem = "Um de seus comentários foi removido por um moderador.";
+
+            $stmtNotif = $obj->prepare("INSERT INTO notificacao (id_usuario_destinatario, id_usuario_acionador, id_comentario, tipo, mensagem) VALUES (?, ?, NULL, 'remocao_comentario', ?)");
+            $stmtNotif->bind_param("iis", $idUsuarioDono, $userId, $mensagem);
+            $stmtNotif->execute();
         }
 
         $deleteQuery = $obj->prepare("DELETE FROM comentario WHERE id_comentario = ?");

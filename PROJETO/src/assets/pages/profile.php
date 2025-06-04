@@ -587,6 +587,15 @@
         header('Location: profile.php');
         exit;
     }
+    
+    $unreadCount = 0;
+    if ($isLoggedIn) {
+        $stmtUnread = $obj->prepare("SELECT COUNT(*) as total FROM notificacao WHERE id_usuario_destinatario = ? AND status = 'nao_lida'");
+        $stmtUnread->bind_param("i", $userId);
+        $stmtUnread->execute();
+        $resultUnread = $stmtUnread->get_result()->fetch_assoc();
+        $unreadCount = $resultUnread['total'] ?? 0;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -649,6 +658,15 @@
 
     <section class="profile">
         <div class="logout-button">
+            <?php if (!$isModerator): ?>
+                <a class="notifications-image" href="notifications.php">
+                    <img src="../images/perfil-images/notificacao.png" alt="Ícone de Notificações">
+                    <?php if ($unreadCount > 0): ?>
+                        <span class="notification-badge"><?php echo $unreadCount; ?></span>
+                    <?php endif; ?>
+                    <span class="tooltip-text">Ver notificações</span>
+                </a>
+            <?php endif; ?>
             <form action="profile.php" method="POST" class="tooltip-wrapper">
                 <button type="submit" name="logout">
                     <img src="../images/perfil-images/sair.png" alt="Sair da Conta">

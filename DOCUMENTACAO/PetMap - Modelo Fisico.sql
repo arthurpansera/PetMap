@@ -141,10 +141,19 @@ CREATE TABLE imagem (
 
 CREATE TABLE notificacao (
     id_notificacao INT NOT NULL AUTO_INCREMENT,
-    id_usuario INT NOT NULL,
+    id_usuario_destinatario INT NOT NULL,
+    id_usuario_acionador INT NOT NULL,
+    id_publicacao INT DEFAULT NULL,
+    id_comentario INT DEFAULT NULL,
+    id_perfil INT DEFAULT NULL,
+    tipo ENUM('impulso', 'comentario', 'validacao_perfil', 'validacao_publicacao', 'validacao_comentario', 'remocao_publicacao', 'remocao_comentario') NOT NULL,
     mensagem TEXT NOT NULL,
     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status ENUM('lida','nao_lida') DEFAULT 'nao_lida',
     PRIMARY KEY (id_notificacao),
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario) ON DELETE CASCADE
+    FOREIGN KEY (id_usuario_destinatario) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario_acionador) REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_publicacao) REFERENCES publicacao(id_publicacao) ON DELETE CASCADE,
+    FOREIGN KEY (id_comentario) REFERENCES comentario(id_comentario) ON DELETE CASCADE,
+    FOREIGN KEY (id_perfil) REFERENCES perfil(id_perfil) ON DELETE CASCADE
 );
