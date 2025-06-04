@@ -214,6 +214,33 @@
     opacity: 1;
 }
 
+.notifications-image {
+    margin-right: 30px; 
+    padding-bottom: 3px;
+    position: relative;
+}
+
+.notifications-image:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 50%;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1;
+    pointer-events: none;
+}
+
 .profile-details {
     width: 100%;
     margin-top: 20px;
