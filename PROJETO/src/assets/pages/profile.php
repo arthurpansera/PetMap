@@ -1201,13 +1201,12 @@
                     <h3>Endereço</h3>
 
                     <div class="row-style">
-                        <div class="row-style-content"> 
+                        <div class="row-style-content">
                             <div class="form-group">
                                 <label for="endereco_rua">Rua:</label>
                                 <input type="text" id="endereco_rua" name="endereco_rua" class="required campo-endereco" data-type="rua" data-required="true" placeholder="Insira o nome da rua">
                                 <span class="span-required"> Rua não pode conter caracteres especias.</span>
                             </div>
-
                             <div class="form-group">
                                 <label for="endereco_bairro">Bairro:</label>
                                 <input type="text" id="endereco_bairro" name="endereco_bairro" class="required campo-endereco" data-type="bairro" data-required="true" placeholder="Insira o bairro">
@@ -1224,7 +1223,7 @@
 
                             <div class="form-group">
                                 <label for="state"><b>Estado: *</b></label>
-                                <select name="state" id="state" class="required campo-endereco" data-type="estado" data-required="true">
+                                <select name="state" id="state" class="mid-inputUser required campo-endereco" data-type="estado" data-required="true">
                                     <option value="">Selecione um estado</option>
                                     <option value="AC" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AC') ? 'selected' : ''; ?>>Acre</option>
                                     <option value="AL" <?php echo (isset($_POST['state']) && $_POST['state'] === 'AL') ? 'selected' : ''; ?>>Alagoas</option>
@@ -1263,7 +1262,7 @@
                         <input type="checkbox" id="nao_sei_endereco" name="nao_sei_endereco" onclick="desabilitarCamposEndereco()">
                         <label for="nao_sei_endereco">Não sei informar o endereço</label>
                     </div>
-                    
+
                     <button type="submit" name="make_post" class="create-post" onclick="btnRegisterOnClick(event, this.form)">Publicar</button>
                 </form>
             </div>

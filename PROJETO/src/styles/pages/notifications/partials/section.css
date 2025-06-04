@@ -5,16 +5,22 @@
     padding: 30px;
     border-radius: 10px;
     text-align: center;
-    width: calc(100% - 300px);
+    width: calc(100% - clamp(200px, 32vw, 600px));
     max-width: 1000px;
     height: auto;
     margin-top: 120px;
+    margin-left: clamp(200px, 32vw, 600px);
     box-sizing: border-box;
+    transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .options {
     display: flex;
     width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
 }
 
 .content h2 {
@@ -22,15 +28,15 @@
 }
 
 .notifications {
-    text-align: justify;
-    font-size: 16px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
     margin: 30px auto;
-    width: 900px;
-    line-height: 1.5em;
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .notifications p {
@@ -112,14 +118,63 @@
     user-select: none;
 }
 
-@media (min-width: 1200px) {
-    .content {
-    margin-left: 410px;
+@media (max-width: 1199.98px) {
+    .notifications {
+        width: 100%;
+        padding: 25px;
     }
 }
 
-@media (min-width: 1800px) {
+@media (max-width: 991.98px) {
     .content {
-    margin-left: 600px;
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .content h2 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .content {
+        padding: 16px;
+    }
+
+    .content h2 {
+        font-size: 26px;
+    }
+
+    .notification-item {
+        padding: 16px 18px;
+    }
+
+    .notification-item p {
+        font-size: 15px;
+    }
+
+    .notification-item button {
+        padding: 6px 14px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .content h2 {
+        font-size: 22px;
+    }
+
+    .notifications p {
+        font-size: 16px;
+    }
+
+    .notification-item small {
+        font-size: 12px;
+    }
+
+    .read-label {
+        font-size: 11px;
+        padding: 2px 6px;
     }
 }

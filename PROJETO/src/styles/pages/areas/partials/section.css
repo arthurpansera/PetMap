@@ -189,15 +189,3 @@ table tr:hover td {
         font-size: 16px;
     }
 }
-
-@media (min-width: 1200px) {
-    .content {
-        margin-left: 410px;
-    }
-}
-
-@media (min-width: 1800px) {
-    .content {
-        margin-left: 600px;
-    }
-}
