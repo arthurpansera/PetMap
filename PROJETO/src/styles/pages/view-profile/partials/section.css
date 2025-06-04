@@ -1,23 +1,49 @@
-.profile {
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.content-profile-page{
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 30px;
     border-radius: 10px;
+    width: calc(100% - clamp(200px, 32vw, 600px));
+    max-width: 1000px;
+    height: auto;
+    margin-top: 120px;
+    margin-left: clamp(200px, 32vw, 600px);
+    box-sizing: border-box;
+    transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    width: 100%;
     max-width: 1000px;
     max-height: 1300px;
     margin-top: 150px;
     margin-bottom: 40px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    margin: 30px auto;
+    width: 100%;
     box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+}
+
+
+.user-posts{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
 }
 
 .profile-content {
     display: flex;
     text-align: center;
     flex-direction: column;
+
 }
 
 .profile-header {
@@ -36,6 +62,13 @@
     height: 250px;
     object-fit: cover;
     display: block;
+}
+
+.status-icon {
+    width: 25px;
+    height: 25px;
+    margin-bottom: 5px;
+    vertical-align: middle;
 }
 
 .profile-info {
@@ -150,55 +183,8 @@
     background-color: rgb(23, 102, 186);
 }
 
-@media (min-width: 1200px) and (max-width: 1800px) {
-    .profile {
-        max-width: 900px;
-        margin-left: 470px;
-    }
-
-    .profile-header {
-        font-size: 22px;
-    }
-
-    .profile-header img {
-        max-width: 220px;
-        max-height: 220px;
-    }
-
-    .content {
-        margin-left: 420px;
-    }
-
-    .content-area {
-        margin-left: 420px;
-    }
-}
-
-@media (min-width: 1800px) {
-    .profile {
-        margin-left: 600px;
-    }
-
-    .content {
-        margin-left: 600px;
-    }
-
-    .content-area {
-        margin-left: 600px;
-    }
-}
-
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: calc(100% - 300px);
-    max-width: 1000px;
-    height: auto;
-    box-sizing: border-box;
+    width: 100%;
 }
 
 .content h2 {
@@ -207,18 +193,16 @@
     margin-bottom: 50px;
 }
 
-.user-posts {
-    width: 100%;
-}
-
 .post-item {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
     margin: 30px auto;
-    width: 900px;
-    transition: transform 0.3s ease-in-out;
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .post-item:hover {
@@ -313,8 +297,7 @@
 }
 
 .content-area {
-    width: calc(100% - 300px);
-    max-width: 1000px;
+    width: 100%;
     padding: 20px;
 }
 
@@ -348,6 +331,7 @@
 }
 
 .comments-list {
+    margin-top: 10px;
     width: 100%;
     margin-top: 10px;
     padding: 10px;
@@ -595,45 +579,224 @@
     background-color: #c12232;
 }
 
-@media (min-width: 1200px) and (max-width: 1800px) {
-    .profile {
-        max-width: 900px;
-        margin-left: 470px;
+@media (max-width: 1450px) {
+    .profile-header {
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        margin-left: 0;
+    }
+    .profile-left{
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        margin: 0;
     }
 
-    .profile-header {
+    .profile-left form{
+        font-size: 10px;
+    }
+     .profile-left img {
+        width: 180px;
+        height: 180px;
+        margin-bottom: 20px;
+    }
+
+    .profile-info {
+        align-items: center;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 1199.98px) {
+    .profile {
+        width: 100%;
+        padding: 25px;
+        box-sizing: border-box;
+    }
+
+    .content {
+        width: 100%;
+        padding: 25px;
+        box-sizing: border-box;
+    }
+
+    .posts-buttons {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .row-style {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .row-style-content {
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 991.98px){
+
+    .content-profile-page {
+        margin-left: 0;
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .content{
+        width:100%;
+    }
+
+    .post-item {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .post-item img {
+        max-width: 100%;
+    }
+
+    .modal-content {
+        width: 95%;
+        max-width: 100%;
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 767.98px) {
+    .content {
+        font-size: 28px;
+
+    }
+    .user-post{
+        width: 100%;
+        padding: 20px;
+        margin: 20px 0;
+
+    }
+    .post-item {
+        width: 100%;
+    }
+    .post-title {
         font-size: 22px;
     }
 
-    .profile-header img {
-        max-width: 220px;
-        max-height: 220px;
+    .post-item p {
+        font-size: 16px;
     }
 
-    .content,
-    .content-area {
-        margin-left: 420px;
+    .comment-form textarea {
+        height: 100px;
+        font-size: 13px;
+    }
+
+    .comment-form button {
+        width: 45%;
+        height: 40px;
+        font-size: 15px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .like-button, .comment-button button {
+        font-size: 13px;
+        padding: 8px 16px;
+        height: 36px;
+    }
+
+    .comments {
+        padding-left: 15px;
+    }
+
+    .comment {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .no-posts-message {
+        font-size: 22px;
     }
 }
 
-@media (min-width: 1800px) {
-    .profile,
-    .content,
-    .content-area {
-        margin-left: 600px;
-    }
-}
+@media (max-width: 575.98px) {
+    .user-post{
+        width: 100%;
+        padding: 20px;
+        margin: 20px 0;
 
-@media (max-width: 1199px) {
-    .profile,
-    .post-item,
-    .comment,
-    .comment-profile,
-    .form-container,
-    .content,
-    .content-area {
-        width: 95%;
+    }
+    .post-item {
+        width: 100%;
+    }
+
+    .post-item img {
         max-width: 100%;
-        margin: 0 auto;
+    }
+
+    .comment-form textarea {
+        height: 90px;
+        font-size: 13px;
+    }
+
+    .comment-form button {
+        font-size: 14px;
+    }
+
+    .like-button, .comment-button{
+        width:31%;
+        font-size: 12px;
+    }
+
+    .posts-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .comment-actions {
+        width: 100%;
+        gap: 5px;
+    }
+    
+    .no-posts-image {
+        width: 100%;
+    }
+
+    .post-title {
+        font-size: 20px;
+    }
+
+    .post-item p {
+        font-size: 15px;
+    }
+
+    .profile-header .profile-left img {
+        width: 130px;
+        height: 130px;
+    }
+
+    .profile-details .label {
+        width: 120px;
+        font-size: 16px;
+    }
+
+    .profile-details span {
+        font-size: 16px;
+    }
+    .content h2 {
+        font-size: 26px;
+    }
+
+    .post-title {
+        font-size: 20px;
     }
 }

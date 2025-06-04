@@ -695,13 +695,9 @@ body.swal2-height-auto {
         text-align: center;
     }
 
-    .profile-image img {
-        width: 120px;
-        height: 120px;
-    }
+    .nav .profile-image{
+        display: none;
 
-    .profile-name h2 {
-        font-size: 1.5rem;
     }
 
     .profile-info p {
@@ -798,12 +794,6 @@ body.swal2-height-auto {
     body {
         font-size: 14px;
     }
-
-    .profile-image img {
-        width: 100px;
-        height: 100px;
-    }
-
     .btn {
         font-size: 0.875rem;
         padding: 0.4rem 0.75rem;
