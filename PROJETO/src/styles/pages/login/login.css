@@ -3,3 +3,52 @@
 @import url(./partials/login-register-box.css);
 @import url(./partials/has-or-no-account.css);
 @import url(./partials/animation.css); 
+
+@media (max-width: 1100px) {
+    .no-account{
+        display: none;
+    }
+
+    .has-account{
+        display: none;
+    }
+
+    .login-box h1, .register-box h1 {
+        font-size: 2rem;
+        padding: 20px 0px;
+        text-align: center;
+    }
+    .register-box, .login-box{
+        width: 100%;
+    }
+
+    .input-box, .user-options, .input-box-1{
+        width: 90%;
+    }
+
+    .label-input {
+        margin: 0 7%;
+    }
+
+    .register-button, .login-button{
+        display: flex;
+    }
+
+    .login-btn {
+        margin-bottom: 3.5rem;
+    }
+    .user-options {
+        font-size: 24px;
+        color: rgb(106, 106, 106);
+    }
+
+    .user-options:hover {
+        background-color: rgb(215, 215, 215);
+        box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3)
+    }
+
+    .user-options-box {
+        margin: 1rem 0;
+        margin-bottom: 2.7rem;
+    }
+}

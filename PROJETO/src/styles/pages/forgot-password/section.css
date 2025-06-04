@@ -150,9 +150,19 @@ form button:hover {
     margin-bottom: 40px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 1000px) {
   form {
         width: 90%;
-        padding: 20px;
+  }
+
+  .message.success {
+    width: 90%;
+    font-weight: 12px;
+  }
+  .message.error{
+     width: 90%;
+  }
+  .expired-container{
+    width: 90%;
   }
 }

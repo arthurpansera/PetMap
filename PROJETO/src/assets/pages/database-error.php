@@ -10,7 +10,7 @@
         <p>O <strong>PetMap</strong> está temporariamente fora do ar.<br />
         Por favor, tente novamente mais tarde.</p>
         
-        <img src="../images/no-posts-image/sem-posts.png" alt="Ícone de Erro" class="no-posts-image">
+        <img src="../images/no-posts-image/sem-posts.png" alt="Ícone de Erro" class="error-image">
         
         <button id="retryBtn">Tentar novamente</button>
     </div>

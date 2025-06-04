@@ -1,23 +1,44 @@
-.profile {
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.content-profile-page{
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
-    width: 100%;
+    width: calc(100% - clamp(200px, 32vw, 600px));
+    max-width: 1000px;
+    height: auto;
+    margin-top: 120px;
+    margin-left: clamp(200px, 32vw, 600px);
+    box-sizing: border-box;
+    transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
     max-width: 1000px;
     max-height: 1300px;
     margin-top: 150px;
     margin-bottom: 40px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    margin: 30px auto;
+    width: 100%;
     box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .profile-content {
     display: flex;
     text-align: center;
     flex-direction: column;
+
 }
 
 .profile-header {
@@ -227,54 +248,6 @@
     width: 4em;
     height: 4em;
 }
-
-@media (min-width: 1200px) and (max-width: 1800px) {
-    .profile {
-        max-width: 900px;
-        margin-left: 470px;
-    }
-
-    .profile-header {
-        font-size: 22px;
-    }
-
-    .profile-header img {
-        max-width: 220px;
-        max-height: 220px;
-    }
-
-    .profile-buttons {
-        gap: 15px;
-    }
-
-    button {
-        font-size: 16px;
-        padding: 10px 18px;
-    }
-
-    .content {
-        margin-left: 420px;
-    }
-
-    .content-area {
-        margin-left: 420px;
-    }
-}
-
-@media (min-width: 1800px) {
-    .profile {
-        margin-left: 600px;
-    }
-
-    .content {
-        margin-left: 600px;
-    }
-
-    .content-area {
-        margin-left: 600px;
-    }
-}
-
 .modal {
     display: none;
     position: fixed;
@@ -457,16 +430,7 @@ input.input-adm {
 }
 
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: calc(100% - 300px);
-    max-width: 1000px;
-    height: auto;
-    box-sizing: border-box;
+    width: 100%;
 }
 
 .content h2 {
@@ -475,18 +439,16 @@ input.input-adm {
     margin-bottom: 50px;
 }
 
-.user-posts {
-    width: 100%;
-}
-
 .post-item {
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 30px;
     border-radius: 10px;
     margin: 30px auto;
-    width: 900px;
-    transition: transform 0.3s ease-in-out;
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .post-item:hover {
@@ -738,9 +700,9 @@ input.input-adm {
 }
 
 .content-area {
-    width: calc(100% - 300px);
-    max-width: 1000px;
+    width: 100%;
     padding: 20px;
+
 }
 
 .tabs {
@@ -933,22 +895,28 @@ input.input-adm {
     margin-top: 10px;
 }
 
-@media (max-width: 991px) {
-    .profile {
-        padding: 20px;
-        margin: 100px auto 40px;
-        max-width: 95%;
-        max-height: none;
-    }
-
+@media (max-width: 1450px) {
     .profile-header {
+        display:flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
+        justify-content: center;
         margin-left: 0;
     }
+    .profile-left{
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        margin: 0;
+    }
 
-    .profile-header .profile-left img {
+    .profile-left form{
+        font-size: 10px;
+    }
+     .profile-left img {
         width: 180px;
         height: 180px;
         margin-bottom: 20px;
@@ -959,13 +927,51 @@ input.input-adm {
         margin-left: 0;
         margin-top: 10px;
     }
+}
 
-    .profile-buttons .functions-buttons {
-        flex-direction: column;
-        gap: 10px;
+@media (max-width: 1199.98px) {
+    .profile {
+        width: 100%;
+        padding: 25px;
+        box-sizing: border-box;
     }
 
-    .content, .post-item {
+    .content {
+        width: 100%;
+        padding: 25px;
+        box-sizing: border-box;
+    }
+
+    .posts-buttons {
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .row-style {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .row-style-content {
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 991.98px){
+
+    .content-profile-page {
+        margin-left: 0;
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 28px;
+    }
+    .content{
+        width:100%;
+    }
+
+    .post-item {
         width: 95%;
         padding: 20px;
     }
@@ -998,7 +1004,119 @@ input.input-adm {
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767.98px) {
+    .content {
+        font-size: 28px;
+
+    }
+    .user-post{
+        width: 100%;
+        padding: 20px;
+        margin: 20px 0;
+
+    }
+    .post-item {
+        width: 100%;
+    }
+    .post-title {
+        font-size: 22px;
+    }
+
+    .post-item p {
+        font-size: 16px;
+    }
+
+    .comment-form textarea {
+        height: 100px;
+        font-size: 13px;
+    }
+
+    .comment-form button {
+        width: 45%;
+        height: 40px;
+        font-size: 15px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .like-button, .comment-button, .comment-actions button {
+        font-size: 13px;
+        padding: 8px 16px;
+        height: 36px;
+    }
+
+    .comments {
+        padding-left: 15px;
+    }
+
+    .comment {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .no-posts-message {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .user-post{
+        width: 100%;
+        padding: 20px;
+        margin: 20px 0;
+
+    }
+    .post-item {
+        width: 100%;
+    }
+
+    .post-item img {
+        max-width: 100%;
+    }
+
+    .comment-form textarea {
+        height: 90px;
+        font-size: 13px;
+    }
+
+    .comment-form button {
+        font-size: 14px;
+    }
+
+    .like-button, .comment-button{
+        width:31%;
+        font-size: 12px;
+    }
+
+    .posts-buttons {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .comment-actions {
+        width: 100%;
+        gap: 5px;
+    }
+    
+    .no-posts-image {
+        width: 100%;
+    }
+
+    .post-title {
+        font-size: 20px;
+    }
+
+    .post-item p {
+        font-size: 15px;
+    }
+
+    .logout-button img {
+        width: 28px;
+        height: 28px;
+    }
+
     .profile-header .profile-left img {
         width: 130px;
         height: 130px;
@@ -1031,25 +1149,9 @@ input.input-adm {
         padding: 12px;
     }
 
-    .form-content {
-        gap: 30px;
-    }
-
     .profile-edit, .profile-delete, .btn-remove-photo {
         font-size: 16px;
         padding: 10px 16px;
     }
 
-    .tooltip-text {
-        font-size: 11px;
-    }
-
-    .logout-button img {
-        width: 28px;
-        height: 28px;
-    }
-
-    #edit-image-gallery > div {
-        max-width: 90px;
-    }
 }

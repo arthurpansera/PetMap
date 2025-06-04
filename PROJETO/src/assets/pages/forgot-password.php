@@ -1,6 +1,6 @@
 <?php
-$msg = $_GET['msg'] ?? null;
-$showForm = $msg !== 'success';
+    $msg = $_GET['msg'] ?? null;
+    $showForm = $msg !== 'success';
 ?>
 
 <!DOCTYPE html>
@@ -13,21 +13,17 @@ $showForm = $msg !== 'success';
 </head>
 <body>
     <?php if ($msg): ?>
-        <div class="message 
-            <?= $msg === 'success' ? 'success' : 'error' ?>">
-            <?php
-                switch ($msg) {
-                    case 'success':
-                        echo 'Verifique seu e-mail para redefinir a senha.';
-                        break;
-                    case 'email_not_found':
-                        echo 'E-mail não encontrado. Verifique e tente novamente.';
-                        break;
-                    default:
-                        echo 'Erro ao enviar o e-mail. Tente novamente.';
-                }
-            ?>
+
+        <div class="message <?= $msg === 'success' ? 'success' : 'error' ?>">
+            <?php if ($msg === 'success'): ?>
+                <p>Verifique seu e-mail para redefinir a senha.</p>
+            <?php elseif ($msg === 'email_not_found'): ?>
+                <p>E-mail não encontrado. Verifique e tente novamente.</p>
+            <?php else: ?>
+                <p>Erro ao enviar o e-mail. Tente novamente.</p>
+            <?php endif; ?>
         </div>
+
     <?php endif; ?>
 
     <?php if ($showForm): ?>
@@ -37,5 +33,6 @@ $showForm = $msg !== 'success';
             <button type="submit">Enviar link de recuperação</button>
         </form>
     <?php endif; ?>
+
 </body>
 </html>
