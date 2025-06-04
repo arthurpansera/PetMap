@@ -1,15 +1,18 @@
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: calc(100% - 300px);
-    max-width: 1000px;
-    height: auto;
-    margin-top: 120px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: calc(100% - clamp(200px, 32vw, 600px));
+  max-width: 1000px;
+  height: auto;
+  margin-top: 120px;
+  margin-left: clamp(200px, 32vw, 600px);
+  box-sizing: border-box;
+  transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .options {
@@ -21,16 +24,18 @@
     font-size: 35px;
 }
 
-.content .questions {
-    text-align: justify;
-    font-size: 16px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    border-radius: 10px;
-    margin: 30px auto;
-    width: 900px;
-    line-height: 1.5em;
+.questions{
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 30px auto;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  text-align: justify;
+  font-size: 16px;
+  line-height: 1.5em;
 }
 
 .content .faq-info-1 {
@@ -116,33 +121,16 @@
     color: rgb(228, 228, 228);
 }
 
-@media (min-width: 1200px) {
-    .content {
-        margin-left: 410px;
-    }
-}
-
-@media (min-width: 1800px) {
-    .content {
-        margin-left: 600px;
-    }
-}
 
 @media (max-width: 1199.98px) {
-  .content {
-    width: 100%;
-    margin-left: 0;
-    padding: 20px;
-  }
-
   .content h2 {
     font-size: 30px;
   }
 
-  .content .questions {
-    width: 95%;
+  .quetions {
+    width: 100%;
     padding: 25px;
-    margin: 20px auto;
+    box-sizing: border-box;
   }
 
   .accordion {
@@ -167,12 +155,22 @@
   }
 }
 
+@media (max-width: 991.98px){
+    .content {
+      margin-left: 0;
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 28px;
+  }
+}
+
 @media (max-width: 767.98px) {
   .content h2 {
     font-size: 26px;
   }
 
-  .content .questions {
+ .questions {
     font-size: 15px;
     padding: 20px;
   }
@@ -206,7 +204,7 @@
     font-size: 24px;
   }
 
-  .content .questions {
+  .questions {
     width: 100%;
     padding: 15px;
   }
@@ -230,3 +228,4 @@
     padding: 8px;
   }
 }
+
