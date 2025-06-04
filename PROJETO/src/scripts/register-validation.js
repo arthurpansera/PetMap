@@ -287,7 +287,7 @@ function isCEP(cep) {
 }
 
 function isRoad(rua) {
-  const re = /^[A-Za-z0-9\s]+$/;
+  const re = /^[A-Za-zÀ-ÖØ-öø-ÿ0-9\s\-',.ªº]+$/;
   return re.test(rua);
 }
 
