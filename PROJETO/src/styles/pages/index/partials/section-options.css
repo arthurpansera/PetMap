@@ -1,30 +1,38 @@
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: calc(100% - 300px);
-    max-width: 1000px;
-    height: auto;
-    margin-top: 120px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: calc(100% - clamp(200px, 32vw, 600px));
+  max-width: 1000px;
+  height: auto;
+  margin-top: 120px;
+  margin-left: clamp(200px, 32vw, 600px);
+  box-sizing: border-box;
+  transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.menu-post{
+  width: 100%;
+}
 .options {
     display: flex;
     width: 100%;
 }
 
 .post-item {
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    border-radius: 10px;
-    margin: 30px auto;
-    width: 900px;
-    transition: transform 0.3s ease-in-out;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 30px auto;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .post-item:hover {
@@ -215,7 +223,6 @@
     border-radius: 10px;
     cursor: pointer;
 }
-
 .comment-form button:hover {
     background-color: #570089;
 }
@@ -226,7 +233,6 @@
     justify-content: flex-end;
     gap: 10px;
 }
-
 .comment-actions button {
     color: black;
     background-color: #ddd;
@@ -261,28 +267,11 @@
     white-space: nowrap;
 }
 
-@media (min-width: 1200px) {
-    .content {
-        margin-left: 410px;
-    }
-}
-
-@media (min-width: 1800px) {
-    .content {
-        margin-left: 600px;
-    }
-}
-
 @media (max-width: 1199.98px) {
-  .content {
-    width: 100%;
-    margin-left: 0;
-    padding: 20px;
-  }
-
   .post-item {
-    width: 95%;
+    width: 100%;
     padding: 25px;
+    box-sizing: border-box;
   }
 
   .posts-buttons {
@@ -300,11 +289,21 @@
   }
 }
 
-@media (max-width: 767.98px) {
-  .content h2 {
-    font-size: 28px;
+@media (max-width: 991.98px){
+    .content {
+      margin-left: 0;
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 28px;
   }
+}
 
+@media (max-width: 767.98px) {
+  .content {
+    font-size: 28px;
+
+  }
   .post-title {
     font-size: 22px;
   }
@@ -319,9 +318,11 @@
   }
 
   .comment-form button {
-    width: 100%;
+    width: 45%;
     height: 40px;
     font-size: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .like-button, .comment-button, .comment-actions button {
@@ -361,26 +362,26 @@
   }
 
   .comment-form button {
-    width: 100%;
     font-size: 14px;
   }
 
-  .like-button, .comment-button, .comment-actions button {
-    width: 100%;
-    justify-content: center;
+  .like-button, .comment-button{
+    width:31%;
+    font-size: 12px;
   }
 
   .posts-buttons {
-    flex-direction: column;
-    gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
   }
 
   .comment-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
+    width: 100%;
+    gap: 5px;
   }
-
+  
   .no-posts-image {
     width: 100%;
   }

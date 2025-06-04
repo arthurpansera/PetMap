@@ -21,7 +21,7 @@ body{
 
 }
 
-.no-posts-image {
+.error-image {
     width: 33%;
     margin-bottom: 10px;
 }
@@ -42,4 +42,21 @@ button {
 button:hover {
     background-color: #570089;
     transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+    .container p {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    .error-image {
+        width: 50%;
+        margin-bottom: 20px;
+    }
 }

@@ -1,20 +1,18 @@
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    width: calc(100% - 300px);
-    max-width: 1000px;
-    height: auto;
-    margin-top: 120px;
-    box-sizing: border-box;
-}
-
-.options {
-    display: flex;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  width: calc(100% - clamp(200px, 32vw, 600px));
+  max-width: 1000px;
+  height: auto;
+  margin-top: 120px;
+  margin-left: clamp(200px, 32vw, 600px);
+  box-sizing: border-box;
+  transition: margin-left 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .content h2 {
@@ -22,14 +20,24 @@
     margin-bottom: 40px;
 }
 
+.rescued-animal-post{
+  width: 100%;
+}
+.options {
+    display: flex;
+    width: 100%;
+}
+
 .post-item {
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 30px;
-    border-radius: 10px;
-    margin: 30px auto;
-    width: 900px;
-    transition: transform 0.3s ease-in-out;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 10px;
+  margin: 30px auto;
+  width: 100%;
+  max-width: 900px;
+  box-sizing: border-box;
+  transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .post-item:hover {
@@ -238,82 +246,130 @@
     white-space: nowrap;
 }
 
-@media (min-width: 1200px) {
-    .content {
-        margin-left: 410px;
-    }
+@media (max-width: 1199.98px) {
+  .post-item {
+    width: 100%;
+    padding: 25px;
+    box-sizing: border-box;
+  }
+
+  .posts-buttons {
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .row-style {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .row-style-content {
+    width: 100%;
+  }
 }
 
-@media (min-width: 1800px) {
+@media (max-width: 991.98px){
     .content {
-        margin-left: 600px;
-    }
+      margin-left: 0;
+      width: 100%;
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 28px;
+  }
 }
 
-@media (min-width: 1200px) and (max-width: 1799px) {
-    .content {
-        margin-left: 410px;
-    }
+@media (max-width: 767.98px) {
+  .content {
+    font-size: 28px;
 
-    .post-item {
-        width: 90%;
-        max-width: 900px;
-    }
+  }
+  .post-title {
+    font-size: 22px;
+  }
+
+  .post-item p {
+    font-size: 16px;
+  }
+
+  .comment-form textarea {
+    height: 100px;
+    font-size: 13px;
+  }
+
+  .comment-form button {
+    width: 45%;
+    height: 40px;
+    font-size: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .like-button, .comment-button, .comment-actions button {
+    font-size: 13px;
+    padding: 8px 16px;
+    height: 36px;
+  }
+
+  .comments {
+    padding-left: 15px;
+  }
+
+  .comment {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .no-posts-message {
+    font-size: 22px;
+  }
 }
 
-@media (min-width: 1800px) {
-    .content {
-        margin-left: 600px;
-    }
+@media (max-width: 575.98px) {
+  .post-item {
+    width: 100%;
+    padding: 20px;
+    margin: 20px 0;
+  }
 
-    .post-item {
-        width: 90%;
-        max-width: 900px;
-    }
-}
+  .post-item img {
+    max-width: 100%;
+  }
 
-@media (max-width: 1199px) {
-    .content {
-        width: 95%;
-        margin: 100px auto 0 auto;
-        padding: 20px;
-    }
+  .comment-form textarea {
+    height: 90px;
+    font-size: 13px;
+  }
 
-    .post-item {
-        width: 100%;
-        padding: 20px;
-    }
+  .comment-form button {
+    font-size: 14px;
+  }
 
-    .comment {
-        width: 100%;
-        padding: 15px;
-    }
+  .like-button, .comment-button{
+    width:31%;
+    font-size: 12px;
+  }
 
-    .comment-form button {
-        width: 100%;
-    }
+  .posts-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+  }
 
-    .comment-actions {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+  .comment-actions {
+    width: 100%;
+    gap: 5px;
+  }
+  
+  .no-posts-image {
+    width: 100%;
+  }
 
-    .comment-form textarea {
-        width: 100%;
-    }
+  .post-title {
+    font-size: 20px;
+  }
 
-    .posts-buttons {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .comments {
-        padding-left: 0;
-        flex-direction: column;
-    }
-
-    .no-posts-image {
-        width: 100%;
-    }
+  .post-item p {
+    font-size: 15px;
+  }
 }

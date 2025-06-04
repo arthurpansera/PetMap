@@ -124,13 +124,17 @@
                 <section class="no-account">
                     <h1>Bem-vindo ao <br> PetMap!</h1>
                     <h3>Ainda não possui uma conta?</h3>
-                    <a href="#" id="show-register">Cadastrar-se</a>
+                    <a href="#" class="show-register">Cadastrar-se</a>
                 </section>
     
                 <section class="login-box">
-                    <div class="back-btn">
-                        <a href="../../../index.php">Voltar</a>
+                    <div class="register-back-btn">
+                        <div class="back-btn"> 
+                            <a href="../../../index.php">Voltar</a>
+                        </div>
+                        <a href="#" class="show-register register-button ">Cadastrar-se</a>
                     </div>
+
                     <h1>Login</h1>
                     <form id="form" name="form" method="POST" action="login.php">
                         <label for="email" class="label-input">E-mail: </label>
@@ -139,15 +143,18 @@
                         <input type="password" name="password" id="password" class="input-box-1" placeholder="Insira sua senha" required>
                         <a class="forgot-password" href="forgot-password.php">Esqueci minha senha</a>
                         <input type="submit" value="Login" class="login-btn">
-                      
                     </form>
                 </section>
             </section>
     
             <section class="register-content hidden" id="register-content">
                 <section class="register-box">
-                    <div class="back-btn">
-                        <a href="../../../index.php">Voltar</a>
+
+                    <div class="register-back-btn">
+                        <div class="back-btn">
+                            <a href="../../../index.php">Voltar</a>
+                        </div>
+                        <a class="show-login login-button">Realizar Login</a>
                     </div>
 
                     <h1>Selecione o tipo de Cadastro</h1>
@@ -162,7 +169,7 @@
                 <section class="has-account">
                     <h1>Bem-vindo ao <br> PetMap!</h1>
                     <h3>Já possui uma conta?</h3>
-                    <a id="show-login">Login</a>
+                    <a class="show-login">Login</a>
                 </section>
             </section>
         </section>

@@ -1,3 +1,29 @@
+
+.register-button, .login-button{
+    display: none;
+    text-align: center;
+    margin: 40px 30px 20px auto;
+    font-size: 1.2rem;
+    color: var(--purple-color);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+.register-button:hover, .login-button:hover {
+    transform: scale(1.05);
+}
+
+.register-back-btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+}
+
 .login-box, .register-box {
     display: flex;
     flex-direction: column;
@@ -101,3 +127,4 @@
     margin: 1rem 0;
     margin-bottom: 2.7rem;
 }
+
