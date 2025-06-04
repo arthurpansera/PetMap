@@ -36,7 +36,7 @@
 .notifications p {
     text-align: center;
     font-size: 18px;
-    color: #666;
+    color: black;
     font-style: italic;
     margin-top: 60px;
 }
@@ -48,7 +48,7 @@
 }
 
 .notification-item {
-    background-color: #f9f9ff;
+    background-color: #eeeeee;
     margin-bottom: 16px;
     padding: 18px 22px;
     border-radius: 12px;
