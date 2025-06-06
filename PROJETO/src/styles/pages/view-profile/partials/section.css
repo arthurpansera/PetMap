@@ -125,6 +125,14 @@
     max-width: 220px;
 }
 
+.verify-profile{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .verify-button {
     background-color: #28a745;
     color: white;
@@ -135,6 +143,7 @@
     font-size: 14px;
     transition: background-color 0.3s ease;
     margin-bottom: 10px;
+    width: 220px;
 }
 
 .verify-button:hover {
@@ -161,6 +170,7 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
+    width: 220px;
     transition: background-color 0.3s ease;
 }
 
@@ -337,6 +347,13 @@
     padding: 10px;
     overflow: auto;
     clear: both;
+}
+
+.comentarios-perfil{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .comments {

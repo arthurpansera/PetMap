@@ -764,6 +764,13 @@ input.input-adm {
     transition: background-color 0.5s ease, color 0.5s ease;
 }
 
+.comentarios-perfil{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
 .comments-list {
     margin-top: 10px;
     width: 100%;
