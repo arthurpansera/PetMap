@@ -30,8 +30,9 @@ O PetMap tem como objetivo principal facilitar a conexão entre pessoas e ONGs p
 
 ---
 
-## Integrantes da Equipe
+## 👥 Integrantes da Equipe
 
+Este projeto foi desenvolvido por:
 - Arthur Rodrigues Pansera
 - Jean Inácio Praes
 - João Gabriel de Lima Coltre
