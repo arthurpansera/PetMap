@@ -41,4 +41,4 @@ O PetMap tem como objetivo principal facilitar a conexão entre pessoas e ONGs p
 
 ## 🙏 Agradecimentos
 
-Agradecemos ao professor Giulio Domenico Bordin pela orientação e apoio durante todo o desenvolvimento do projeto.
+Agradecemos ao professor Giulio Domenico Bordin pela orientação e apoio durante o desenvolvimento do projeto.
