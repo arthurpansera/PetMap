@@ -16,17 +16,19 @@ O PetMap tem como objetivo principal facilitar a conexão entre pessoas e ONGs p
 
 ## 🛠️ Tecnologias Utilizadas
 
-- Frontend: HTML, CSS, JavaScript
-- Backend: PHP
-- Banco de Dados: MySQL
-- APIs e Recursos Externos:
+Para o desenvolvimento do PetMap, foi utilizado um conjunto de tecnologias web adequadas aos requisitos funcionais do projeto, garantindo uma aplicação funcional e de fácil manutenção.
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** PHP
+- **Banco de Dados:** MySQL
+- **APIs e Recursos Externos:**
   - ViaCEP — consulta de CEP
   - PHPMailer — envio seguro de e-mails
-- Ferramentas de Desenvolvimento:
+- **Ferramentas de Desenvolvimento:**
   - Visual Studio Code
   - XAMPP
   - Git e GitHub
-- Metodologia: Scrum (com reuniões diárias e entregas iterativas)
+- **Metodologia:** Scrum (com reuniões diárias e entregas iterativas)
 
 ---
 
